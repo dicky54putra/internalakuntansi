@@ -1,0 +1,571 @@
+# Webalizer V2.23-08 Incremental Data - 07/03/2020 04:10:36
+2020 7 3 4 10 36
+531 305 82 25 20 38 7282574 345 96 0 0 0
+15 19 105 1 3
+229 127 1648494 34 189 30 0 0
+229 137 4432658 42 113 49 0 0
+73 41 1201422 15 43 17 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+37 19 592125 25 0 0
+42 27 721898 20 0 0
+6 1 6329 5 0 0
+73 36 1155016 40 0 0
+66 49 742445 49 0 0
+21 16 688185 9 0 0
+105 65 605465 94 0 0
+6 4 21906 6 0 0
+29 19 763095 11 0 0
+0 0 0 0 0 0
+6 2 24648 5 0 0
+16 11 168372 7 0 0
+7 2 5737 6 0 0
+30 15 570831 16 0 0
+28 17 595599 12 0 0
+11 3 30038 10 0 0
+3 0 10889 1 0 0
+4 1 6087 4 0 0
+5 1 9545 4 0 0
+1 0 3683 0 0 0
+1 0 0 1 0 0
+2 0 3071 2 0 0
+8 2 13091 7 0 0
+24 15 544519 11 0 0
+0
+0
+0
+305
+0
+0
+0
+0
+0
+2
+0
+0
+139
+0
+2
+0
+0
+11
+0
+0
+0
+45
+0
+0
+0
+23
+0
+0
+0
+0
+0
+0
+0
+0
+0
+4
+0
+0
+0
+0
+0
+# -urls- 
+/backend/web/assets/a489020/yii.js
+0 11 8320241313730090784 71950 0 0 0 0
+/phpmyadmin/
+0 2 0 11127 1 0 0 0
+/backend/web/assets/692ee2d4/css/font-awesome.min.css
+0 12 7311364628454665059 96126 0 0 0 0
+/backend/web/upload/avatar5.png
+1 2 0 16282 0 0 0 0
+/backend/web/assets/d86e1d49/themes/smoothness/jquery-ui.css
+0 1 7590571135539753009 8892 0 0 0 0
+/backend/web/images/kartun.gif
+1 10 0 1863613 0 0 0 0
+/backend/web/css/site.css
+0 1 7311364628454665059 1083 0 0 0 0
+/backend/web/assets/f160c41/jquery.js
+0 12 1 975261 0 0 0 0
+/backend/web/assets/8de9f4ee/css/bootstrap.css
+0 12 6291343000403521078 263272 0 0 0 0
+/backend/web/assets/85bf6b02/css/skins/_all-skins.min.css
+0 11 7590571135539753009 40750 0 0 0 0
+/backend/web/assets/d86e1d49/ui/i18n/datepicker-id.js
+0 1 6291343000403521078 4679 0 0 0 0
+/backend/web/assets/8de9f4ee/js/bootstrap.js
+0 12 0 197954 0 0 0 0
+/backend/web/assets/85bf6b02/js/adminlte.min.js
+0 13 0 55816 0 0 0 0
+/phpmyadmin/js/messages.php
+0 1 3 9308 0 0 0 0
+/phpmyadmin/phpmyadmin.css.php
+0 1 0 356 0 0 0 0
+/backend/web/assets/85bf6b02/css/AdminLTE.min.css
+0 11 8391172999254461984 173190 0 0 0 0
+/backend/web/js/Chart.js
+0 2 2 213084 0 0 0 0
+/backend/web/assets/a489020/yii.activeForm.js
+0 12 7311364628454665059 92188 0 0 0 0
+/backend/web/assets/8de9f4ee/fonts/glyphicons-halflings-regular.woff2
+0 10 0 183204 0 0 0 0
+/backend/web/assets/a28de2c6/jquery.inputmask.bundle.js
+0 1 7090192379871708960 39352 0 0 0 0
+/backend/web/assets/692ee2d4/fonts/fontawesome-webfont.woff2
+0 2 0 155012 0 0 0 0
+/backend/web/assets/d86e1d49/jquery-ui.js
+0 1 7590571135539753009 92025 0 0 0 0
+/phpmyadmin/js/whitelist.php
+0 1 0 4056 0 0 0 0
+/backend/web/images/desa.jpg
+1 12 8588193439729541985 1608846 0 0 0 0
+/backend/web/
+0 155 0 661008 21 17 0 0
+# End Of Table - urls
+# -sites- (monthly)
+45.227.255.224
+0 1 0 348 0 0 0 0
+-
+192.241.228.8
+0 1 0 3448 0 0 0 0
+-
+80.82.68.18
+0 1 0 348 0 0 0 0
+-
+103.102.12.10
+0 78 55 479971 1 1593584479 0 0
+-
+107.174.236.180
+0 3 1 2544 1 1593579212 0 0
+/backend/web/
+66.249.79.214
+0 9 5 36917 4 1593698161 0 0
+/backend/web/
+164.52.24.162
+0 1 0 3512 1 1593746936 0 0
+-
+209.208.28.30
+0 1 1 1984 1 1593602640 0 0
+/backend/web/
+193.118.53.202
+0 1 0 3265 1 1593735786 0 0
+-
+209.208.28.27
+0 1 0 452 1 1593602639 0 0
+/backend/web/
+128.14.209.250
+0 3 1 5726 1 1593645647 0 0
+/backend/web/
+185.220.101.24
+0 1 0 0 1 1593637446 0 0
+-
+18.27.197.252
+0 1 0 0 1 1593687918 0 0
+-
+42.236.10.84
+0 3 3 177420 0 0 0 0
+-
+94.102.56.151
+0 3 1 15230 1 1593618038 0 0
+/backend/web/
+184.105.247.196
+0 1 0 3265 1 1593655394 0 0
+-
+171.67.71.93
+0 1 0 0 1 1593643662 0 0
+-
+66.249.79.210
+0 9 3 37972 3 1593698764 0 0
+/backend/web/
+96.127.169.2
+0 3 1 5730 1 1593714197 0 0
+/backend/web/
+193.118.55.146
+0 3 1 5729 1 1593588382 0 0
+/backend/web/
+66.249.65.91
+0 1 1 1987 1 1593736177 0 0
+/backend/web/
+223.167.74.87
+0 1 0 0 1 1593647688 0 0
+-
+66.249.79.213
+0 8 6 119350 1 1593655366 0 0
+-
+46.103.198.22
+0 12 2 12916 1 1593573983 0 0
+/backend/web/
+180.254.227.154
+0 41 32 168624 1 1593577258 0 0
+/backend/web/
+2.85.4.29
+0 12 2 13028 1 1593585092 0 0
+/backend/web/
+182.2.74.202
+0 13 3 36140 1 1593661127 0 0
+/backend/web/
+38.99.62.94
+0 3 1 9066 1 1593741114 0 0
+/backend/web/
+36.90.15.133
+0 15 8 112466 1 1593584399 0 0
+-
+209.58.180.2
+0 16 13 528524 1 1593733639 0 0
+/backend/web/
+192.241.228.205
+0 1 0 3265 1 1593676931 0 0
+-
+178.128.194.144
+0 3 0 3691 1 1593748323 0 0
+/backend/web/
+66.249.65.88
+0 4 2 12036 2 1593738587 0 0
+/backend/web/
+125.236.233.97
+0 1 0 0 1 1593635645 0 0
+-
+66.249.65.84
+0 2 1 9788 2 1593735585 0 0
+/backend/web/
+139.162.113.204
+0 1 0 3251 1 1593695541 0 0
+-
+91.121.89.189
+0 1 0 367 1 1593711775 0 0
+-
+192.241.225.25
+0 1 0 3265 1 1593578919 0 0
+-
+111.162.145.70
+0 1 1 1951 1 1593650017 0 0
+/backend/web/
+47.103.82.231
+0 16 13 528585 1 1593660505 0 0
+/backend/web/
+42.236.10.93
+0 10 8 322022 1 1593648992 0 0
+/backend/web/
+36.72.217.244
+0 21 17 571011 1 1593698619 0 0
+/backend/web/
+192.241.221.122
+0 1 0 3448 0 0 0 0
+-
+61.219.11.153
+0 2 0 0 2 1593655820 0 0
+-
+85.95.239.72
+0 1 0 367 1 1593696002 0 0
+-
+192.35.168.204
+0 2 0 6709 1 1593695614 0 0
+-
+83.97.20.150
+0 1 0 3471 1 1593700786 0 0
+-
+34.241.15.44
+0 4 1 2829 1 1593740989 0 0
+/backend/web/
+66.249.79.215
+0 6 3 6848 4 1593694546 0 0
+-
+45.143.220.115
+0 1 0 3683 0 0 0 0
+-
+66.249.65.93
+0 2 0 625 1 1593736175 0 0
+-
+180.254.250.204
+0 19 15 558223 1 1593749432 0 0
+/backend/web/
+209.17.96.210
+0 1 0 3269 1 1593608441 0 0
+-
+195.54.160.135
+0 9 2 39798 2 1593738474 0 0
+-
+196.52.43.94
+0 3 1 14636 1 1593614088 0 0
+/backend/web/
+164.68.113.159
+0 1 0 367 1 1593626658 0 0
+-
+207.180.201.51
+0 1 0 3822 1 1593575685 0 0
+-
+34.95.30.187
+0 1 0 3463 1 1593686632 0 0
+-
+128.14.134.170
+0 6 2 11448 2 1593704307 0 0
+/backend/web/
+66.249.65.92
+0 4 1 3109 2 1593736176 0 0
+/backend/web/
+172.105.89.161
+0 1 0 3448 1 1593599672 0 0
+-
+66.249.65.86
+0 2 0 4369 1 1593735584 0 0
+/backend/web/
+154.51.131.142
+0 3 1 2730 1 1593692028 0 0
+/backend/web/
+202.80.215.214
+0 21 16 688185 1 1593668037 0 0
+/backend/web/
+92.63.111.27
+0 3 1 13712 1 1593610693 0 0
+/backend/web/
+66.249.79.212
+0 8 6 140701 2 1593698159 0 0
+-
+36.73.150.102
+0 40 31 1273989 2 1593660556 0 0
+/backend/web/
+3.21.43.131
+0 8 2 24158 2 1593651086 0 0
+/backend/web/
+184.105.247.195
+0 1 0 3265 1 1593739632 0 0
+-
+114.5.242.30
+0 24 19 558950 2 1593748523 0 0
+/phpmyadmin/js/messages.php
+175.152.111.34
+0 1 0 184 1 1593650014 0 0
+-
+103.30.181.178
+0 18 13 529418 1 1593697408 0 0
+/backend/web/
+69.28.92.103
+0 1 0 221 1 1593602638 0 0
+-
+165.227.126.226
+0 3 1 5265 1 1593702752 0 0
+/backend/web/
+3.88.48.55
+0 3 1 14660 1 1593592109 0 0
+/backend/web/
+45.10.53.61
+0 1 0 367 1 1593616572 0 0
+-
+34.250.9.32
+0 2 0 7818 0 0 0 0
+-
+66.249.79.211
+0 8 4 47896 3 1593694548 0 0
+/backend/web/
+182.253.62.38
+0 3 3 16177 1 1593675536 0 0
+/backend/web/
+150.255.7.186
+0 1 0 415 1 1593650016 0 0
+/backend/web/
+42.236.10.125
+0 3 2 29195 1 1593648988 0 0
+-
+83.97.20.30
+0 2 0 6142 2 1593725688 0 0
+-
+# End Of Table - sites (monthly)
+# -sites- (daily)
+164.52.24.162
+0 1 0 3512 1 1593746936 0 0
+-
+193.118.53.202
+0 1 0 3265 1 1593735786 0 0
+-
+66.249.65.91
+0 1 1 1987 1 1593736177 0 0
+/backend/web/
+38.99.62.94
+0 3 1 9066 1 1593741114 0 0
+/backend/web/
+178.128.194.144
+0 3 0 3691 1 1593748323 0 0
+/backend/web/
+66.249.65.88
+0 2 1 6133 1 1593738587 0 0
+/backend/web/
+66.249.65.84
+0 1 1 5661 1 1593735585 0 0
+/backend/web/
+34.241.15.44
+0 4 1 2829 1 1593740989 0 0
+/backend/web/
+66.249.65.93
+0 1 0 221 1 1593736175 0 0
+-
+180.254.250.204
+0 19 15 558223 1 1593749432 0 0
+/backend/web/
+195.54.160.135
+0 9 2 39798 2 1593738474 0 0
+-
+66.249.65.92
+0 1 0 452 1 1593736176 0 0
+/backend/web/
+66.249.65.86
+0 2 0 4369 1 1593735584 0 0
+/backend/web/
+184.105.247.195
+0 1 0 3265 1 1593739632 0 0
+-
+114.5.242.30
+0 24 19 558950 2 1593748523 0 0
+/phpmyadmin/js/messages.php
+# End Of Table - sites (daily)
+# -referrers- 
+http://sijaksa.online/backend/web/assets/8de9f4ee/css/bootstrap.css
+0 8
+https://sijaksa.online/backend/web/assets/8de9f4ee/css/bootstrap.css
+0 2
+http://sijaksa.online/backend/web/index.php
+0 146
+https://157.230.46.176:443/index.php
+0 1
+http://sijaksa.online
+0 1
+http://baidu.com/
+0 3
+https://sijaksa.online/backend/web/index.php
+0 104
+https://www.google.com/
+0 5
+- (Direct Request)
+0 226
+https://sijaksa.online/backend/web/assets/85bf6b02/css/AdminLTE.min.css
+0 4
+http://sijaksa.online/backend/web/
+0 1
+http://sijaksa.online/backend/web/assets/85bf6b02/css/AdminLTE.min.css
+0 8
+https://sijaksa.online/
+0 1
+https://157.230.46.176/backend/web/
+0 5
+http://sijaksa.online/backend/web/assets/692ee2d4/css/font-awesome.min.css
+0 1
+https://157.230.46.176:443/
+0 3
+https://157.230.46.176:443/backend/web/
+0 4
+https://sijaksa.online/backend/web/
+0 1
+https://157.230.46.176/
+0 6
+https://sijaksa.online/backend/web/assets/692ee2d4/css/font-awesome.min.css
+0 1
+# End Of Table - referrers
+# -agents- 
+Mozilla/5.0 (Windows NT 6.1; WOW64; rv:52.0) Gecko/20100101 Firefox/52.0
+0 1
+HTTP Banner Detection (https://security.ipip.net)
+0 1
+Mozilla/5.0 (compatible; Nimbostratus-Bot/v1.3.2; http://cloudsystemnetworks.com)
+0 1
+Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/27.0.1453.93 Safari/537.36
+0 1
+Mozilla/5.0 (Linux; Android 6.0.1; Nexus 5X Build/MMB29P) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.92 Mobile S
+0 24
+Mozilla/5.0 (compatible; NetcraftSurveyAgent/1.0; +info@netcraft.com)
+0 3
+Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3602.2 Safari/537.36
+0 1
+Mozilla/5.0 (Linux; U; Android 8.1.0; zh-CN; EML-AL00 Build/HUAWEIEML-AL00) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.
+0 16
+Mozilla/5.0 (Linux; Android 10; RMX1851) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.132 Mobile Safari/537.36
+0 20
+TprAdsTxtCrawler/1.0
+0 2
+Go http package
+0 2
+Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.113 Safari/537.36
+0 16
+Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36 eM Client/
+0 24
+Mozilla/5.0 (Linux; Android 10; SM-N975F) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.106 Mobile Safari/537.36
+0 13
+Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)
+0 22
+Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36 Edg/83.0.
+0 19
+Go-http-client/1.1
+0 1
+Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36
+0 3
+Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.121 Safari/537.36
+0 2
+Mozilla/5.0 (iPhone; CPU iPhone OS 9_1 like Mac OS X) AppleWebKit/601.1.46 (KHTML, like Gecko) Version/9.0 Mobile/13B143 Safa
+0 3
+Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.106 Safari/537.36
+0 24
+Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36
+0 24
+Mozilla/5.0 zgrab/0.x
+0 6
+python-requests/2.6.0 CPython/2.7.5 Linux/3.10.0-1127.el7.x86_64
+0 1
+Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.61 Safari/537.36
+0 21
+Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36
+0 25
+Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/45.0.2454.101 Safari/537.36
+0 3
+Pandalytics/1.0 (https://domainsbot.com/pandalytics/)
+0 4
+Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:62.0) Gecko/20100101 Firefox/62.0
+0 4
+Mozilla/5.0 (Windows NT 6.1; rv:38.0) Gecko/20100101 Firefox/38.0 K-Meleon/76.0
+0 3
+Mozilla/5.0 (compatible; evc-batch/2.0)
+0 3
+Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36
+0 152
+Mozilla/5.0 (Macintosh; Intel Mac OS X 10.13; rv:61.0) Gecko/20100101 Firefox/72.0
+0 2
+Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.132 Safari/537.36
+0 21
+Internet-structure-research-project-bot
+0 3
+Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.130 Safari/537.36
+0 3
+libwww-perl/6.45
+0 3
+Mozilla/5.0 (Linux; Android 6.0.1; Nexus 5X Build/MMB29P) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.118 Mobile 
+0 17
+# End Of Table - agents
+# -search strings- 
+# End Of Table - search strings
+# -usernames- 
+# End Of Table - usernames
