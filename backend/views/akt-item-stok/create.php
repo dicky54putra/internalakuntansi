@@ -5,7 +5,7 @@ use yii\helpers\Html;
 /* @var $this yii\web\View */
 /* @var $model backend\models\AktItemStok */
 
-$this->title = 'Tambah Item Stok';
+$this->title = 'Tambah Stok Gudang';
 ?>
 <div class="akt-item-stok-create">
 

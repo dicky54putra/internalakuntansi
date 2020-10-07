@@ -139,7 +139,7 @@ $this->title = 'Detail Daftar Barang : ' . $model->kode_item;
 
                         <div class="" style="margin-top:20px;">
                             <ul class="nav nav-tabs" id="tabForRefreshPage">
-                                <li class="active"><a data-toggle="tab" href="#stok">Stok</a></li>
+                                <li class="active"><a data-toggle="tab" href="#stok">Stok Gudang</a></li>
                                 <!-- <li><a data-toggle="tab" href="#pajak-pembelian">Pajak Pembelian</a></li>
                                 <li><a data-toggle="tab" href="#pajak-penjualan">Pajak Penjualan</a></li> -->
                                 <li><a data-toggle="tab" href="#harga-jual">Harga Jual</a></li>
@@ -148,7 +148,7 @@ $this->title = 'Detail Daftar Barang : ' . $model->kode_item;
                             <div class="tab-content">
                                 <div id="stok" class="tab-pane fade in active" style="margin-top:20px;">
                                     <p>
-                                        <?= Html::a('<span class="glyphicon glyphicon-plus"></span> Tambah Stok', ['akt-item-stok/create', 'id' => $model->id_item], ['class' => 'btn btn-success']) ?>
+                                        <?= Html::a('<span class="glyphicon glyphicon-plus"></span> Tambah Stok Gudang', ['akt-item-stok/create', 'id' => $model->id_item], ['class' => 'btn btn-success']) ?>
                                     </p>
                                     <table class="table" style="width:100%;">
                                         <thead>

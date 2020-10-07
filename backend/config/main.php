@@ -189,7 +189,7 @@ return [
         ],
         'db' => [
             'class' => 'yii\db\Connection',
-            'dsn' => 'mysql:host=localhost;dbname=accounting',
+            'dsn' => 'mysql:host=localhost;dbname=internalakuntansi',
             // 'dsn' => 'mysql:host=localhost;dbname=akuntansi_datacoba',
             'username' => 'root',
             'password' => '',
