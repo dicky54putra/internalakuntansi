@@ -31,7 +31,6 @@ use kartik\select2\Select2;
 
                             <?= $form->field($model, 'metode_depresiasi')->widget(Select2::classname(), [
                                 'data' =>  array(
-                                    1 => 'Metode Saldo Menurun',
                                     2 => 'Metode Garis Lurus',
                                 ),
                                 'language' => 'en',
@@ -61,45 +60,45 @@ use kartik\select2\Select2;
                             ])->label('Akun Harta') ?>
                         </div>
                         <div class="col-md-6">
-                                
-                    <?= $form->field($model, 'id_akun_akumulasi')->widget(Select2::classname(), [
-                        'data' => ArrayHelper::map(
-                            AktAkun::find()->all(),
-                            'id_akun',
-                            'nama_akun'
-                        ),
-                        'language' => 'en',
-                        'options' => ['placeholder' => 'Pilih Akun Akumulasi'],
-                        'pluginOptions' => [
-                            // 'allowClear' => true,
-                            'tags' => true,
-                            'tokenSeparators' => [',', ' '],
-                            'maximumInputLength' => 10
-                        ],
-                    ])->label('Akun Akumulasi') ?>
 
-                    <?= $form->field($model, 'id_akun_depresiasi')->widget(Select2::classname(), [
-                        'data' => ArrayHelper::map(
-                            AktAkun::find()->all(),
-                            'id_akun',
-                            'nama_akun'
-                        ),
-                        'language' => 'en',
-                        'options' => ['placeholder' => 'Pilih Akun Depresiasi'],
-                        'pluginOptions' => [
-                            // 'allowClear' => true,
-                            'tags' => true,
-                            'tokenSeparators' => [',', ' '],
-                            'maximumInputLength' => 10
-                        ],
-                    ])->label('Akun Depresiasi') ?>
+                            <?= $form->field($model, 'id_akun_akumulasi')->widget(Select2::classname(), [
+                                'data' => ArrayHelper::map(
+                                    AktAkun::find()->all(),
+                                    'id_akun',
+                                    'nama_akun'
+                                ),
+                                'language' => 'en',
+                                'options' => ['placeholder' => 'Pilih Akun Akumulasi'],
+                                'pluginOptions' => [
+                                    // 'allowClear' => true,
+                                    'tags' => true,
+                                    'tokenSeparators' => [',', ' '],
+                                    'maximumInputLength' => 10
+                                ],
+                            ])->label('Akun Akumulasi') ?>
 
-                    <?= $form->field($model, 'keterangan')->textarea(['rows' => 6]) ?>
+                            <?= $form->field($model, 'id_akun_depresiasi')->widget(Select2::classname(), [
+                                'data' => ArrayHelper::map(
+                                    AktAkun::find()->all(),
+                                    'id_akun',
+                                    'nama_akun'
+                                ),
+                                'language' => 'en',
+                                'options' => ['placeholder' => 'Pilih Akun Depresiasi'],
+                                'pluginOptions' => [
+                                    // 'allowClear' => true,
+                                    'tags' => true,
+                                    'tokenSeparators' => [',', ' '],
+                                    'maximumInputLength' => 10
+                                ],
+                            ])->label('Akun Depresiasi') ?>
 
-                        
+                            <?= $form->field($model, 'keterangan')->textarea(['rows' => 6]) ?>
+
+
                         </div>
                     </div>
-                   
+
 
                     <div class="form-group">
                         <?= Html::a('<span class="glyphicon glyphicon-circle-arrow-left"></span> Kembali', ['index'], ['class' => 'btn btn-warning']) ?>
