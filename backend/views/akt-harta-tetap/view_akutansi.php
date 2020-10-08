@@ -142,7 +142,7 @@ $this->title = 'Detail Harta Tetap : ' .  $model->kode_pembelian;
                                             }
                                         ],
                                         [
-                                            'label' => 'Tanggal Pakai',
+                                            'label' => 'Tanggal Beli / Tanggal Pakai',
                                             'value' => function ($model) {
                                                 if ($model->tanggal_pakai != null) {
                                                     return tanggal_indo($model->tanggal_pakai);
@@ -178,45 +178,28 @@ $this->title = 'Detail Harta Tetap : ' .  $model->kode_pembelian;
                                 ]) ?>
                             </div>
                             <div class="col-md-6">
-                                <?= DetailView::widget([
-                                    'model' => $model,
-                                    'attributes' => [
-                                        [
-                                            'label' => 'Akumulasi Beban',
-                                            'value' => function ($model) {
-                                                return ribuan($model->akumulasi_beban);
-                                            }
-                                        ],
-                                        [
-                                            'label' => 'Beban Tahun Ini',
-                                            'value' => function ($model) {
-                                                return ribuan($model->beban_tahun_ini);
-                                            }
-                                        ],
-                                        [
-                                            'label' => 'Terhitung Tanggal',
-                                            'value' => function ($model) {
-                                                if ($model->terhitung_tanggal != null) {
-                                                    return tanggal_indo($model->terhitung_tanggal);
-                                                } else {
-                                                    return $model->terhitung_tanggal;
-                                                }
-                                            }
-                                        ],
-                                        [
-                                            'label' => 'Nilai Buku',
-                                            'value' => function ($model) {
-                                                return ribuan($model->nilai_buku);
-                                            }
-                                        ],
-                                        [
-                                            'label' => 'Beban per Bulan',
-                                            'value' => function ($model) {
-                                                return ribuan($model->beban_per_bulan);
-                                            }
-                                        ]
-                                    ],
-                                ]) ?>
+                                <table id="w3" class="table table-striped table-bordered detail-view">
+                                    <tr>
+                                        <th>Akumulasi Beban</th>
+                                        <td class="akumulasi_beban_detail"></td>
+                                    </tr>
+                                    <tr>
+                                        <th>Beban Tahun Ini</th>
+                                        <td class="beban_tahun_ini_detail"></td>
+                                    </tr>
+                                    <tr>
+                                        <th>Terhitung Tanggal</th>
+                                        <td><?= tanggal_indo($model->terhitung_tanggal) ?></td>
+                                    </tr>
+                                    <tr>
+                                        <th>Nilai Buku</th>
+                                        <td class="nilai_buku_detail"></td>
+                                    </tr>
+                                    <tr>
+                                        <th>Beban per Bulan</th>
+                                        <td class="beban_per_bulan_detail"></td>
+                                    </tr>
+                                </table>
                             </div>
 
                         </div>
@@ -287,14 +270,8 @@ $this->title = 'Detail Harta Tetap : ' .  $model->kode_pembelian;
                             <?= $form->field($model, 'lokasi')->textInput() ?>
                         </div>
                         <div class="form-group">
-                            <?= $form->field($model, 'tanggal_pakai')->widget(\yii\jui\DatePicker::classname(), [
-                                'clientOptions' => [
-                                    'changeMonth' => true,
-                                    'changeYear' => true,
-                                ],
-                                'dateFormat' => 'yyyy-MM-dd',
-                                'options' => ['class' => 'form-control']
-                            ]) ?>
+                            <?php $tgl = Yii::$app->db->createCommand("SELECT tanggal FROM akt_pembelian_harta_tetap WHERE id_pembelian_harta_tetap = '$model->id_pembelian_harta_tetap'")->queryScalar(); ?>
+                            <?= $form->field($model, 'tanggal_pakai')->textInput(['readonly' => true, 'value' => $tgl])->label('Tanggal Pakai / Tanggal Beli') ?>
                         </div>
                         <div class="form-group">
                             <?= $form->field($model, 'id_kelompok_aset_tetap')->widget(Select2::classname(), [
@@ -315,51 +292,85 @@ $this->title = 'Detail Harta Tetap : ' .  $model->kode_pembelian;
                     </div>
                     <div class="col-md-6">
                         <div class="form-group">
-                            <?= $form->field($model, 'akumulasi_beban')->textInput(['readonly' => true, 'value' =>  $model->akumulasi_beban != null ? ribuan(($model->akumulasi_beban)) : '']) ?>
-                        </div>
-                        <div class="form-group">
-                            <?= $form->field($model, 'beban_tahun_ini')->textInput(['readonly' => true, 'value' =>  $model->beban_tahun_ini != null ? ribuan(($model->beban_tahun_ini)) : '']) ?>
-                        </div>
-                        <div class="form-group">
-                            <?= $form->field($model, 'beban_per_bulan')->textInput(['readonly' => true, 'value' =>  $model->beban_per_bulan != null ? ribuan(($model->beban_per_bulan)) : '']) ?>
-                        </div>
-                        <div class="form-group">
-                            <?= $form->field($model, 'nilai_buku')->textInput(['readonly' => true, 'value' =>  $model->nilai_buku != null ? ribuan(($model->nilai_buku)) : '']) ?>
-                        </div>
-                        <div class="form-group">
-                            <?= $form->field($model, 'terhitung_tanggal')->textInput(['value' => date('Y') . '-' . 12 . '-' . 31, 'readonly' => true]) ?>
-                        </div>
-                        <div class="form-group">
-                            <label for="harga_perolehan">Akun Harta</label>
-                            <input type="text" id="akun_harta" class="form-control" readonly value="<?= $model->id_kelompok_aset_tetap == null ? '' : $akun_harta['nama_akun'] ?>">
-                        </div>
-                        <div class="form-group">
-                            <label for="harga_perolehan">Akun Akumulasi</label>
-                            <input type="text" id="akun_akumulasi" class="form-control" readonly value="<?= $model->id_kelompok_aset_tetap == null ? '' : $akun_akumulasi['nama_akun'] ?>">
-                        </div>
-                        <div class=" form-group">
-                            <label for="harga_perolehan">Akun Depresiasi</label>
-                            <input type="text" id="akun_depresiasi" class="form-control" readonly value="<?= $model->id_kelompok_aset_tetap == null ? '' : $akun_depresiasi['nama_akun'] ?>">
+                            <div class="form-group field-aktpembelianhartatetapdetail-akumulasi_beban">
+                                <label class="control-label" for="aktpembelianhartatetapdetail-akumulasi_beban">Akumulasi Beban</label>
+                                <input type="text" id="aktpembelianhartatetapdetail-akumulasi_beban" class="form-control" readonly>
+                                <div class="help-block"></div>
+                            </div>
+                            <div class="form-group field-aktpembelianhartatetapdetail-beban_tahun_ini">
+                                <label class="control-label" for="aktpembelianhartatetapdetail-beban_tahun_ini">Beban Tahun Ini</label>
+                                <input type="text" id="aktpembelianhartatetapdetail-beban_tahun_ini" class="form-control" readonly>
+                                <div class="help-block"></div>
+                            </div>
+                            <div class="form-group field-aktpembelianhartatetapdetail-beban_per_bulan">
+                                <label class="control-label" for="aktpembelianhartatetapdetail-beban_per_bulan">Beban per Bulan</label>
+                                <input type="text" id="aktpembelianhartatetapdetail-beban_per_bulan" class="form-control" readonly>
+                                <div class="help-block"></div>
+                            </div>
+                            <div class="form-group field-aktpembelianhartatetapdetail-nilai_buku">
+                                <label class="control-label" for="aktpembelianhartatetapdetail-nilai_buku">Nilai Buku</label>
+                                <input type="text" id="aktpembelianhartatetapdetail-nilai_buku" class="form-control" readonly>
+                                <div class="help-block"></div>
+                            </div>
+
+                            <div class="form-group">
+                                <?= $form->field($model, 'terhitung_tanggal')->textInput(['value' => date('Y') . '-' . 12 . '-' . 31, 'readonly' => true]) ?>
+                            </div>
+                            <div class="form-group">
+                                <label for="harga_perolehan">Akun Harta</label>
+                                <input type="text" id="akun_harta" class="form-control" readonly value="<?= $model->id_kelompok_aset_tetap == null ? '' : $akun_harta['nama_akun'] ?>">
+                            </div>
+                            <div class="form-group">
+                                <label for="harga_perolehan">Akun Akumulasi</label>
+                                <input type="text" id="akun_akumulasi" class="form-control" readonly value="<?= $model->id_kelompok_aset_tetap == null ? '' : $akun_akumulasi['nama_akun'] ?>">
+                            </div>
+                            <div class=" form-group">
+                                <label for="harga_perolehan">Akun Depresiasi</label>
+                                <input type="text" id="akun_depresiasi" class="form-control" readonly value="<?= $model->id_kelompok_aset_tetap == null ? '' : $akun_depresiasi['nama_akun'] ?>">
+                            </div>
                         </div>
                     </div>
+
+
                 </div>
-
-
+                <div class=" modal-footer">
+                    <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Close</button>
+                    <?= Html::submitButton('<span class="glyphicon glyphicon-floppy-saved"></span> Simpan', ['class' => 'btn btn-success']) ?>
+                    <?php ActiveForm::end(); ?>
+                </div>
             </div>
-            <div class=" modal-footer">
-                <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Close</button>
-                <?= Html::submitButton('<span class="glyphicon glyphicon-floppy-saved"></span> Simpan', ['class' => 'btn btn-success']) ?>
-                <?php ActiveForm::end(); ?>
-            </div>
+            <!-- /.modal-content -->
         </div>
-        <!-- /.modal-content -->
+        <!-- /.modal-dialog -->
     </div>
-    <!-- /.modal-dialog -->
-</div>
 
 
-<?php
-$script = <<< JS
+    <?php
+    $script = <<< JS
+
+    if($model->id_kelompok_aset_tetap != null ) {
+        $.get('index.php?r=akt-harta-tetap/get-akt-kelompok-harta-tetap',{ id : $model->id_kelompok_aset_tetap },function(data){
+            var data = $.parseJSON(data);
+                if(data.metode_depresiasi ==  2) {
+                    var hp = $harga_perolehan - $model->residu;
+
+                    var beban_per_bulan = hp / (data.umur_ekonomis * 12);
+                    var beban_tahun_ini= hp / data.umur_ekonomis;
+
+                    saveBeban(beban_per_bulan, beban_tahun_ini,hp, data.umur_ekonomis, type = 'Detail');
+
+                    $('.beban_per_bulan_detail').text(formatNumber(beban_per_bulan));
+
+                    $('#aktpembelianhartatetapdetail-beban_per_bulan').attr('value', formatNumber(beban_per_bulan));
+
+                } else {
+                    $('.beban_tahun_ini_detail').text(formatNumber(beban_tahun_ini));
+                    $('.beban_per_bulan_detail').text(formatNumber(beban_per_bulan));
+                }
+        });
+        
+    }
+
 
     $('.form-setting').change(function(e){
         
@@ -382,11 +393,9 @@ $script = <<< JS
                     var beban_per_bulan = hp / (data.umur_ekonomis * 12);
                     var beban_tahun_ini= hp / data.umur_ekonomis;
 
-                    saveBeban(beban_per_bulan, beban_tahun_ini,hp);
+                    saveBeban(beban_per_bulan, beban_tahun_ini,hp, data.umur_ekonomis, type = 'Input');
 
-                    $('#aktpembelianhartatetapdetail-beban_tahun_ini').attr('value', formatNumber(beban_tahun_ini));
                     $('#aktpembelianhartatetapdetail-beban_per_bulan').attr('value', formatNumber(beban_per_bulan));
-
                 } else {
                     $('#aktpembelianhartatetapdetail-beban_tahun_ini').attr('value',0);
                     $('#aktpembelianhartatetapdetail-beban_per_bulan').attr('value',0);
@@ -397,21 +406,53 @@ $script = <<< JS
                 $('#akun_akumulasi').attr('value',data.akun_akumulasi.nama_akun);
                 $('#akun_depresiasi').attr('value',data.akun_depresiasi.nama_akun);
             
-            });
+        });
 
     }
 
-    function saveBeban(beban_bulan, beban_tahun, hp){
+    function saveBeban(beban_bulan, beban_tahun, hp, umur_ekonomis, type){
 
         var tanggal = $('#aktpembelianhartatetapdetail-tanggal_pakai').val();
-        var bulan = tanggal.substr(5,2);
 
-        var selisih = 12 - bulan;
-        var akumulasi_beban = selisih * beban_bulan;
+        var bulan = tanggal.substr(5,2)
+        var _tahun = tanggal.substr(0,4);
+        
+        var tahun = parseInt(_tahun);
+
+        var tahun_ekonomis = tahun + parseInt(umur_ekonomis);
+        var date = new Date(); 
+        var year = date.getFullYear(); // Jika Ingin Pengecekan Rubah Disini
+
+
+        var selisih = 0;
+        if(tahun == year ) {
+            selisih = (12 - bulan + 1) /12;
+        } else if (tahun != year && year != tahun_ekonomis ) {
+            selisih = 12/12;
+        } else if( year == tahun_ekonomis ) {
+            selisih = bulan/12;
+        }
+
+        var beban_fix_tahun = beban_tahun * selisih; 
+
+        // console.log('selisih', selisih );
+        // console.log('beban_fix_tahun', beban_fix_tahun);
+        
+        $('#aktpembelianhartatetapdetail-beban_tahun_ini').attr('value', formatNumber(beban_fix_tahun));
+
+        var akumulasi_beban = umur_ekonomis * beban_fix_tahun;
         var nilai_buku = hp - akumulasi_beban;
 
         $('#aktpembelianhartatetapdetail-akumulasi_beban').attr('value', formatNumber(akumulasi_beban));
         $('#aktpembelianhartatetapdetail-nilai_buku').attr('value', formatNumber(nilai_buku));
+
+        if(type == 'Detail') {
+
+            $('.beban_tahun_ini_detail').text(formatNumber(beban_fix_tahun));
+            $('#aktpembelianhartatetapdetail-beban_tahun_ini').attr('value', formatNumber(beban_fix_tahun));
+            $('.akumulasi_beban_detail').text(formatNumber(akumulasi_beban));
+            $('.nilai_buku_detail').text(formatNumber(nilai_buku));
+        }
     }
 
     function formatNumber(number) {
@@ -421,5 +462,5 @@ $script = <<< JS
 
 
 JS;
-$this->registerJs($script);
-?>
+    $this->registerJs($script);
+    ?>
