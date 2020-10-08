@@ -29,9 +29,17 @@ $this->title = 'Detail Harta Tetap : ' .  $model->kode_pembelian;
 
     <p>
         <?= Html::a('<span class="glyphicon glyphicon-circle-arrow-left"></span> Kembali', ['index-akutansi'], ['class' => 'btn btn-warning']) ?>
-        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#setting-depresiasi">
-            <span class="glyphicon glyphicon-edit"></span> Setting Depresiasi
-        </button>
+        <?php if ($model->status == 1 && $model->umur_ekonomis == null) { ?>
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#setting-depresiasi">
+                <span class="glyphicon glyphicon-edit"></span> Setting Depresiasi
+            </button>
+
+        <?php } else if ($model->status == 1 && $model->umur_ekonomis != null) { ?>
+            <?= Html::a('<span class="glyphicon glyphicon-check"></span> Terjual', ['terjual', 'id' => $model->id_pembelian_harta_tetap_detail], [
+                'class' => 'btn btn-success'
+            ]) ?>
+
+        <?php } ?>
         <?= Html::a('<span class="glyphicon glyphicon-trash"></span> Hapus', ['delete', 'id' => $model->id_pembelian_harta_tetap_detail], [
             'class' => 'btn btn-danger',
             'data' => [
@@ -304,7 +312,7 @@ $this->title = 'Detail Harta Tetap : ' .  $model->kode_pembelian;
                             </div>
                             <div class="form-group field-aktpembelianhartatetapdetail-beban_per_bulan">
                                 <label class="control-label" for="aktpembelianhartatetapdetail-beban_per_bulan">Beban per Bulan</label>
-                                <input type="text" id="aktpembelianhartatetapdetail-beban_per_bulan" class="form-control" readonly>
+                                <input type="text" id="aktpembelianhartatetapdetail-beban_per_bulan" class="form-control" name="beban_per_bulan" readonly>
                                 <div class="help-block"></div>
                             </div>
                             <div class="form-group field-aktpembelianhartatetapdetail-nilai_buku">
