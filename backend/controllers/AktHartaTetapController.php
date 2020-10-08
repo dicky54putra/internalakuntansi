@@ -5,6 +5,7 @@ namespace backend\controllers;
 use Yii;
 use backend\models\AktHartaTetap;
 use backend\models\AktAkun;
+use backend\models\AktDepresiasiHartaTetap;
 use backend\models\AktKelompokHartaTetap;
 
 
@@ -100,22 +101,79 @@ class AktHartaTetapController extends Controller
     public function actionSettingDepresiasi($id)
     {
         $model = AktPembelianHartaTetapDetail::findOne($id);
+
+        // echo $id;
+        // die;
         if ($model->load(Yii::$app->request->post())) {
-            // $beban_tahun_ini = Yii::$app->request->post('AktPembelianHartaTetapDetail')['beban_tahun_ini'];
-            // $akumulasi_beban = Yii::$app->request->post('AktPembelianHartaTetapDetail')['akumulasi_beban'];
-            // $beban_per_bulan = Yii::$app->request->post('AktPembelianHartaTetapDetail')['beban_per_bulan'];
-            // $nilai_buku = Yii::$app->request->post('AktPembelianHartaTetapDetail')['nilai_buku'];
-            // echo ceil($akumulasi_beban);
-            // die;
-            // $model->beban_tahun_ini = preg_replace("/[^0-9,]+/", "", $beban_tahun_ini);
-            // $model->beban_per_bulan = preg_replace("/[^0-9,]+/", "", $beban_per_bulan);
-            // $model->akumulasi_beban = preg_replace("/[^0-9,]+/", "", $akumulasi_beban);
-            // $model->nilai_buku = preg_replace("/[^0-9,]+/", "", $nilai_buku);
+
+            $_beban_per_bulan = Yii::$app->request->post('beban_per_bulan');
+            $beban_per_bulan = preg_replace("/[^0-9,]+/", "", $_beban_per_bulan);
+
+            $tanggal_ekonomis = date("Y-m-d", strtotime("$model->tanggal_pakai +$model->umur_ekonomis year"));
+
+            $month = strtotime($model->tanggal_pakai);
+            $end = strtotime($tanggal_ekonomis);
+            while ($month <= $end) {
+                $tanggal =  date('Y-m-t', $month);
+                $depresiasi_harta_tetap = new AktDepresiasiHartaTetap();
+                $akt_depresiasi_harta_tetap = AktDepresiasiHartaTetap::find()->select(["kode_depresiasi"])->orderBy("id_depresiasi_harta_tetap DESC")->limit(1)->one();
+                if (!empty($akt_depresiasi_harta_tetap->kode_depresiasi)) {
+                    # code...
+                    $no_bulan = substr($akt_depresiasi_harta_tetap->kode_depresiasi, 2, 4);
+                    if ($no_bulan == date('ym')) {
+                        # code...
+                        $noUrut = substr($akt_depresiasi_harta_tetap->kode_depresiasi, -3);
+                        $noUrut++;
+                        $noUrut_2 = sprintf("%03s", $noUrut);
+                        $kode_depresiasi = 'FD' . date('ym') . $noUrut_2;
+                    } else {
+                        # code...
+                        $kode_depresiasi = 'FD' . date('ym') . '001';
+                    }
+                } else {
+                    # code...
+                    $kode_depresiasi = 'FD' . date('ym') . '001';
+                }
+
+                $depresiasi_harta_tetap->id_pembelian_harta_tetap_detail = $id;
+                $depresiasi_harta_tetap->tanggal = $tanggal;
+                $depresiasi_harta_tetap->nilai = $beban_per_bulan;
+                $depresiasi_harta_tetap->kode_depresiasi = $kode_depresiasi;
+                $depresiasi_harta_tetap->save(false);
+
+                $month = strtotime("+1 month", $month);
+            }
 
             $model->save();
 
             return $this->redirect(['view-akutansi', 'id' => $model->id_pembelian_harta_tetap_detail]);
         }
+    }
+
+
+    public function actionTerjual($id)
+    {
+        $model = AktPembelianHartaTetapDetail::findOne($id);
+
+        $tanggal_ekonomis = date("Y-m-t", strtotime("$model->tanggal_pakai +$model->umur_ekonomis year"));
+        $start = date("Y-m-d");
+
+        $depresiasi_harta_tetap =  AktDepresiasiHartaTetap::find()
+            ->where(['>=', 'tanggal', $start])
+            ->andWhere(['<=', 'tanggal', $tanggal_ekonomis])
+            ->all();
+
+
+        foreach ($depresiasi_harta_tetap as $d) {
+            $d->delete();
+        }
+
+        $model->status = 2;
+        $model->tanggal_terjual = date('Y-m-d');
+
+        $model->save();
+
+        return $this->redirect(['view-akutansi', 'id' => $model->id_pembelian_harta_tetap_detail]);
     }
 
 
