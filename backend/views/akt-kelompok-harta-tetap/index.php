@@ -39,13 +39,13 @@ $this->title = 'Daftar Kelompok Harta Tetap';
             [
                 'attribute' => 'metode_depresiasi',
                 'format' => 'html',
-                'filter' => array(1 => 'Metode Saldo Menurun', 2 => 'Metode Garis Lurus'),
+                'filter' => array(2 => 'Metode Garis Lurus'),
                 'value' => function ($model) {
-                    if ($model->metode_depresiasi == 1) {
+                    if ($model->metode_depresiasi == 2) {
                         # code...
-                        return 'Metode Saldo Menurun';
-                    } else {
                         return 'Metode Garis Lurus';
+                    } else {
+                        return '';
                         # code...
                     }
                 }

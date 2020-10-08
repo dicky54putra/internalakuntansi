@@ -58,11 +58,11 @@ $this->title = $model->kode;
                                     'attribute' => 'metode_depresiasi',
                                     'format' => 'html',
                                     'value' => function ($model) {
-                                        if ($model->metode_depresiasi == 1) {
+                                        if ($model->metode_depresiasi == 2) {
                                             # code...
-                                            return 'Metode Saldo Menurun';
-                                        } else {
                                             return 'Metode Garis Lurus';
+                                        } else {
+                                            return '';
                                             # code...
                                         }
                                     }

@@ -35,7 +35,7 @@ class AktPembelianHartaTetapDetail extends \yii\db\ActiveRecord
             [['id_pembelian_harta_tetap',  'qty', 'harga', 'nama_barang'], 'required'],
             [['id_pembelian_harta_tetap', 'qty', 'diskon', 'total', 'umur_ekonomis'], 'integer'],
             [['keterangan'], 'string'],
-            [['residu', 'tipe_harta_tetap', 'tanggal_pakai', 'lokasi', 'id_kelompok_aset_tetap', 'akumulasi_beban', 'beban_tahun_ini', 'nilai_buku', 'terhitung_tanggal', 'beban_per_bulan'], 'safe'],
+            [['residu', 'tipe_harta_tetap', 'tanggal_pakai', 'lokasi', 'id_kelompok_aset_tetap', 'terhitung_tanggal'], 'safe'],
             [['kode_pembelian'], 'string', 'max' => 30],
             [['nama_barang'], 'string', 'max' => 100],
         ];

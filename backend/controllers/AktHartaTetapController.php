@@ -101,17 +101,16 @@ class AktHartaTetapController extends Controller
     {
         $model = AktPembelianHartaTetapDetail::findOne($id);
         if ($model->load(Yii::$app->request->post())) {
-            $beban_tahun_ini = Yii::$app->request->post('AktPembelianHartaTetapDetail')['beban_tahun_ini'];
-            $akumulasi_beban = Yii::$app->request->post('AktPembelianHartaTetapDetail')['akumulasi_beban'];
-            $beban_per_bulan = Yii::$app->request->post('AktPembelianHartaTetapDetail')['beban_per_bulan'];
-            $nilai_buku = Yii::$app->request->post('AktPembelianHartaTetapDetail')['nilai_buku'];
+            // $beban_tahun_ini = Yii::$app->request->post('AktPembelianHartaTetapDetail')['beban_tahun_ini'];
+            // $akumulasi_beban = Yii::$app->request->post('AktPembelianHartaTetapDetail')['akumulasi_beban'];
+            // $beban_per_bulan = Yii::$app->request->post('AktPembelianHartaTetapDetail')['beban_per_bulan'];
+            // $nilai_buku = Yii::$app->request->post('AktPembelianHartaTetapDetail')['nilai_buku'];
             // echo ceil($akumulasi_beban);
             // die;
-
-            $model->beban_tahun_ini = preg_replace("/[^0-9,]+/", "", $beban_tahun_ini);
-            $model->beban_per_bulan = preg_replace("/[^0-9,]+/", "", $beban_per_bulan);
-            $model->akumulasi_beban = preg_replace("/[^0-9,]+/", "", $akumulasi_beban);
-            $model->nilai_buku = preg_replace("/[^0-9,]+/", "", $nilai_buku);
+            // $model->beban_tahun_ini = preg_replace("/[^0-9,]+/", "", $beban_tahun_ini);
+            // $model->beban_per_bulan = preg_replace("/[^0-9,]+/", "", $beban_per_bulan);
+            // $model->akumulasi_beban = preg_replace("/[^0-9,]+/", "", $akumulasi_beban);
+            // $model->nilai_buku = preg_replace("/[^0-9,]+/", "", $nilai_buku);
 
             $model->save();
 
