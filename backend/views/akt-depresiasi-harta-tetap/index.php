@@ -39,26 +39,26 @@ $this->params['breadcrumbs'][] = $this->title;
                 }
             ],
 
-            [
-                'class' => 'yii\grid\ActionColumn',
-                'header' => 'Aksi',
-                'headerOptions' => ['style' => 'color:#337ab7'],
-                'template' => " ",
-                'buttons' => [
-                    'view' => function ($url, $model) {
-                        return Html::a('<button class = "btn btn-info"><span class="glyphicon glyphicon-eye-open"></span> Detail </button>', $url, [
-                            'title' => Yii::t('app', 'lead-view'),
-                        ]);
-                    },
+            // [
+            //     'class' => 'yii\grid\ActionColumn',
+            //     'header' => 'Aksi',
+            //     'headerOptions' => ['style' => 'color:#337ab7'],
+            //     'template' => " ",
+            //     'buttons' => [
+            //         'view' => function ($url, $model) {
+            //             return Html::a('<button class = "btn btn-info"><span class="glyphicon glyphicon-eye-open"></span> Detail </button>', $url, [
+            //                 'title' => Yii::t('app', 'lead-view'),
+            //             ]);
+            //         },
 
-                ],
-                'urlCreator' => function ($action, $model, $key, $index) {
-                    if ($action === 'view') {
-                        $url = 'index.php?r=akt-depresiasi-harta-tetap/view&id=' . $model->id_depresiasi_harta_tetap;
-                        return $url;
-                    }
-                }
-            ],
+            //     ],
+            //     'urlCreator' => function ($action, $model, $key, $index) {
+            //         if ($action === 'view') {
+            //             $url = 'index.php?r=akt-depresiasi-harta-tetap/view&id=' . $model->id_depresiasi_harta_tetap;
+            //             return $url;
+            //         }
+            //     }
+            // ],
         ],
         'containerOptions' => ['style' => 'overflow: auto'], // only set when $responsive = false
         'headerRowOptions' => ['class' => 'kartik-sheet-style'],

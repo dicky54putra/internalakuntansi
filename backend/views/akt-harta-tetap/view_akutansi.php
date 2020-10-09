@@ -29,17 +29,20 @@ $this->title = 'Detail Harta Tetap : ' .  $model->kode_pembelian;
 
     <p>
         <?= Html::a('<span class="glyphicon glyphicon-circle-arrow-left"></span> Kembali', ['index-akutansi'], ['class' => 'btn btn-warning']) ?>
-        <?php if ($model->status == 1 && $model->umur_ekonomis == null) { ?>
-            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#setting-depresiasi">
-                <span class="glyphicon glyphicon-edit"></span> Setting Depresiasi
-            </button>
+        <?php // if ($model->status == 1 && $model->umur_ekonomis == null) { 
+        ?>
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#setting-depresiasi">
+            <span class="glyphicon glyphicon-edit"></span> Setting Depresiasi
+        </button>
 
-        <?php } else if ($model->status == 1 && $model->umur_ekonomis != null) { ?>
-            <?= Html::a('<span class="glyphicon glyphicon-check"></span> Terjual', ['terjual', 'id' => $model->id_pembelian_harta_tetap_detail], [
-                'class' => 'btn btn-success'
-            ]) ?>
+        <?php // } else if ($model->status == 1 && $model->umur_ekonomis != null) { 
+        ?>
+        <?= Html::a('<span class="glyphicon glyphicon-check"></span> Terjual', ['terjual', 'id' => $model->id_pembelian_harta_tetap_detail], [
+            'class' => 'btn btn-success'
+        ]) ?>
 
-        <?php } ?>
+        <?php // } 
+        ?>
         <?= Html::a('<span class="glyphicon glyphicon-trash"></span> Hapus', ['delete', 'id' => $model->id_pembelian_harta_tetap_detail], [
             'class' => 'btn btn-danger',
             'data' => [

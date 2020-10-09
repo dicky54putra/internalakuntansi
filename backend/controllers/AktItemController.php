@@ -76,7 +76,7 @@ class AktItemController extends Controller
 
         $model_tipe = new AktItemTipe();
         $model_merk = new AktMerk();
-        
+
         $total_merk = AktMerk::find()->count();
         $nomor_merk = 'MI' . str_pad($total_merk + 1, 3, "0", STR_PAD_LEFT);
 
@@ -116,7 +116,7 @@ class AktItemController extends Controller
         $model_tipe = new AktItemTipe();
 
         $model_merk = new AktMerk();
-        
+
         $total_merk = AktMerk::find()->count();
         $nomor_merk = 'MI' . str_pad($total_merk + 1, 3, "0", STR_PAD_LEFT);
 
@@ -153,7 +153,42 @@ class AktItemController extends Controller
      */
     public function actionDelete($id)
     {
-        $this->findModel($id)->delete();
+        $model = $this->findModel($id);
+
+        $db = Yii::$app->getDb();
+        $dbname = 'dbname';
+        $dsn = $db->dsn;
+        $dbName = getDsnAttribute($dbname, $dsn);
+        $columnName = 'id_item';
+        $thisTable = 'akt_item';
+        $thisId = $model->id_item;
+        $rows = (new \yii\db\Query())
+            ->select(['TABLE_NAME'])
+            ->from('INFORMATION_SCHEMA.COLUMNS')
+            ->where(['TABLE_SCHEMA' => $dbName])
+            ->andWhere(['COLUMN_NAME' => $columnName])
+            ->andWhere(['!=', 'TABLE_NAME', $thisTable])
+            ->all();
+        $array_table_name = array();
+        $totalan_countData = 0;
+        foreach ($rows as $key => $value) {
+            # code...
+            $rows2 = (new \yii\db\Query())
+                ->select(['COUNT(*) as countData'])
+                ->from($value['TABLE_NAME'])
+                ->where([$columnName => $thisId])
+                ->one();
+            $array_table_name[] = $value['TABLE_NAME'] . ' - ' . $rows2['countData'];
+            $totalan_countData += $rows2['countData'];
+        }
+
+        if ($totalan_countData == 0) {
+            # code...
+            $model->delete();
+        } else {
+            # code...
+            Yii::$app->session->setFlash('warning', [['Perhatian!', '<i class="fa fa-exclamation-triangle" aria-hidden="true"></i> Data Barang : ' . $model->nama_item . ' Tidak Dapat Di Hapus, Dikarenakan Data Masih Digunakan!']]);
+        }
 
         return $this->redirect(['index']);
     }
