@@ -76,7 +76,7 @@ class AktItemController extends Controller
 
         $model_tipe = new AktItemTipe();
         $model_merk = new AktMerk();
-        
+
         $total_merk = AktMerk::find()->count();
         $nomor_merk = 'MI' . str_pad($total_merk + 1, 3, "0", STR_PAD_LEFT);
 
@@ -116,7 +116,7 @@ class AktItemController extends Controller
         $model_tipe = new AktItemTipe();
 
         $model_merk = new AktMerk();
-        
+
         $total_merk = AktMerk::find()->count();
         $nomor_merk = 'MI' . str_pad($total_merk + 1, 3, "0", STR_PAD_LEFT);
 

@@ -36,7 +36,7 @@ $this->title = 'Detail Data Pembayaran : ' . $model->no_pembelian_harta_tetap;
     </ul>
 
     <p>
-        <?= Html::a('<span class="glyphicon glyphicon-circle-arrow-left"></span> Kembali', ['index'], ['class' => 'btn btn-warning']) ?>
+        <?= Html::a('<span class="glyphicon glyphicon-circle-arrow-left"></span> Kembali', ['index', '#' => 'data-pembelian-harta-tetap'], ['class' => 'btn btn-warning']) ?>
     </p>
 
     <div class="panel panel-primary">
