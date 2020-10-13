@@ -85,7 +85,7 @@ class AktSalesController extends Controller
             'nomor' => $nomor,
             'data_kota' => $data_kota,
             'nomor_kota' => $nomor_kota,
-            'model_kota' => $model_kota 
+            'model_kota' => $model_kota
         ]);
     }
 
@@ -114,7 +114,7 @@ class AktSalesController extends Controller
             'nomor' => $nomor,
             'data_kota' => $data_kota,
             'nomor_kota' => $nomor_kota,
-            'model_kota' => $model_kota 
+            'model_kota' => $model_kota
         ]);
     }
 
@@ -127,7 +127,42 @@ class AktSalesController extends Controller
      */
     public function actionDelete($id)
     {
-        $this->findModel($id)->delete();
+        $model = $this->findModel($id);
+
+        $db = Yii::$app->getDb();
+        $dbname = 'dbname';
+        $dsn = $db->dsn;
+        $dbName = getDsnAttribute($dbname, $dsn);
+        $columnName = 'id_sales';
+        $thisTable = 'akt_sales';
+        $thisId = $model->id_sales;
+        $rows = (new \yii\db\Query())
+            ->select(['TABLE_NAME'])
+            ->from('INFORMATION_SCHEMA.COLUMNS')
+            ->where(['TABLE_SCHEMA' => $dbName])
+            ->andWhere(['COLUMN_NAME' => $columnName])
+            ->andWhere(['!=', 'TABLE_NAME', $thisTable])
+            ->all();
+        $array_table_name = array();
+        $totalan_countData = 0;
+        foreach ($rows as $key => $value) {
+            # code...
+            $rows2 = (new \yii\db\Query())
+                ->select(['COUNT(*) as countData'])
+                ->from($value['TABLE_NAME'])
+                ->where([$columnName => $thisId])
+                ->one();
+            $array_table_name[] = $value['TABLE_NAME'] . ' - ' . $rows2['countData'];
+            $totalan_countData += $rows2['countData'];
+        }
+
+        if ($totalan_countData == 0) {
+            # code...
+            $model->delete();
+        } else {
+            # code...
+            Yii::$app->session->setFlash('warning', [['Perhatian!', '<i class="fa fa-exclamation-triangle" aria-hidden="true"></i> Data Sales : <b>' . $model->nama_sales . '</b> Tidak Dapat Di Hapus, Dikarenakan Data Masih Digunakan!']]);
+        }
 
         return $this->redirect(['index']);
     }

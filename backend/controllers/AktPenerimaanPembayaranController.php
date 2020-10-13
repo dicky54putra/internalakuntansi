@@ -4,6 +4,7 @@ namespace backend\controllers;
 
 use Yii;
 use backend\models\AktPenerimaanPembayaran;
+use backend\models\AktPenerimaanPembayaranHartaTetap;
 use backend\models\AktPenerimaanPembayaranSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -315,57 +316,255 @@ class AktPenerimaanPembayaranController extends Controller
         return $this->redirect(['view-penerimaan-pembayaran', 'id' => $model->id_penjualan]);
     }
 
-    // public function actionIndex()
-    // {
-    //     $searchModel = new AktPenerimaanPembayaranSearch();
-    //     $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
-    //     return $this->render('index', [
-    //         'searchModel' => $searchModel,
-    //         'dataProvider' => $dataProvider,
-    //     ]);
-    // }
 
-    // public function actionView($id)
-    // {
-    //     return $this->render('view', [
-    //         'model' => $this->findModel($id),
-    //     ]);
-    // }
+    public function actionViewPenerimaanHartaTetap($id)
+    {
+        $model = AktPenjualanHartaTetap::findOne($id);
 
-    // public function actionCreate()
-    // {
-    //     $model = new AktPenerimaanPembayaran();
-    //     $model->tanggal_penerimaan_pembayaran = date('Y-m-d');
 
-    //     if ($model->load(Yii::$app->request->post()) && $model->save(FALSE)) {
-    //         return $this->redirect(['update-dua', 'id' => $model->id_penerimaan_pembayaran_penjualan]);
-    //     }
+        $model_penerimaan_harta_tetap = new AktPenerimaanPembayaranHartaTetap();
+        $model_penerimaan_harta_tetap->tanggal_penerimaan_pembayaran = date('Y-m-d');
+        $model_penerimaan_harta_tetap->id_penjualan_harta_tetap = $model->id_penjualan_harta_tetap;
 
-    //     return $this->render('create', [
-    //         'model' => $model,
-    //     ]);
-    // }
+        $query = (new \yii\db\Query())->from('akt_penerimaan_pembayaran_harta_tetap')->where(['id_penjualan_harta_tetap' => $model->id_penjualan_harta_tetap]);
+        $sum_nominal = $query->sum('nominal');
 
-    // public function actionUpdate($id)
-    // {
-    //     $model = $this->findModel($id);
+        return $this->render('view_penerimaan_harta_tetap', [
+            'model' => $model,
+            'sum_nominal' => $sum_nominal,
+            'model_penerimaan_harta_tetap' =>  $model_penerimaan_harta_tetap
+        ]);
+    }
 
-    //     if ($model->load(Yii::$app->request->post()) && $model->save(FALSE)) {
-    //         return $this->redirect(['view', 'id' => $model->id_penerimaan_pembayaran_penjualan]);
-    //     }
+    public function actionCreatePenerimaanHartaTetap()
+    {
+        $model = new AktPenerimaanPembayaranHartaTetap();
+        $model_tanggal_penerimaan_pembayaran = Yii::$app->request->post('AktPenerimaanPembayaranHartaTetap')['tanggal_penerimaan_pembayaran'];
+        $model_id_penjualan = Yii::$app->request->post('AktPenerimaanPembayaranHartaTetap')['id_penjualan_harta_tetap'];
+        $model_cara_bayar = Yii::$app->request->post('AktPenerimaanPembayaranHartaTetap')['cara_bayar'];
+        $model_id_kas_bank = Yii::$app->request->post('AktPenerimaanPembayaranHartaTetap')['id_kas_bank'];
+        $model_nominal = Yii::$app->request->post('AktPenerimaanPembayaranHartaTetap')['nominal'];
+        $model_keterangan = Yii::$app->request->post('AktPenerimaanPembayaranHartaTetap')['keterangan'];
+        $total = Yii::$app->db->createCommand("SELECT total from akt_penjualan_harta_tetap where id_penjualan_harta_tetap = '$model_id_penjualan'")->queryScalar();
+        $nominal = Yii::$app->db->createCommand("SELECT nominal from akt_penerimaan_pembayaran_harta_tetap where id_penjualan_harta_tetap = '$model_id_penjualan'")->queryScalar();
+        $sisa = $total - $nominal;
 
-    //     return $this->render('update', [
-    //         'model' => $model,
-    //     ]);
-    // }
+        $model2 = AktPenjualanHartaTetap::find()->where(['id_penjualan_harta_tetap' => $model_id_penjualan])->one();
+        $cek_kas = AktKasBank::find()->where(['id_kas_bank' => $model_id_kas_bank])->one();
+        if ($model_nominal > $sisa) {
+            Yii::$app->session->setFlash('danger', [['Perhatian !', 'Nominal yang diinputkan melebihi total yang belum diterima!']]);
+            return $this->redirect(['view-penerimaan-pembayaran', 'id' => $model_id_penjualan]);
+        } else if ($model_nominal <= $sisa) {
+            $model->tanggal_penerimaan_pembayaran = $model_tanggal_penerimaan_pembayaran;
+            $model->id_penjualan_harta_tetap = $model_id_penjualan;
+            $model->cara_bayar = $model_cara_bayar;
+            $model->id_kas_bank = $model_id_kas_bank;
+            $model->nominal = $model_nominal + $model2->uang_muka;
+            $model->keterangan = $model_keterangan;
+            $model->save(FALSE);
 
-    // public function actionDelete($id)
-    // {
-    //     $this->findModel($id)->delete();
+            // membuat jurnal umum
+            $jurnal_umum = new AktJurnalUmum();
+            $akt_jurnal_umum = AktJurnalUmum::find()->select(["no_jurnal_umum"])->orderBy("id_jurnal_umum DESC")->limit(1)->one();
+            if (!empty($akt_jurnal_umum->no_jurnal_umum)) {
+                # code...
+                $no_bulan = substr($akt_jurnal_umum->no_jurnal_umum, 2, 4);
+                if ($no_bulan == date('ym')) {
+                    # code...
+                    $noUrut = substr($akt_jurnal_umum->no_jurnal_umum, -3);
+                    $noUrut++;
+                    $noUrut_2 = sprintf("%03s", $noUrut);
+                    $no_jurnal_umum = 'JU' . date('ym') . $noUrut_2;
+                } else {
+                    # code...
+                    $no_jurnal_umum = 'JU' . date('ym') . '001';
+                }
+            } else {
+                # code...
+                $no_jurnal_umum = 'JU' . date('ym') . '001';
+            }
 
-    //     return $this->redirect(['index']);
-    // }
+            $jurnal_umum->no_jurnal_umum = $no_jurnal_umum;
+            $jurnal_umum->tanggal = date('Y-m-d');
+            $jurnal_umum->tipe = 1;
+            $jurnal_umum->keterangan = 'Penerimaan Biaya Harta Tetap : ' . $model2->no_penjualan_harta_tetap;
+            $jurnal_umum->save(false);
+
+            $pembayaran_cash = JurnalTransaksi::find()->where(['nama_transaksi' => 'Penerimaan Harta Tetap Transaksi Cash'])->one();
+            $pembayaran_kredit = JurnalTransaksi::find()->where(['nama_transaksi' => 'Penerimaan Harta Tetap Transaksi Kredit'])->one();
+
+
+            if ($model2->jenis_bayar == 1) {
+                $jurnal_transaksi = JurnalTransaksiDetail::find()->where(['id_jurnal_transaksi' => $pembayaran_cash['id_jurnal_transaksi']])->all();
+                foreach ($jurnal_transaksi as $jurnal) {
+                    $jurnal_umum_detail = new AktJurnalUmumDetail();
+                    $akun = AktAkun::findOne($jurnal->id_akun);
+                    $jurnal_umum_detail->id_jurnal_umum = $jurnal_umum->id_jurnal_umum;
+                    $jurnal_umum_detail->id_akun = $jurnal->id_akun;
+                    if ($akun->nama_akun == 'Piutang Usaha' && $jurnal->tipe == 'D') {
+                        $jurnal_umum_detail->debit = $model_nominal;
+                        if ($akun->saldo_normal == 1) {
+                            $akun->saldo_akun = $akun->saldo_akun + $model_nominal;
+                        } else {
+                            $akun->saldo_akun = $akun->saldo_akun - $model_nominal;
+                        }
+                    } else if ($akun->nama_akun == 'Piutang Usaha' && $jurnal->tipe == 'K') {
+                        $jurnal_umum_detail->kredit = $model_nominal;
+                        if ($akun->saldo_normal == 1) {
+
+                            $akun->saldo_akun = $akun->saldo_akun - $model_nominal;
+                        } else {
+                            $akun->saldo_akun = $akun->saldo_akun + $model_nominal;
+                        }
+                    } else if ($akun->nama_akun == 'kas' && $jurnal->tipe == 'D') {
+                        $jurnal_umum_detail->debit = $model_nominal;
+                        if ($akun->saldo_normal == 1) {
+                            $cek_kas->saldo = $cek_kas->saldo + $model_nominal;
+                        } else {
+                            $cek_kas->saldo = $cek_kas->saldo - $model_nominal;
+                        }
+                    } else if ($akun->nama_akun == 'kas' && $jurnal->tipe == 'K') {
+                        $jurnal_umum_detail->kredit = $model_nominal;
+                        if ($akun->saldo_normal == 1) {
+                            $cek_kas->saldo = $cek_kas->saldo - $model_nominal;
+                        } else {
+                            $cek_kas->saldo = $cek_kas->saldo + $model_nominal;
+                        }
+                    }
+                    $jurnal_umum_detail->keterangan = 'Penerimaan Biaya Harta Tetap Cash: ' . $model2->no_penjualan_harta_tetap;
+                    $akun->save(false);
+                    $jurnal_umum_detail->save(false);
+                    $cek_kas->save(false);
+                    if ($akun->nama_akun == 'kas') {
+                        $history_transaksi2 = new AktHistoryTransaksi();
+                        $history_transaksi2->nama_tabel = 'akt_kas_bank';
+                        $history_transaksi2->id_tabel = $model_id_kas_bank;
+                        $history_transaksi2->id_jurnal_umum = $jurnal_umum_detail->id_jurnal_umum_detail;
+                        $history_transaksi2->save(false);
+                    }
+                }
+            } else if ($model2->jenis_bayar == 2) {
+                $jurnal_transaksi = JurnalTransaksiDetail::find()->where(['id_jurnal_transaksi' => $pembayaran_kredit['id_jurnal_transaksi']])->all();
+                foreach ($jurnal_transaksi as $jurnal) {
+                    $jurnal_umum_detail = new AktJurnalUmumDetail();
+                    $akun = AktAkun::findOne($jurnal->id_akun);
+                    $jurnal_umum_detail->id_jurnal_umum = $jurnal_umum->id_jurnal_umum;
+                    $jurnal_umum_detail->id_akun = $jurnal->id_akun;
+                    if ($akun->nama_akun == 'Piutang Usaha' && $jurnal->tipe == 'D') {
+                        $jurnal_umum_detail->debit = $model_nominal;
+                        if ($akun->saldo_normal == 1) {
+                            $akun->saldo_akun = $akun->saldo_akun + $model_nominal;
+                        } else {
+                            $akun->saldo_akun = $akun->saldo_akun - $model_nominal;
+                        }
+                    } else if ($akun->nama_akun == 'Piutang Usaha' && $jurnal->tipe == 'K') {
+                        $jurnal_umum_detail->kredit = $model_nominal;
+                        if ($akun->saldo_normal == 1) {
+
+                            $akun->saldo_akun = $akun->saldo_akun - $model_nominal;
+                        } else {
+                            $akun->saldo_akun = $akun->saldo_akun + $model_nominal;
+                        }
+                    } else if ($akun->nama_akun == 'kas' && $jurnal->tipe == 'D') {
+                        $jurnal_umum_detail->debit = $model_nominal;
+                        if ($akun->saldo_normal == 1) {
+                            $cek_kas->saldo = $cek_kas->saldo + $model_nominal;
+                        } else {
+                            $cek_kas->saldo = $cek_kas->saldo - $model_nominal;
+                        }
+                    } else if ($akun->nama_akun == 'kas' && $jurnal->tipe == 'K') {
+                        $jurnal_umum_detail->kredit = $model_nominal;
+                        if ($akun->saldo_normal == 1) {
+                            $cek_kas->saldo = $cek_kas->saldo - $model_nominal;
+                        } else {
+                            $cek_kas->saldo = $cek_kas->saldo + $model_nominal;
+                        }
+                    }
+                    $jurnal_umum_detail->keterangan = 'Penerimaan Biaya Harta Tetap Kredit : ' . $model2->no_penjualan_harta_tetap;
+                    $akun->save(false);
+                    $cek_kas->save(false);
+                    $jurnal_umum_detail->save(false);
+
+                    if ($akun->nama_akun == 'kas') {
+                        $history_transaksi3 = new AktHistoryTransaksi();
+                        $history_transaksi3->nama_tabel = 'akt_kas_bank';
+                        $history_transaksi3->id_tabel = $model_id_kas_bank;
+                        $history_transaksi3->id_jurnal_umum = $jurnal_umum_detail->id_jurnal_umum_detail;
+                        $history_transaksi3->save(false);
+                    }
+                }
+            }
+
+
+            $history_transaksi = new AktHistoryTransaksi();
+            $history_transaksi->nama_tabel = 'akt_penerimaan_pembayaran_harta_tetap';
+            $history_transaksi->id_tabel = $model->id_penerimaan_pembayaran_harta_tetap;
+            $history_transaksi->id_jurnal_umum = $jurnal_umum->id_jurnal_umum;
+            $history_transaksi->save(false);
+        }
+
+
+        // $kas = Yii::$app->db->createCommand("UPDATE akt_kas_bank SET saldo = saldo + '$model_nominal' WHERE id_kas_bank = '$model_id_kas_bank'")->execute();
+        Yii::$app->session->setFlash('success', [['Perhatian !', 'Berhasil Tersimpan di Data Penerimaan Pembayaran']]);
+        return $this->redirect(['view-penerimaan-harta-tetap', 'id' => $model->id_penjualan_harta_tetap]);
+    }
+
+    public function actionDeleteHartaTetap($id)
+    {
+        $model = AktPenerimaanPembayaranHartaTetap::findOne($id);
+
+        $akt_pembelian = AktPenjualanHartaTetap::findOne($model->id_penjualan_harta_tetap);
+
+        $history_transaksi_count = AktHistoryTransaksi::find()->where(['id_tabel' => $id])->andWhere(['nama_tabel' => 'akt_penerimaan_pembayaran_harta_tetap'])->count();
+
+        if ($history_transaksi_count > 0) {
+            $history_transaksi = AktHistoryTransaksi::find()->where(['id_tabel' => $id])->andWhere(['nama_tabel' => 'akt_penerimaan_pembayaran_harta_tetap'])->one();
+
+            $jurnal_umum = AktJurnalUmum::find()->where(['id_jurnal_umum' => $history_transaksi->id_jurnal_umum])->one();
+
+
+            $jurnal_umum_detail = AktJurnalUmumDetail::find()->where(['id_jurnal_umum' => $jurnal_umum->id_jurnal_umum])->all();
+            // if($akt_pembelian->jenis_bayar == 1) {
+            foreach ($jurnal_umum_detail as $ju) {
+                $akun = AktAkun::find()->where(['id_akun' => $ju->id_akun])->one();
+                if ($akun->nama_akun != 'kas') {
+                    if ($akun->saldo_normal == 1 && $ju->debit > 0) {
+                        $akun->saldo_akun = $akun->saldo_akun - $ju->debit;
+                    } else if ($akun->saldo_normal == 1 && $ju->kredit > 0) {
+                        $akun->saldo_akun = $akun->saldo_akun + $ju->kredit;
+                    } else if ($akun->saldo_normal == 2 && $ju->kredit > 0) {
+                        $akun->saldo_akun = $akun->saldo_akun - $ju->kredit;
+                    } else if ($akun->saldo_normal == 2 && $ju->debit > 0) {
+                        $akun->saldo_akun = $akun->saldo_akun + $ju->debit;
+                    }
+                }
+                if ($akun->nama_akun == 'kas') {
+                    $history_transaksi2 = AktHistoryTransaksi::find()->where(['id_tabel' => $model->id_kas_bank])->andWhere(['nama_tabel' => 'akt_kas_bank'])->andWhere(['id_jurnal_umum' => $ju->id_jurnal_umum_detail])->one();
+                    $akt_kas_bank = AktKasBank::find()->where(['id_kas_bank' => $model->id_kas_bank])->one();
+                    $akt_kas_bank->saldo = $akt_kas_bank->saldo - $ju->debit + $ju->kredit;
+                    $akt_kas_bank->save(false);
+                    $history_transaksi2->delete();
+                }
+                $akun->save(false);
+                $ju->delete();
+            }
+            // } 
+
+
+            $jurnal_umum->delete();
+            $history_transaksi->delete();
+        }
+
+
+
+
+
+        $model->delete();
+        Yii::$app->session->setFlash('success', [['Perhatian !', 'Berhasil Terhapus dari Data Penerimaan Pembayaran']]);
+        return $this->redirect(['view-penerimaan-harta-tetap', 'id' => $model->id_penjualan_harta_tetap]);
+    }
+
 
     protected function findModel($id)
     {

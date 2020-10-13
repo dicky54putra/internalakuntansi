@@ -108,7 +108,7 @@ class AktHartaTetapController extends Controller
 
             $_beban_per_bulan = Yii::$app->request->post('beban_per_bulan');
             $beban_per_bulan = preg_replace("/[^0-9,]+/", "", $_beban_per_bulan);
-
+            $model->beban_per_bulan = $beban_per_bulan;
             $tanggal_ekonomis = date("Y-m-d", strtotime("$model->tanggal_pakai +$model->umur_ekonomis year"));
 
             $month = strtotime($model->tanggal_pakai);
@@ -151,16 +151,17 @@ class AktHartaTetapController extends Controller
     }
 
 
-    public function actionTerjual($id)
+    public function actionDeleteDepresiasi($id)
     {
         $model = AktPembelianHartaTetapDetail::findOne($id);
 
         $tanggal_ekonomis = date("Y-m-t", strtotime("$model->tanggal_pakai +$model->umur_ekonomis year"));
-        $start = date("Y-m-d");
+        $start = $model->tanggal_pakai;
 
         $depresiasi_harta_tetap =  AktDepresiasiHartaTetap::find()
             ->where(['>=', 'tanggal', $start])
             ->andWhere(['<=', 'tanggal', $tanggal_ekonomis])
+            ->andWhere(['=', 'id_pembelian_harta_tetap_detail', $id])
             ->all();
 
 
@@ -168,10 +169,16 @@ class AktHartaTetapController extends Controller
             $d->delete();
         }
 
-        $model->status = 2;
-        $model->tanggal_terjual = date('Y-m-d');
 
-        $model->save();
+        $model->id_kelompok_aset_tetap = null;
+        $model->umur_ekonomis = null;
+        $model->lokasi = null;
+        $model->beban_per_bulan = null;
+        $model->terhitung_tanggal = null;
+        $model->tanggal_pakai = null;
+        $model->save(false);
+
+        Yii::$app->session->setFlash('success', [['Perhatian!', 'Data Depresiasi Berhasil Dihapus, Jangan Lupa Untuk Setting Ulang Data Depresiasi!']]);
 
         return $this->redirect(['view-akutansi', 'id' => $model->id_pembelian_harta_tetap_detail]);
     }

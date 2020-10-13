@@ -83,13 +83,13 @@ class AktKotaController extends Controller
             $update_in_sales =  Yii::$app->request->post('update-in-sales');
             $id_update_sales =  Yii::$app->request->post('id-update-sales');
 
-            if(isset($create_in_item)) {
+            if (isset($create_in_item)) {
                 $model->save();
                 return $this->redirect(['akt-mitra-bisnis-alamat/create', 'id' => $id]);
             } else if (isset($update_in_item)) {
                 $model->save();
                 return $this->redirect(['akt-mitra-bisnis-alamat/update', 'id' => $id_update_alamat]);
-            }  else if (isset($create_in_pegawai)) {
+            } else if (isset($create_in_pegawai)) {
                 $model->save();
                 return $this->redirect(['akt-pegawai/create']);
             } else if (isset($update_in_pegawai)) {
@@ -101,7 +101,7 @@ class AktKotaController extends Controller
             } else if (isset($update_in_sales)) {
                 $model->save();
                 return $this->redirect(['akt-sales/update', 'id' => $id_update_sales]);
-            }  else  {
+            } else {
                 $model->save();
                 return $this->redirect(['view', 'id' => $model->id_kota]);
             }
@@ -145,7 +145,42 @@ class AktKotaController extends Controller
      */
     public function actionDelete($id)
     {
-        $this->findModel($id)->delete();
+        $model = $this->findModel($id);
+
+        $db = Yii::$app->getDb();
+        $dbname = 'dbname';
+        $dsn = $db->dsn;
+        $dbName = getDsnAttribute($dbname, $dsn);
+        $columnName = 'id_kota';
+        $thisTable = 'akt_kota';
+        $thisId = $model->id_kota;
+        $rows = (new \yii\db\Query())
+            ->select(['TABLE_NAME'])
+            ->from('INFORMATION_SCHEMA.COLUMNS')
+            ->where(['TABLE_SCHEMA' => $dbName])
+            ->andWhere(['COLUMN_NAME' => $columnName])
+            ->andWhere(['!=', 'TABLE_NAME', $thisTable])
+            ->all();
+        $array_table_name = array();
+        $totalan_countData = 0;
+        foreach ($rows as $key => $value) {
+            # code...
+            $rows2 = (new \yii\db\Query())
+                ->select(['COUNT(*) as countData'])
+                ->from($value['TABLE_NAME'])
+                ->where([$columnName => $thisId])
+                ->one();
+            $array_table_name[] = $value['TABLE_NAME'] . ' - ' . $rows2['countData'];
+            $totalan_countData += $rows2['countData'];
+        }
+
+        if ($totalan_countData == 0) {
+            # code...
+            $model->delete();
+        } else {
+            # code...
+            Yii::$app->session->setFlash('warning', [['Perhatian!', '<i class="fa fa-exclamation-triangle" aria-hidden="true"></i> Data Kota : <b>' . $model->nama_kota . '</b> Tidak Dapat Di Hapus, Dikarenakan Data Masih Digunakan!']]);
+        }
 
         return $this->redirect(['index']);
     }

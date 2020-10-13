@@ -2,12 +2,10 @@
 
 use yii\helpers\Html;
 use yii\widgets\DetailView;
-use backend\models\AktPenerimaanPembayaran;
+
 use backend\models\AktKasBank;
-use backend\models\AktPenjualanDetail;
-use backend\models\AktItemStok;
-use backend\models\AktItem;
-use backend\models\AktGudang;
+use backend\models\AktPenerimaanPembayaranHartaTetap;
+
 use yii\widgets\ActiveForm;
 use kartik\select2\Select2;
 use kartik\depdrop\DepDrop;
@@ -16,11 +14,10 @@ use yii\helpers\Url;
 /* @var $this yii\web\View */
 /* @var $model backend\models\AktPenjualan */
 
-$this->title = 'Detail Data Penerimaan : ' . $model->no_penjualan;
-// $this->params['breadcrumbs'][] = ['label' => 'Akt Penjualans', 'url' => ['index']];
-// $this->params['breadcrumbs'][] = $this->title;
+$this->title = 'Detail Data Penerimaan Penjualan Harta Tetap : ' . $model->no_penjualan_harta_tetap;
 \yii\web\YiiAsset::register($this);
 ?>
+
 <div class="akt-penjualan-penjualan-view">
 
     <h1><?= Html::encode($this->title) ?></h1>
@@ -39,7 +36,6 @@ $this->title = 'Detail Data Penerimaan : ' . $model->no_penjualan;
         <div class="panel-body">
             <div class="col-md-12" style="padding: 0;">
                 <div class="box-body">
-
                     <div class="row">
                         <div class="col-md-6">
                             <?= DetailView::widget([
@@ -47,27 +43,23 @@ $this->title = 'Detail Data Penerimaan : ' . $model->no_penjualan;
                                 'template' => '<tr><th style="width:40%;">{label}</th><td>{value}</td></tr>',
                                 'attributes' => [
                                     // 'id_penjualan',
-                                    'no_penjualan',
+                                    'no_penjualan_harta_tetap',
                                     [
-                                        'attribute' => 'tanggal_penjualan',
+                                        'attribute' => 'tanggal_penjualan_harta_tetap',
                                         'value' => function ($model) {
-                                            if (!empty($model->tanggal_penjualan)) {
-                                                # code...
-                                                return tanggal_indo($model->tanggal_penjualan, true);
+                                            if (!empty($model->tanggal_penjualan_harta_tetap)) {
+                                                return tanggal_indo($model->tanggal_penjualan_harta_tetap);
                                             } else {
-                                                # code...
                                             }
                                         }
                                     ],
-                                    'no_faktur_penjualan',
+                                    'no_faktur_penjualan_harta_tetap',
                                     [
-                                        'attribute' => 'tanggal_faktur_penjualan',
+                                        'attribute' => 'tanggal_faktur_penjualan_harta_tetap',
                                         'value' => function ($model) {
-                                            if (!empty($model->tanggal_faktur_penjualan)) {
-                                                # code...
-                                                return tanggal_indo($model->tanggal_faktur_penjualan, true);
+                                            if (!empty($model->tanggal_faktur_penjualan_harta_tetap)) {
+                                                return tanggal_indo($model->tanggal_faktur_penjualan_harta_tetap);
                                             } else {
-                                                # code...
                                             }
                                         }
                                     ],
@@ -80,7 +72,7 @@ $this->title = 'Detail Data Penerimaan : ' . $model->no_penjualan;
                                     [
                                         'label' => 'Total Yang Telah di Bayar',
                                         'value' => function ($model) {
-                                            $query = (new \yii\db\Query())->from('akt_penerimaan_pembayaran')->where(['id_penjualan' => $model->id_penjualan]);
+                                            $query = (new \yii\db\Query())->from('akt_penerimaan_pembayaran_harta_tetap')->where(['id_penjualan_harta_tetap' => $model->id_penjualan_harta_tetap]);
                                             $sum_nominal = $query->sum('nominal');
                                             return ribuan($sum_nominal == 0 ? $model->uang_muka : $sum_nominal);
                                         }
@@ -88,7 +80,7 @@ $this->title = 'Detail Data Penerimaan : ' . $model->no_penjualan;
                                     [
                                         'label' => 'Total Yang Belum di Bayar',
                                         'value' => function ($model) {
-                                            $query = (new \yii\db\Query())->from('akt_penerimaan_pembayaran')->where(['id_penjualan' => $model->id_penjualan]);
+                                            $query = (new \yii\db\Query())->from('akt_penerimaan_pembayaran_harta_tetap')->where(['id_penjualan_harta_tetap' => $model->id_penjualan_harta_tetap]);
                                             $sum_nominal = $query->sum('nominal');
 
                                             $kekurangan_pembayaran = 0;
@@ -158,11 +150,11 @@ $this->title = 'Detail Data Penerimaan : ' . $model->no_penjualan;
                                             2 => 'Belum Lunas',
                                         ),
                                         'value' => function ($model) {
-                                            $query = (new \yii\db\Query())->from('akt_penerimaan_pembayaran')->where(['id_penjualan' => $model->id_penjualan]);
+                                            $query = (new \yii\db\Query())->from('akt_penerimaan_pembayaran_harta_tetap')->where(['id_penjualan_harta_tetap' => $model->id_penjualan_harta_tetap]);
                                             $sum_nominal = $query->sum('nominal');
-                                            if ($model->total == $sum_nominal) {
+                                            if ($model->total + $model->uang_muka == $sum_nominal) {
                                                 return "<span class='label label-success'>Lunas</span>";
-                                            } else if ($model->total != $sum_nominal) {
+                                            } else if ($model->total + $model->uang_muka != $sum_nominal) {
                                                 return "<span class='label label-warning'>Belum Lunas</span>";
                                             }
                                         }
@@ -172,12 +164,13 @@ $this->title = 'Detail Data Penerimaan : ' . $model->no_penjualan;
                         </div>
                     </div>
 
+
                     <div class="" style="margin-top:20px;">
                         <ul class="nav nav-tabs">
                             <li class="active"><a data-toggle="tab" href="#data-barang"><span class="fa fa-box"></span> Data Penerimaan Pembayaran</a></li>
                             <?php
                             if ($model->total > $sum_nominal) {
-                                # code...
+
                             ?>
                                 <li><a data-toggle="tab" href="#isi-data-penjualan"> <span class="glyphicon glyphicon-plus"></span> Tambah Data Penerimaan Pembayaran</a></li>
                             <?php } ?>
@@ -203,7 +196,7 @@ $this->title = 'Detail Data Penerimaan : ' . $model->no_penjualan;
                                                 <?php
                                                 $no = 0;
                                                 $totalan_nominal = 0;
-                                                $query_penerimaan_pembayaran = AktPenerimaanPembayaran::find()->where(['id_penjualan' => $model->id_penjualan])->all();
+                                                $query_penerimaan_pembayaran = AktPenerimaanPembayaranHartaTetap::find()->where(['id_penjualan_harta_tetap' => $model->id_penjualan_harta_tetap])->all();
                                                 foreach ($query_penerimaan_pembayaran as $key => $data) {
                                                     # code...
                                                     $kas_bank = AktKasBank::findOne($data['id_kas_bank']);
@@ -219,15 +212,13 @@ $this->title = 'Detail Data Penerimaan : ' . $model->no_penjualan;
                                                         <td><?= $data['keterangan'] ?></td>
                                                         <td>
                                                             <?php
-                                                            $query = (new \yii\db\Query())->from('akt_penerimaan_pembayaran')->where(['id_penjualan' => $model->id_penjualan]);
+                                                            $query = (new \yii\db\Query())->from('akt_penerimaan_pembayaran_harta_tetap')->where(['id_penjualan_harta_tetap' => $model->id_penjualan_harta_tetap]);
                                                             $sum_nominal = $query->sum('nominal');
                                                             if ($model->total == $sum_nominal) {
                                                             } else if ($model->total != $sum_nominal) {
 
                                                             ?>
-                                                                <?php  //Html::a('<span class="glyphicon glyphicon-edit"></span>', ['akt-penerimaan-pembayaran/update-from-view', 'id' => $data['id_penerimaan_pembayaran_penjualan']], ['class' => 'btn btn-primary']) 
-                                                                ?>
-                                                                <?= Html::a('<span class="glyphicon glyphicon-trash"></span>', ['akt-penerimaan-pembayaran/delete-from-view', 'id' => $data['id_penerimaan_pembayaran_penjualan']], [
+                                                                <?= Html::a('<span class="glyphicon glyphicon-trash"></span>', ['akt-penerimaan-pembayaran/delete-harta-tetap', 'id' => $data['id_penerimaan_pembayaran_harta_tetap']], [
                                                                     'class' => 'btn btn-danger',
                                                                     'data' => [
                                                                         'confirm' => 'Apakah anda yakin akan menghapus data nomor ' . $no . ' dari list Data Penerimaan Pembayaran ?',
@@ -257,13 +248,13 @@ $this->title = 'Detail Data Penerimaan : ' . $model->no_penjualan;
 
                                         <?php $form = ActiveForm::begin([
                                             'method' => 'post',
-                                            'action' => ['akt-penerimaan-pembayaran/create-from-view'],
+                                            'action' => ['akt-penerimaan-pembayaran/create-penerimaan-harta-tetap'],
                                         ]); ?>
 
                                         <div class="row">
                                             <div class="col-md-6">
 
-                                                <?= $form->field($model_penerimaan_pembayaran, 'tanggal_penerimaan_pembayaran')->widget(\yii\jui\DatePicker::classname(), [
+                                                <?= $form->field($model_penerimaan_harta_tetap, 'tanggal_penerimaan_pembayaran')->widget(\yii\jui\DatePicker::classname(), [
                                                     'clientOptions' => [
                                                         'changeMonth' => true,
                                                         'changeYear' => true,
@@ -272,21 +263,21 @@ $this->title = 'Detail Data Penerimaan : ' . $model->no_penjualan;
                                                     'options' => ['class' => 'form-control', 'autocomplete' => 'off']
                                                 ]) ?>
 
-                                                <?= $form->field($model_penerimaan_pembayaran, 'id_penjualan')->textInput(['readonly' => true, 'type' => 'hidden'])->label(FALSE) ?>
+                                                <?= $form->field($model_penerimaan_harta_tetap, 'id_penjualan_harta_tetap')->textInput(['readonly' => true, 'type' => 'hidden'])->label(FALSE) ?>
 
-                                                <?= $form->field($model_penerimaan_pembayaran, 'cara_bayar')->dropDownList(
+                                                <?= $form->field($model_penerimaan_harta_tetap, 'cara_bayar')->dropDownList(
                                                     array(
                                                         1 => "Tunai",
                                                         2 => "Transfer",
                                                     ),
                                                     ['prompt' => 'Pilih Cara Bayar']
                                                 ) ?>
-                                                <?= $form->field($model_penerimaan_pembayaran, 'id_kas_bank')->widget(DepDrop::classname(), [
+                                                <?= $form->field($model_penerimaan_harta_tetap, 'id_kas_bank')->widget(DepDrop::classname(), [
                                                     'type' => DepDrop::TYPE_SELECT2,
                                                     'options' => ['id' => 'id-kas-bank', 'placeholder' => 'Pilih Kas Bank...'],
                                                     'select2Options' => ['pluginOptions' => ['allowClear' => true]],
                                                     'pluginOptions' => [
-                                                        'depends' => ['aktpenerimaanpembayaran-cara_bayar'],
+                                                        'depends' => ['aktpenerimaanpembayaranhartatetap-cara_bayar'],
                                                         'url' => Url::to(['/akt-pembayaran-biaya/kas-bank'])
                                                     ]
                                                 ])->label('Kas Bank');
@@ -297,7 +288,7 @@ $this->title = 'Detail Data Penerimaan : ' . $model->no_penjualan;
 
                                                 <?php
                                                 if ($model->jenis_bayar == 1) {
-                                                    echo $form->field($model_penerimaan_pembayaran, 'nominal')->widget(
+                                                    echo $form->field($model_penerimaan_harta_tetap, 'nominal')->widget(
                                                         \yii\widgets\MaskedInput::className(),
                                                         [
                                                             'options' => ['autocomplete' => 'off', 'value' => $model->total, 'readonly' => true],
@@ -305,7 +296,7 @@ $this->title = 'Detail Data Penerimaan : ' . $model->no_penjualan;
                                                         ]
                                                     );
                                                 } else {
-                                                    echo $form->field($model_penerimaan_pembayaran, 'nominal')->widget(
+                                                    echo $form->field($model_penerimaan_harta_tetap, 'nominal')->widget(
                                                         \yii\widgets\MaskedInput::className(),
                                                         [
                                                             'options' => ['autocomplete' => 'off'],
@@ -316,7 +307,7 @@ $this->title = 'Detail Data Penerimaan : ' . $model->no_penjualan;
 
                                                 ?>
 
-                                                <?= $form->field($model_penerimaan_pembayaran, 'keterangan')->textarea(['rows' => 4]) ?>
+                                                <?= $form->field($model_penerimaan_harta_tetap, 'keterangan')->textarea(['rows' => 4]) ?>
 
                                             </div>
                                         </div>
@@ -330,6 +321,7 @@ $this->title = 'Detail Data Penerimaan : ' . $model->no_penjualan;
                                     </div>
                                 </div>
                             </div>
+
 
                         </div>
                     </div>
