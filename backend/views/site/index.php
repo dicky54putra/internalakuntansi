@@ -78,10 +78,16 @@ $this->title = 'Home';
         <div class="col-md-12">
             <div class="panel panel-primary">
                 <div class="panel-heading panel-primary">
-                    <h4 style="font-weight: bold;"> Data Penjualan Per Hari </h4>
+                    <h4 style="font-weight: bold;"> Data Penjualan Dan Pembelian Per Hari </h4>
                 </div>
                 <div class="panel-body">
-                    <canvas id="chart-area" style="height:500px;"></canvas>
+                    <div class="col-md-6">
+                        <canvas id="chart-area" style="height:350px;"></canvas>
+                    </div>
+                    <div class="col-md-6">
+                        <canvas id="chart-area2" style="height:350px;"></canvas>
+                    </div>
+                    <!-- <canvas id="chart-area" style="height:500px;"></canvas> -->
                 </div>
             </div>
         </div>
@@ -149,6 +155,7 @@ $this->title = 'Home';
     <script type="text/javascript" src="js/Chart.js"></script>
     <script>
         const ctx = document.getElementById("chart-area").getContext('2d');
+        const ctx2 = document.getElementById("chart-area2").getContext('2d');
         var myChart = new Chart(ctx, {
             type: 'bar',
             data: {
@@ -173,6 +180,74 @@ $this->title = 'Home';
                     <?php
                     foreach ($tanggal_label as $tgl) {
                         echo '"' . tanggal_indo($tgl['tanggal_order_penjualan']) . '",';
+                    }
+                    ?>
+                ]
+            },
+            options: {
+                segmentShowStroke: true,
+                segmentStrokeColor: '#fff',
+                segmentStrokeWidth: 1,
+                percentageInnerCutout: 0,
+                animationSteps: 100,
+                animationEasing: 'easeOutBounce',
+                animateRotate: true,
+                animateScale: false,
+                responsive: true,
+                maintainAspectRatio: false,
+                legendTemplate: '<ul class="<%=name.toLowerCase()%>-legend"><% for (var i=0; i<segments.length; i++){%><li><span style="background-color:<%=segments[i].fillColor%>"></span><%if(segments[i].label){%><%=segments[i].label%><%}%></li><%}%></ul>',
+                legend: {
+                    display: true,
+                    position: 'bottom',
+                    fontSize: 10,
+                    boxWidth: 20
+                },
+                title: {
+                    display: false,
+                },
+                chartArea: {
+                    backgroundColor: 'rgba(255, 255, 255, 1)'
+                },
+                tooltips: {
+                    callbacks: {
+                        label: function(tooltipItem, data) {
+                            return 'Jumlah : ' + tooltipItem.yLabel.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                        },
+                    },
+                },
+                scales: {
+                    xAxes: [{
+                        ticks: {
+                            fontSize: 10
+                        }
+                    }]
+                }
+            }
+        });
+        var myChart = new Chart(ctx2, {
+            type: 'bar',
+            data: {
+                datasets: [{
+                    data: [
+                        <?php
+                        foreach ($tanggal2 as $t) {
+                            $data_count = Yii::$app->db->createCommand("SELECT COUNT(id_pembelian) as pembelian FROM akt_pembelian WHERE tanggal_order_pembelian = '$t[tanggal_order_pembelian]' AND status >= 3")->query();
+                            foreach ($data_count as $g) {
+                                echo '"' . $g['pembelian'] . '",';
+                            }
+                        }
+                        ?>, '0'
+                    ],
+                    backgroundColor: 'blue',
+                    borderColor: 'blue',
+                    fill: false,
+                    lineTension: 0.5,
+                    label: 'Pembelian'
+                }],
+                labels: [
+                    <?php
+                    foreach ($tanggal_label2 as $tgl) {
+                        echo '"' . tanggal_indo($tgl['tanggal_order_pembelian']) . '",';
                     }
                     ?>
                 ]
