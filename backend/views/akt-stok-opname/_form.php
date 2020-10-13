@@ -32,15 +32,7 @@ use kartik\select2\Select2;
                             ]) ?>
                         </div>
                         <div class="col-md-6">
-                            <?= $form->field($model, 'id_pegawai')->widget(Select2::classname(), [
-                                'data' => $data_pegawai,
-                                'language' => 'en',
-                                'options' => ['placeholder' => 'Pilih Pegawai'],
-                                'pluginOptions' => [
-                                    'allowClear' => true
-                                ],
-                            ])
-                            ?>
+                            <?= $form->field($model, 'keterangan')->textarea(['rows' => 5]) ?>
                         </div>
                     </div>
 

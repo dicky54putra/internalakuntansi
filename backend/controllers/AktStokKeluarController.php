@@ -159,6 +159,7 @@ class AktStokKeluarController extends Controller
             $jurnal_umum->no_jurnal_umum = $no_jurnal_umum;
             $jurnal_umum->tipe = 1;
             $jurnal_umum->tanggal = date('Y-m-d');
+            $jurnal_umum->keterangan = 'Stok Keluar : ' . $kode;
             $jurnal_umum->save(false);
 
             // End Create Jurnal Umum
