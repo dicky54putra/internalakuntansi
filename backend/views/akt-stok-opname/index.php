@@ -39,17 +39,6 @@ $this->title = 'Data Stok Opname';
                     return tanggal_indo($model->tanggal_opname, true);
                 }
             ],
-            [
-                'attribute' => 'id_pegawai',
-                'value' => function ($model) {
-                    if (!empty($model->pegawai->nama_pegawai)) {
-                        # code...
-                        return $model->pegawai->nama_pegawai;
-                    } else {
-                        # code...
-                    }
-                }
-            ],
 
             [
                 'class' => 'yii\grid\ActionColumn',

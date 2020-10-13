@@ -30,8 +30,7 @@ class AktStokOpname extends \yii\db\ActiveRecord
     {
         return [
             [['no_transaksi', 'tanggal_opname'], 'required'],
-            [['tanggal_opname'], 'safe'],
-            [['id_pegawai'], 'integer'],
+            [['tanggal_opname', 'keterangan'], 'safe'],
             [['no_transaksi'], 'string', 'max' => 200],
         ];
     }
@@ -45,14 +44,10 @@ class AktStokOpname extends \yii\db\ActiveRecord
             'id_stok_opname' => 'Id Stok Opname',
             'no_transaksi' => 'No Transaksi',
             'tanggal_opname' => 'Tanggal Opname',
-            'id_pegawai' => 'Pegawai',
+            'Keterangan' => 'Keterangan',
         ];
     }
 
-    public function getpegawai()
-    {
-        return $this->hasOne(AktPegawai::className(), ['id_pegawai' => 'id_pegawai']);
-    }
 
     public static function getJurnalUmum($id = null)
     {

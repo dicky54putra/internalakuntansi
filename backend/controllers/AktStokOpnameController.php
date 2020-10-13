@@ -161,6 +161,7 @@ class AktStokOpnameController extends Controller
             $jurnal_umum->no_jurnal_umum = $no_jurnal_umum;
             $jurnal_umum->tipe = 1;
             $jurnal_umum->tanggal = date('Y-m-d');
+            $jurnal_umum->keterangan = 'Stok Opname : ' . $kode;
             $jurnal_umum->save(false);
 
             // End Create Jurnal Umum
