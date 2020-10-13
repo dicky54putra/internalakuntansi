@@ -48,17 +48,18 @@ $this->title = 'Detail Pegawai : ' . $model->nama_pegawai;
                                 'format' => 'raw',
                                 'label' => 'Kota',
                                 'value' => function ($model) {
-                                    return $model->akt_kota->nama_kota;
+                                    if (!empty($model->akt_kota->nama_kota)) {
+                                        # code...
+                                        return $model->akt_kota->nama_kota;
+                                    }
                                 }
                             ],
                             [
                                 'attribute' => 'kode_pos',
                                 'format' => 'raw',
                                 'value' => function ($model) {
-                                    if ($model->kode_pos != null ) {
+                                    if (!empty($model->kode_pos)) {
                                         return $model->kode_pos;
-                                    } else if ($model->kode_pos == null ) {
-                                        return '<p style="color:red;"> Belum diset </p>';
                                     }
                                 }
                             ],
@@ -66,10 +67,8 @@ $this->title = 'Detail Pegawai : ' . $model->nama_pegawai;
                                 'attribute' => 'telepon',
                                 'format' => 'raw',
                                 'value' => function ($model) {
-                                    if ($model->telepon != null ) {
+                                    if (!empty($model->telepon)) {
                                         return $model->telepon;
-                                    } else if ($model->telepon == null ) {
-                                        return '<p style="color:red;"> Belum diset </p>';
                                     }
                                 }
                             ],
@@ -77,10 +76,8 @@ $this->title = 'Detail Pegawai : ' . $model->nama_pegawai;
                                 'attribute' => 'handphone',
                                 'format' => 'raw',
                                 'value' => function ($model) {
-                                    if ($model->handphone != null ) {
+                                    if (!empty($model->handphone)) {
                                         return $model->handphone;
-                                    } else if ($model->handphone == null ) {
-                                        return '<p style="color:red;"> Belum diset </p>';
                                     }
                                 }
                             ],
@@ -88,10 +85,8 @@ $this->title = 'Detail Pegawai : ' . $model->nama_pegawai;
                                 'attribute' => 'email',
                                 'format' => 'raw',
                                 'value' => function ($model) {
-                                    if ($model->email != null ) {
+                                    if (!empty($model->email)) {
                                         return $model->email;
-                                    } else if ($model->email == null ) {
-                                        return '<p style="color:red;"> Belum diset </p>';
                                     }
                                 }
                             ],
@@ -109,5 +104,7 @@ $this->title = 'Detail Pegawai : ' . $model->nama_pegawai;
                         ],
                     ]) ?>
                 </div>
-
             </div>
+        </div>
+    </div>
+</div>

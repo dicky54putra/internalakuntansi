@@ -187,7 +187,7 @@ class AktItemController extends Controller
             $model->delete();
         } else {
             # code...
-            Yii::$app->session->setFlash('warning', [['Perhatian!', '<i class="fa fa-exclamation-triangle" aria-hidden="true"></i> Data Barang : ' . $model->nama_item . ' Tidak Dapat Di Hapus, Dikarenakan Data Masih Digunakan!']]);
+            Yii::$app->session->setFlash('warning', [['Perhatian!', '<i class="fa fa-exclamation-triangle" aria-hidden="true"></i> Data Barang : <b>' . $model->nama_item . '</b> Tidak Dapat Di Hapus, Dikarenakan Data Masih Digunakan!']]);
         }
 
         return $this->redirect(['index']);

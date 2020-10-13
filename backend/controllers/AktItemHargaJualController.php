@@ -173,7 +173,7 @@ class AktItemHargaJualController extends Controller
             $model->delete();
         } else {
             # code...
-            Yii::$app->session->setFlash('warning', [['Perhatian!', '<i class="fa fa-exclamation-triangle" aria-hidden="true"></i> Data : ' . $model_level_harga->keterangan . ' Tidak Dapat Di Hapus, Dikarenakan Data Masih Digunakan!']]);
+            Yii::$app->session->setFlash('warning', [['Perhatian!', '<i class="fa fa-exclamation-triangle" aria-hidden="true"></i> Data Harga Jual : <b>' . $model_level_harga->keterangan . '</b> Tidak Dapat Di Hapus, Dikarenakan Data Masih Digunakan!']]);
         }
 
         return $this->redirect(['akt-item/view', 'id' => $model->id_item, '#' => 'harga-jual']);

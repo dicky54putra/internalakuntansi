@@ -58,7 +58,7 @@ $this->title = 'Detail Penjualan Harta Tetap : ' . $model->no_penjualan_harta_te
             if ($angka_array_approver == 0) {
                 # code...
             ?>
-                <?= Html::a('<span class="glyphicon glyphicon-edit"></span> Ubah', ['update', 'id' => $model->id_penjualan_harta_tetap], [
+                <?= Html::a('<span class="glyphicon glyphicon-edit"></span> Ubah Data Penjualan', ['update', 'id' => $model->id_penjualan_harta_tetap], [
                     'class' => 'btn btn-primary',
                     'data-toggle' => 'modal',
                     'data-target' => '#modal-ubah'
@@ -274,7 +274,7 @@ $this->title = 'Detail Penjualan Harta Tetap : ' . $model->no_penjualan_harta_te
                                                 </div>
 
                                                 <div class="col-md-2">
-                                                    <?= $form->field($model_penjualan_harta_tetap_detail_baru, 'harga')->textInput(['maxlength' => true, 'readonly' => true, 'autocomplete' => 'off', 'id' => 'harga']) ?>
+                                                    <?= $form->field($model_penjualan_harta_tetap_detail_baru, 'harga')->textInput(['maxlength' => true, 'readonly' => false, 'autocomplete' => 'off', 'id' => 'harga']) ?>
                                                 </div>
                                                 <div class="col-md-2">
                                                     <?= $form->field($model_penjualan_harta_tetap_detail_baru, 'qty')->textInput(['autocomplete' => 'off', 'type' => 'number', 'readonly' => true]) ?>
@@ -490,14 +490,14 @@ $this->title = 'Detail Penjualan Harta Tetap : ' . $model->no_penjualan_harta_te
 
                         <div class="row">
                             <div class="col-md-6">
-                                <?= $form->field($model, 'uang_muka')->widget(\yii\widgets\MaskedInput::className(), ['options' => ['required' => 'on', 'autocomplete' => 'off'], 'clientOptions' => ['alias' => 'decimal', 'groupSeparator' => '.', 'autoGroup' => true, 'removeMaskOnSubmit' => true, 'rightAlign' => false, 'min' => 0]]); ?>
+                                <?= $form->field($model, 'uang_muka')->widget(\yii\widgets\MaskedInput::className(), ['options' => ['required' => 'off', 'autocomplete' => 'off'], 'clientOptions' => ['alias' => 'decimal', 'groupSeparator' => '.', 'autoGroup' => true, 'removeMaskOnSubmit' => true, 'rightAlign' => false, 'min' => 0]]); ?>
 
                             </div>
                             <div class="col-md-6">
                                 <?= $form->field($model, 'id_kas_bank')->widget(Select2::classname(), [
                                     'data' => $data_kas_bank,
                                     'language' => 'en',
-                                    'options' => ['placeholder' => 'Pilih Kas Bank Uang Muka', 'required' => 'on'],
+                                    'options' => ['placeholder' => 'Pilih Kas Bank'],
                                     'pluginOptions' => [
                                         'allowClear' => true
                                     ],
@@ -645,19 +645,19 @@ $script = <<< JS
         return rupiah;
     }
     
-    $('#id_pembelian_harta_tetap_detail').on('change', function(){
-        var id = $(this).val();
-        $.ajax({
-            url:'index.php?r=akt-penjualan-harta-tetap-detail/get-harga-barang',
-            type : 'GET',
-            data : 'id='+id,
-            success : function(data){
-                let dataJson = $.parseJSON(data);
-                let hargaSatuan = formatNumber(dataJson.harga);
-                harga.value = hargaSatuan;
-            }
-        })
-    })
+    // $('#id_pembelian_harta_tetap_detail').on('change', function(){
+    //     var id = $(this).val();
+    //     $.ajax({
+    //         url:'index.php?r=akt-penjualan-harta-tetap-detail/get-harga-barang',
+    //         type : 'GET',
+    //         data : 'id='+id,
+    //         success : function(data){
+    //             let dataJson = $.parseJSON(data);
+    //             let hargaSatuan = formatNumber(dataJson.harga);
+    //             harga.value = hargaSatuan;
+    //         }
+    //     })
+    // })
 
     $(document).ready(function(){ 
 
@@ -702,66 +702,7 @@ $script = <<< JS
     });
     });
 
-    // $('#jumlah_tempo').change(function(){
-    //     var id = $('#id_penjualan').val();
-    //     $.ajax({
-    //         url:'index.php?r=akt-penjualan-penjualan/get-tanggal',
-    //         data: {id : id},
-    //         type:'GET',
-    //         dataType:'json',
-    //         success:function(data){
-    //             if ($('#aktpenjualan-jumlah_tempo').val() == 15) {
-    //                 var tgl = new Date(new Date(data.tanggal_penjualan).getTime() + (15*24*60*60*1000));
-    //                 var t = new Date(tgl), month = '' + (t.getMonth() + 1), day = '' + t.getDate(), year = t.getFullYear();
-    //                 if (month.length < 2) 
-    //                     month = '0' + month;
-    //                 if (day.length < 2) 
-    //                     day = '0' + day;
-
-    //                 var g = [year, month, day].join('-');
-                    
-    //                 $("#aktpenjualan-tanggal_tempo").val(g);
-    //             }
-    //             if ($('#aktpenjualan-jumlah_tempo').val() == 30) {
-    //                 var tgl = new Date(new Date(data.tanggal_penjualan).getTime() + (30*24*60*60*1000));
-    //                 var t = new Date(tgl), month = '' + (t.getMonth() + 1), day = '' + t.getDate(), year = t.getFullYear();
-    //                 if (month.length < 2) 
-    //                     month = '0' + month;
-    //                 if (day.length < 2) 
-    //                     day = '0' + day;
-
-    //                 var g = [year, month, day].join('-');
-                    
-    //                 $("#aktpenjualan-tanggal_tempo").val(g);
-    //             }
-    //             if ($('#aktpenjualan-jumlah_tempo').val() == 45) {
-    //                 var tgl = new Date(new Date(data.tanggal_penjualan).getTime() + (45*24*60*60*1000));
-    //                 var t = new Date(tgl), month = '' + (t.getMonth() + 1), day = '' + t.getDate(), year = t.getFullYear();
-    //                 if (month.length < 2) 
-    //                     month = '0' + month;
-    //                 if (day.length < 2) 
-    //                     day = '0' + day;
-
-    //                 var g = [year, month, day].join('-');
-                    
-    //                 $("#aktpenjualan-tanggal_tempo").val(g);
-    //             }
-    //             if ($('#aktpenjualan-jumlah_tempo').val() == 60) {
-    //                 var tgl = new Date(new Date(data.tanggal_penjualan).getTime() + (60*24*60*60*1000));
-    //                 var t = new Date(tgl), month = '' + (t.getMonth() + 1), day = '' + t.getDate(), year = t.getFullYear();
-    //                 if (month.length < 2) 
-    //                     month = '0' + month;
-    //                 if (day.length < 2) 
-    //                     day = '0' + day;
-
-    //                 var g = [year, month, day].join('-');
-                    
-    //                 $("#aktpenjualan-tanggal_tempo").val(g);
-    //             }
-    //         }
-    //     })
-
-    // })
+   
      
 JS;
 $this->registerJs($script);

@@ -163,7 +163,7 @@ class AktItemStokController extends Controller
             $model->delete();
         } else {
             # code...
-            Yii::$app->session->setFlash('warning', [['Perhatian!', '<i class="fa fa-exclamation-triangle" aria-hidden="true"></i> Data Gudang : ' . $model_gudang->nama_gudang . ' Tidak Dapat Di Hapus, Dikarenakan Data Masih Digunakan!']]);
+            Yii::$app->session->setFlash('warning', [['Perhatian!', '<i class="fa fa-exclamation-triangle" aria-hidden="true"></i> Data Stok Gudang : <b>' . $model_gudang->nama_gudang . '</b> Tidak Dapat Di Hapus, Dikarenakan Data Masih Digunakan!']]);
         }
 
         return $this->redirect(['akt-item/view', 'id' => $model->id_item]);

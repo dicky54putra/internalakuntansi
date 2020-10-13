@@ -632,9 +632,17 @@ class AktPembelianHartaTetapController extends Controller
      */
     public function actionDelete($id)
     {
-        $this->findModel($id)->delete();
+        $model =   $this->findModel($id);
 
-        return $this->redirect(['index']);
+        $query_detail = AktPembelianHartaTetapDetail::find()->where(['id_pembelian_harta_tetap' => $id]);
+
+        if ($query_detail->count() > 0) {
+            Yii::$app->session->setFlash('danger', [['Perhatian!', 'Hapus data detail pembelian terlebih dahulu.']]);
+            return $this->redirect(['view', 'id' => $id]);
+        } else {
+            $model->delete();
+            return $this->redirect(['index']);
+        }
     }
 
     public function actionPrintView($id)

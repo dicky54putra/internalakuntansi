@@ -2,6 +2,7 @@
 
 use yii\helpers\Html;
 use kartik\grid\GridView;
+use backend\models\AktPembelianHartaTetapDetail;
 
 /* @var $this yii\web\View */
 /* @var $searchModel backend\models\AktDepartementSearch */
@@ -30,6 +31,15 @@ $this->params['breadcrumbs'][] = $this->title;
                 'attribute' => "tanggal",
                 'value' => function ($model) {
                     return tanggal_indo($model->tanggal);
+                }
+            ],
+            [
+                'attribute' => "id_pembelian_harta_tetap_detail",
+                'label' => 'Aset Tetap',
+                'value' => function ($model) {
+
+                    $akt_pembelian_harta_tetap = AktPembelianHartaTetapDetail::findOne($model->id_pembelian_harta_tetap_detail);
+                    return $akt_pembelian_harta_tetap->kode_pembelian . '  - ' . $akt_pembelian_harta_tetap->nama_barang;
                 }
             ],
             [

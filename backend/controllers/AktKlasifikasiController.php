@@ -8,6 +8,7 @@ use backend\models\AktKlasifikasiSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use backend\models\AktAkun;
 
 /**
  * AktKlasifikasiController implements the CRUD actions for AktKlasifikasi model.
@@ -133,8 +134,8 @@ class AktKlasifikasiController extends Controller
             $totalan_countData += $rows2['countData'];
         }
 
-        echo $totalan_countData;
-        exit();
+        $countKlasifikasi = AktAkun::find()->where(['klasifikasi' => $model->id_klasifikasi])->count();
+        $totalan_countData += $countKlasifikasi;
 
         if ($totalan_countData == 0) {
             # code...

@@ -29,27 +29,21 @@ $this->title = 'Detail Harta Tetap : ' .  $model->kode_pembelian;
 
     <p>
         <?= Html::a('<span class="glyphicon glyphicon-circle-arrow-left"></span> Kembali', ['index-akutansi'], ['class' => 'btn btn-warning']) ?>
-        <?php // if ($model->status == 1 && $model->umur_ekonomis == null) { 
-        ?>
-        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#setting-depresiasi">
-            <span class="glyphicon glyphicon-edit"></span> Setting Depresiasi
-        </button>
+        <?php if ($model->id_kelompok_aset_tetap == null && $model->status == 1) { ?>
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#setting-depresiasi">
+                <span class="glyphicon glyphicon-edit"></span> Setting Depresiasi
+            </button>
+        <?php } else if (($model->id_kelompok_aset_tetap != null && $model->status == 1)) { ?>
 
-        <?php // } else if ($model->status == 1 && $model->umur_ekonomis != null) { 
-        ?>
-        <?= Html::a('<span class="glyphicon glyphicon-check"></span> Terjual', ['terjual', 'id' => $model->id_pembelian_harta_tetap_detail], [
-            'class' => 'btn btn-success'
-        ]) ?>
+            <?= Html::a('<span class="glyphicon glyphicon-trash"></span> Hapus Data Depresiasi', ['delete-depresiasi', 'id' => $model->id_pembelian_harta_tetap_detail], [
+                'class' => 'btn btn-danger',
+                'data' => [
+                    'confirm' => 'Apakah anda yakin akan menghapus Data Depresiasi Harta Tetap : ' . $model->kode_pembelian . ' ?',
+                    'method' => 'post',
+                ],
+            ]) ?>
 
-        <?php // } 
-        ?>
-        <?= Html::a('<span class="glyphicon glyphicon-trash"></span> Hapus', ['delete', 'id' => $model->id_pembelian_harta_tetap_detail], [
-            'class' => 'btn btn-danger',
-            'data' => [
-                'confirm' => 'Are you sure you want to delete this item?',
-                'method' => 'post',
-            ],
-        ]) ?>
+        <?php } ?>
     </p>
     <div class="box">
         <div class="panel panel-primary">
@@ -189,6 +183,7 @@ $this->title = 'Detail Harta Tetap : ' .  $model->kode_pembelian;
                                 ]) ?>
                             </div>
                             <div class="col-md-6">
+                                <input type="hidden" value="<?= $model->id_kelompok_aset_tetap ?>" class="id_kelompok_aset_tetap">
                                 <table id="w3" class="table table-striped table-bordered detail-view">
                                     <tr>
                                         <th>Akumulasi Beban</th>
@@ -200,7 +195,7 @@ $this->title = 'Detail Harta Tetap : ' .  $model->kode_pembelian;
                                     </tr>
                                     <tr>
                                         <th>Terhitung Tanggal</th>
-                                        <td><?= tanggal_indo($model->terhitung_tanggal) ?></td>
+                                        <td><?= $model->terhitung_tanggal == null ? '' : tanggal_indo($model->terhitung_tanggal) ?></td>
                                     </tr>
                                     <tr>
                                         <th>Nilai Buku</th>
@@ -359,8 +354,10 @@ $this->title = 'Detail Harta Tetap : ' .  $model->kode_pembelian;
     <?php
     $script = <<< JS
 
-    if($model->id_kelompok_aset_tetap != null ) {
-        $.get('index.php?r=akt-harta-tetap/get-akt-kelompok-harta-tetap',{ id : $model->id_kelompok_aset_tetap },function(data){
+    var kelompok_aset = $('.id_kelompok_aset_tetap').val();
+                                // console.log(kelompok_aset);
+    if(kelompok_aset != '' ) {
+        $.get('index.php?r=akt-harta-tetap/get-akt-kelompok-harta-tetap',{ id : kelompok_aset },function(data){
             var data = $.parseJSON(data);
                 if(data.metode_depresiasi ==  2) {
                     var hp = $harga_perolehan - $model->residu;
