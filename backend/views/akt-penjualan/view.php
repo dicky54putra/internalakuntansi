@@ -932,6 +932,7 @@ $this->registerJs($script);
 <script>
     const kasBank = document.querySelector('#kas-bank');
     const uangMuka = document.querySelector('#aktpenjualan-uang_muka');
+    const idKasBank = document.querySelector('#id_kas_bank');
 
     if (uangMuka.value != 0) {
         kasBank.classList.remove('style-kas-bank')
@@ -942,9 +943,11 @@ $this->registerJs($script);
         console.log('ok');
         let val = e.target.value;
         if (val == '' || val == 0) {
-            kasBank.classList.add('style-kas-bank')
+            kasBank.classList.add('style-kas-bank');
+            idKasBank.removeAttribute('required');
         } else {
-            kasBank.classList.remove('style-kas-bank')
+            kasBank.classList.remove('style-kas-bank');
+            idKasBank.setAttribute('required', true);
         }
     });
 
