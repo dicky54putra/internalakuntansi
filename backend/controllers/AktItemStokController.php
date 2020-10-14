@@ -129,7 +129,42 @@ class AktItemStokController extends Controller
     public function actionDelete($id)
     {
         $model = $this->findModel($id);
-        $model->delete();
+        $model_gudang = AktGudang::findOne($model->id_gudang);
+
+        $db = Yii::$app->getDb();
+        $dbname = 'dbname';
+        $dsn = $db->dsn;
+        $dbName = getDsnAttribute($dbname, $dsn);
+        $columnName = 'id_item_stok';
+        $thisTable = 'akt_item_stok';
+        $thisId = $model->id_item_stok;
+        $rows = (new \yii\db\Query())
+            ->select(['TABLE_NAME'])
+            ->from('INFORMATION_SCHEMA.COLUMNS')
+            ->where(['TABLE_SCHEMA' => $dbName])
+            ->andWhere(['COLUMN_NAME' => $columnName])
+            ->andWhere(['!=', 'TABLE_NAME', $thisTable])
+            ->all();
+        $array_table_name = array();
+        $totalan_countData = 0;
+        foreach ($rows as $key => $value) {
+            # code...
+            $rows2 = (new \yii\db\Query())
+                ->select(['COUNT(*) as countData'])
+                ->from($value['TABLE_NAME'])
+                ->where([$columnName => $thisId])
+                ->one();
+            $array_table_name[] = $value['TABLE_NAME'] . ' - ' . $rows2['countData'];
+            $totalan_countData += $rows2['countData'];
+        }
+
+        if ($totalan_countData == 0) {
+            # code...
+            $model->delete();
+        } else {
+            # code...
+            Yii::$app->session->setFlash('warning', [['Perhatian!', '<i class="fa fa-exclamation-triangle" aria-hidden="true"></i> Data Stok Gudang : <b>' . $model_gudang->nama_gudang . '</b> Tidak Dapat Di Hapus, Dikarenakan Data Masih Digunakan!']]);
+        }
 
         return $this->redirect(['akt-item/view', 'id' => $model->id_item]);
     }

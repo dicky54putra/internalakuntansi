@@ -149,25 +149,7 @@ $this->title = 'Detail Data Penerimaan : ' . $model->no_penjualan;
                                         }
                                     ],
                                     'materai',
-                                    // [
-                                    //     'attribute' => 'status',
-                                    //     'format' => 'raw',
-                                    //     'value' => function ($model) {
-                                    //         if ($model->status == 1) {
-                                    //             # code...
-                                    //             return "<span class='label label-default'>Order Penjualan</span>";
-                                    //         } elseif ($model->status == 2) {
-                                    //             # code...
-                                    //             return "<span class='label label-warning'>Penjualan</span>";
-                                    //         } elseif ($model->status == 3) {
-                                    //             # code...
-                                    //             return "<span class='label label-primary'>Pengiriman</span>";
-                                    //         } elseif ($model->status == 4) {
-                                    //             # code...
-                                    //             return "<span class='label label-success'>Completed</span>";
-                                    //         }
-                                    //     }
-                                    // ],
+
                                     [
                                         'attribute' => 'status',
                                         'format' => 'raw',

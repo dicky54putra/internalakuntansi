@@ -18,8 +18,8 @@ class AktDepresiasiHartaTetapSearch extends AktDepresiasiHartaTetap
     public function rules()
     {
         return [
-            [['id_depresiasi_harta_tetap'], 'integer'],
-            [['kode_depresiasi', 'nilai', 'tanggal'], 'safe'],
+            // [['id_pembelian_hart_tetap_detail'], 'integer'],
+            [['kode_depresiasi', 'nilai', 'tanggal', 'id_pembelian_harta_tetap_detail'], 'safe'],
         ];
     }
 
@@ -57,13 +57,13 @@ class AktDepresiasiHartaTetapSearch extends AktDepresiasiHartaTetap
 
         // grid filtering conditions
         $query->andFilterWhere([
-            'id_depresiasi_harta_tetap' => $this->id_depresiasi_harta_tetap,
+            'id_pembelian_harta_tetap_detail' => $this->id_pembelian_harta_tetap_detail,
             'kode_depresiasi' => $this->kode_depresiasi,
             'tanggal' => $this->tanggal,
             'nilai' => $this->nilai,
         ]);
 
-        $query->andFilterWhere(['like', 'id_depresiasi_harta_tetap', $this->id_depresiasi_harta_tetap])
+        $query->andFilterWhere(['like', 'id_pembelian_harta_tetap_detail', $this->id_pembelian_harta_tetap_detail])
             ->andFilterWhere(['like', 'kode_depresiasi', $this->kode_depresiasi])
             ->andFilterWhere(['like', 'tanggal', $this->tanggal])
             ->andFilterWhere(['like', 'nilai', $this->nilai]);

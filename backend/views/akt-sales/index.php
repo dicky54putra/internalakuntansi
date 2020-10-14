@@ -42,10 +42,8 @@ $this->title = 'Daftar Sales';
                 'attribute' => 'handphone',
                 'format' => 'raw',
                 'value' => function ($model) {
-                    if ($model->handphone != null ) {
+                    if (!empty($model->handphone)) {
                         return $model->handphone;
-                    } else if ($model->handphone == null ) {
-                        return '<p style="color:red;"> Belum diset </p>';
                     }
                 }
             ],

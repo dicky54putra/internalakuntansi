@@ -76,13 +76,13 @@ class AktGudangController extends Controller
             $id =  Yii::$app->request->post('id');
             $update_in_item =  Yii::$app->request->post('update-in-item');
             $id_update =  Yii::$app->request->post('id_update');
-            if(isset($create_in_item)) {
+            if (isset($create_in_item)) {
                 $model->save();
                 return $this->redirect(['akt-item-stok/create', 'id' => $id]);
-            } else if(isset($update_in_item)) {
+            } else if (isset($update_in_item)) {
                 $model->save();
                 return $this->redirect(['akt-item-stok/update', 'id' => $id_update]);
-            } else  {
+            } else {
                 $model->save();
                 return $this->redirect(['view', 'id' => $model->id_gudang]);
             }
@@ -125,7 +125,42 @@ class AktGudangController extends Controller
      */
     public function actionDelete($id)
     {
-        $this->findModel($id)->delete();
+        $model = $this->findModel($id);
+
+        $db = Yii::$app->getDb();
+        $dbname = 'dbname';
+        $dsn = $db->dsn;
+        $dbName = getDsnAttribute($dbname, $dsn);
+        $columnName = 'id_gudang';
+        $thisTable = 'akt_gudang';
+        $thisId = $model->id_gudang;
+        $rows = (new \yii\db\Query())
+            ->select(['TABLE_NAME'])
+            ->from('INFORMATION_SCHEMA.COLUMNS')
+            ->where(['TABLE_SCHEMA' => $dbName])
+            ->andWhere(['COLUMN_NAME' => $columnName])
+            ->andWhere(['!=', 'TABLE_NAME', $thisTable])
+            ->all();
+        $array_table_name = array();
+        $totalan_countData = 0;
+        foreach ($rows as $key => $value) {
+            # code...
+            $rows2 = (new \yii\db\Query())
+                ->select(['COUNT(*) as countData'])
+                ->from($value['TABLE_NAME'])
+                ->where([$columnName => $thisId])
+                ->one();
+            $array_table_name[] = $value['TABLE_NAME'] . ' - ' . $rows2['countData'];
+            $totalan_countData += $rows2['countData'];
+        }
+
+        if ($totalan_countData == 0) {
+            # code...
+            $model->delete();
+        } else {
+            # code...
+            Yii::$app->session->setFlash('warning', [['Perhatian!', '<i class="fa fa-exclamation-triangle" aria-hidden="true"></i> Data Gudang : <b>' . $model->nama_gudang . '</b> Tidak Dapat Di Hapus, Dikarenakan Data Masih Digunakan!']]);
+        }
 
         return $this->redirect(['index']);
     }

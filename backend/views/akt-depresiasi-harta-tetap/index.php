@@ -2,6 +2,7 @@
 
 use yii\helpers\Html;
 use kartik\grid\GridView;
+use backend\models\AktPembelianHartaTetapDetail;
 
 /* @var $this yii\web\View */
 /* @var $searchModel backend\models\AktDepartementSearch */
@@ -33,32 +34,41 @@ $this->params['breadcrumbs'][] = $this->title;
                 }
             ],
             [
+                'attribute' => "id_pembelian_harta_tetap_detail",
+                'label' => 'Aset Tetap',
+                'value' => function ($model) {
+
+                    $akt_pembelian_harta_tetap = AktPembelianHartaTetapDetail::findOne($model->id_pembelian_harta_tetap_detail);
+                    return $akt_pembelian_harta_tetap->kode_pembelian . '  - ' . $akt_pembelian_harta_tetap->nama_barang;
+                }
+            ],
+            [
                 'attribute' => "nilai",
                 'value' => function ($model) {
                     return ribuan($model->nilai);
                 }
             ],
 
-            [
-                'class' => 'yii\grid\ActionColumn',
-                'header' => 'Aksi',
-                'headerOptions' => ['style' => 'color:#337ab7'],
-                'template' => " ",
-                'buttons' => [
-                    'view' => function ($url, $model) {
-                        return Html::a('<button class = "btn btn-info"><span class="glyphicon glyphicon-eye-open"></span> Detail </button>', $url, [
-                            'title' => Yii::t('app', 'lead-view'),
-                        ]);
-                    },
+            // [
+            //     'class' => 'yii\grid\ActionColumn',
+            //     'header' => 'Aksi',
+            //     'headerOptions' => ['style' => 'color:#337ab7'],
+            //     'template' => " ",
+            //     'buttons' => [
+            //         'view' => function ($url, $model) {
+            //             return Html::a('<button class = "btn btn-info"><span class="glyphicon glyphicon-eye-open"></span> Detail </button>', $url, [
+            //                 'title' => Yii::t('app', 'lead-view'),
+            //             ]);
+            //         },
 
-                ],
-                'urlCreator' => function ($action, $model, $key, $index) {
-                    if ($action === 'view') {
-                        $url = 'index.php?r=akt-depresiasi-harta-tetap/view&id=' . $model->id_depresiasi_harta_tetap;
-                        return $url;
-                    }
-                }
-            ],
+            //     ],
+            //     'urlCreator' => function ($action, $model, $key, $index) {
+            //         if ($action === 'view') {
+            //             $url = 'index.php?r=akt-depresiasi-harta-tetap/view&id=' . $model->id_depresiasi_harta_tetap;
+            //             return $url;
+            //         }
+            //     }
+            // ],
         ],
         'containerOptions' => ['style' => 'overflow: auto'], // only set when $responsive = false
         'headerRowOptions' => ['class' => 'kartik-sheet-style'],

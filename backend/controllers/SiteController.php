@@ -91,24 +91,28 @@ class SiteController extends Controller
         $month = date('m');
         $year = date('Y');
         $tanggal = Yii::$app->db->createCommand("SELECT tanggal_order_penjualan FROM akt_penjualan WHERE status >= 3 AND MONTH(tanggal_order_penjualan) = '$month' AND YEAR(tanggal_order_penjualan) = '$year' GROUP BY tanggal_order_penjualan")->query();
+        $tanggal2 = Yii::$app->db->createCommand("SELECT tanggal_order_pembelian FROM akt_pembelian WHERE status >= 3 AND MONTH(tanggal_order_pembelian) = '$month' AND YEAR(tanggal_order_pembelian) = '$year' GROUP BY tanggal_order_pembelian")->query();
 
         $tanggal_labels = Yii::$app->db->createCommand("SELECT tanggal_order_penjualan FROM akt_penjualan WHERE status >= 3 AND MONTH(tanggal_order_penjualan) = '$month' AND YEAR(tanggal_order_penjualan) = '$year' GROUP BY tanggal_order_penjualan")->query();
+        $tanggal_labels2 = Yii::$app->db->createCommand("SELECT tanggal_order_pembelian FROM akt_pembelian WHERE status >= 3 AND MONTH(tanggal_order_pembelian) = '$month' AND YEAR(tanggal_order_pembelian) = '$year' GROUP BY tanggal_order_pembelian")->query();
 
         $penjualan = Yii::$app->db->createCommand("SELECT SUM(akt_penjualan_detail.qty) AS penjualan, akt_item.nama_item FROM `akt_penjualan_detail` LEFT JOIN akt_penjualan ON akt_penjualan.id_penjualan = akt_penjualan_detail.id_penjualan LEFT JOIN akt_item_stok ON akt_item_stok.id_item_stok = akt_penjualan_detail.id_item_stok LEFT JOIN akt_item ON akt_item.id_item = akt_item_stok.id_item WHERE MONTH(tanggal_order_penjualan) = '$month' AND YEAR(tanggal_order_penjualan) = '$year'  GROUP BY akt_item.id_item ORDER BY penjualan DESC LIMIT 5")->query();
 
         $sum_penjualan = Yii::$app->db->createCommand("SELECT SUM(akt_penjualan_detail.qty) AS penjualan FROM `akt_penjualan_detail` LEFT JOIN akt_penjualan ON akt_penjualan.id_penjualan = akt_penjualan_detail.id_penjualan WHERE MONTH(tanggal_order_penjualan) = '$month' AND YEAR(tanggal_order_penjualan) = '$year' ")->queryScalar();
 
         $akt_kas_bank = AktKasBank::find()
-        ->select(['akt_kas_bank.*', 'akt_mata_uang.mata_uang'])
-        ->leftJoin('akt_mata_uang', '`akt_mata_uang`.`id_mata_uang` = `akt_kas_bank`.`id_mata_uang`')
-        ->asArray()
-        ->all();
+            ->select(['akt_kas_bank.*', 'akt_mata_uang.mata_uang'])
+            ->leftJoin('akt_mata_uang', '`akt_mata_uang`.`id_mata_uang` = `akt_kas_bank`.`id_mata_uang`')
+            ->asArray()
+            ->all();
         return $this->render('index', [
             'akt_kas_bank' => $akt_kas_bank,
             'sum_penjualan' => $sum_penjualan,
             'penjualan' => $penjualan,
             'tanggal_label' => $tanggal_labels,
+            'tanggal_label2' => $tanggal_labels2,
             'tanggal' => $tanggal,
+            'tanggal2' => $tanggal2,
             'sum_omzet' => $sum_omzet,
             'saldo_kas' => $saldo_kas,
             'saldo_piutang' => $saldo_piutang,

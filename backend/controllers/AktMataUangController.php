@@ -104,7 +104,42 @@ class AktMataUangController extends Controller
      */
     public function actionDelete($id)
     {
-        $this->findModel($id)->delete();
+        $model = $this->findModel($id);
+
+        $db = Yii::$app->getDb();
+        $dbname = 'dbname';
+        $dsn = $db->dsn;
+        $dbName = getDsnAttribute($dbname, $dsn);
+        $columnName = 'id_mata_uang';
+        $thisTable = 'akt_mata_uang';
+        $thisId = $model->id_mata_uang;
+        $rows = (new \yii\db\Query())
+            ->select(['TABLE_NAME'])
+            ->from('INFORMATION_SCHEMA.COLUMNS')
+            ->where(['TABLE_SCHEMA' => $dbName])
+            ->andWhere(['COLUMN_NAME' => $columnName])
+            ->andWhere(['!=', 'TABLE_NAME', $thisTable])
+            ->all();
+        $array_table_name = array();
+        $totalan_countData = 0;
+        foreach ($rows as $key => $value) {
+            # code...
+            $rows2 = (new \yii\db\Query())
+                ->select(['COUNT(*) as countData'])
+                ->from($value['TABLE_NAME'])
+                ->where([$columnName => $thisId])
+                ->one();
+            $array_table_name[] = $value['TABLE_NAME'] . ' - ' . $rows2['countData'];
+            $totalan_countData += $rows2['countData'];
+        }
+
+        if ($totalan_countData == 0) {
+            # code...
+            $model->delete();
+        } else {
+            # code...
+            Yii::$app->session->setFlash('warning', [['Perhatian!', '<i class="fa fa-exclamation-triangle" aria-hidden="true"></i> Data Mata Uang : <b>' . $model->mata_uang . '</b> Tidak Dapat Di Hapus, Dikarenakan Data Masih Digunakan!']]);
+        }
 
         return $this->redirect(['index']);
     }
