@@ -55,14 +55,9 @@ $this->title = 'Detail Data Stok Opname : ' . $model->no_transaksi;
                                 }
                             ],
                             [
-                                'attribute' => 'id_pegawai',
+                                'attribute' => 'keterangan',
                                 'value' => function ($model) {
-                                    if (!empty($model->pegawai->nama_pegawai)) {
-                                        # code...
-                                        return $model->pegawai->nama_pegawai;
-                                    } else {
-                                        # code...
-                                    }
+                                    return $model->keterangan;
                                 }
                             ],
                         ],

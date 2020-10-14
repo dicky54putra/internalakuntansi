@@ -473,6 +473,10 @@ $this->title = 'Detail Data Order Pembelian : ' . $model->no_order_pembelian;
     </div>
 </div>
 <style>
+    .style-kas-bank {
+        display: none;
+    }
+
     @media (min-width: 992px) {
         .modal-content {
             margin: 0 -150px;
@@ -580,10 +584,10 @@ if (!empty($form)) {
 
                                 <div class="form-group">
                                     <div class="row">
-                                        <div class="col-md-6">
-                                            <?= $form->field($model, 'uang_muka')->widget(\yii\widgets\MaskedInput::className(), ['clientOptions' => ['alias' => 'decimal', 'groupSeparator' => '.', 'autoGroup' => true, 'removeMaskOnSubmit' => true, 'rightAlign' => false, 'min' => 0], 'options' => ['value' => $model->uang_muka == '' ? 0 : $model->uang_muka]]); ?>
+                                        <div class="col-md-12">
+                                            <?= $form->field($model, 'uang_muka')->textInput(['value' => $model->uang_muka == '' ? 0 : $model->uang_muka, 'autocomplete' => 'off'])->label('Uang Muka') ?>
                                         </div>
-                                        <div class="col-md-6">
+                                        <div class="col-md-12 kas-bank style-kas-bank">
                                             <?= $form->field($model, 'id_kas_bank')->widget(Select2::classname(), [
                                                 'data' => $data_kas_bank,
                                                 'language' => 'en',
@@ -707,7 +711,6 @@ if (!empty($form)) {
 <?php
 $script = <<< JS
     $(document).ready(function(){ 
-        
 
     if ($("#aktpembelian-jenis_bayar").val() == "1")
     {
@@ -747,13 +750,42 @@ $script = <<< JS
     
     });
     });
-
-
-    
-
-
-
     
 JS;
 $this->registerJs($script);
 ?>
+
+<script>
+    const kasBank = document.querySelector('.kas-bank');
+    const uangMuka = document.querySelector('#aktpembelian-uang_muka');
+
+    if (uangMuka.value != 0) {
+        kasBank.classList.remove('style-kas-bank')
+    }
+
+    uangMuka.addEventListener("input", function(e) {
+        uangMuka.value = formatRupiah(this.value);
+        let val = e.target.value;
+        if (val == '' || val == 0) {
+            kasBank.classList.add('style-kas-bank')
+        } else(
+            kasBank.classList.remove('style-kas-bank')
+        )
+    });
+
+    function formatRupiah(angka, prefix) {
+        var number_string = angka.replace(/[^,\d]/g, '').toString(),
+            split = number_string.split(','),
+            sisa = split[0].length % 3,
+            rupiah = split[0].substr(0, sisa),
+            ribuan = split[0].substr(sisa).match(/\d{3}/gi);
+
+        if (ribuan) {
+            separator = sisa ? '.' : '';
+            rupiah += separator + ribuan.join('.');
+        }
+
+        rupiah = split[1] != undefined ? rupiah + ',' + split[1] : rupiah;
+        return prefix == undefined ? rupiah : (rupiah ? 'Rp. ' + rupiah : '');
+    }
+</script>
