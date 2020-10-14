@@ -624,10 +624,12 @@ $this->title = 'Detail Data Order Penjualan : ' . $model->no_order_penjualan;
 
                             <div class="row">
                                 <div class="col-md-6">
-                                    <?= $form->field($model, 'uang_muka')->widget(\yii\widgets\MaskedInput::className(), ['options' => ['required' => 'on', 'autocomplete' => 'off'], 'clientOptions' => ['alias' => 'decimal', 'groupSeparator' => '.', 'autoGroup' => true, 'removeMaskOnSubmit' => true, 'rightAlign' => false, 'min' => 0]]); ?>
+                                    <?php //$form->field($model, 'uang_muka')->widget(\yii\widgets\MaskedInput::className(), ['options' => ['required' => 'on', 'autocomplete' => 'off'], 'clientOptions' => ['alias' => 'decimal', 'groupSeparator' => '.', 'autoGroup' => true, 'removeMaskOnSubmit' => true, 'rightAlign' => false, 'min' => 0]]); 
+                                    ?>
+                                    <?= $form->field($model, 'uang_muka')->textInput(['value' => $model->uang_muka == '' ? 0 : $model->uang_muka, 'autocomplete' => 'off']); ?>
 
                                 </div>
-                                <div class="col-md-6 kas-bank style-kas-bank">
+                                <div id="kas-bank" class="col-md-6 style-kas-bank">
                                     <?= $form->field($model, 'id_kas_bank')->widget(Select2::classname(), [
                                         'data' => $data_kas_bank,
                                         'language' => 'en',
@@ -928,7 +930,7 @@ $this->registerJs($script);
 
 
 <script>
-    const kasBank = document.querySelector('.kas-bank');
+    const kasBank = document.querySelector('#kas-bank');
     const uangMuka = document.querySelector('#aktpenjualan-uang_muka');
 
     if (uangMuka.value != 0) {
@@ -937,12 +939,13 @@ $this->registerJs($script);
 
     uangMuka.addEventListener("input", function(e) {
         uangMuka.value = formatRupiah(this.value);
+        console.log('ok');
         let val = e.target.value;
         if (val == '' || val == 0) {
             kasBank.classList.add('style-kas-bank')
-        } else(
+        } else {
             kasBank.classList.remove('style-kas-bank')
-        )
+        }
     });
 
     function formatRupiah(angka, prefix) {
