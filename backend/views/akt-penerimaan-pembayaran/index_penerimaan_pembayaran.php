@@ -212,9 +212,9 @@ $this->title = 'Data Penerimaan Pembayaran';
                                                     'value' => function ($model) {
                                                         $query = (new \yii\db\Query())->from('akt_penerimaan_pembayaran_harta_tetap')->where(['id_penjualan_harta_tetap' => $model->id_penjualan_harta_tetap]);
                                                         $sum_nominal = $query->sum('nominal');
-                                                        if ($model->total == $sum_nominal) {
+                                                        if ($model->total + $model->uang_muka == $sum_nominal) {
                                                             return "<span class='label label-success'>Lunas</span>";
-                                                        } else if ($model->total != $sum_nominal) {
+                                                        } else if ($model->total + $model->uang_muka != $sum_nominal) {
                                                             return "<span class='label label-warning'>Belum Lunas</span>";
                                                         }
                                                     }

@@ -105,6 +105,8 @@ class AktPembelianController extends Controller
             if ($model->load(Yii::$app->request->post())) {
 
                 $model_ongkir = Yii::$app->request->post('AktPembelian')['ongkir'];
+                // $_b = Yii::$app->request->post('beban_per_bulan');
+                $model->uang_muka = preg_replace("/[^0-9,]+/", "", $model->uang_muka);
 
 
                 if ($model->uang_muka > 0 && $model->id_kas_bank == '') {

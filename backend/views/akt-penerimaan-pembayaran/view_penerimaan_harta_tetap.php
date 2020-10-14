@@ -28,7 +28,7 @@ $this->title = 'Detail Data Penerimaan Penjualan Harta Tetap : ' . $model->no_pe
     </ul>
 
     <p>
-        <?= Html::a('<span class="glyphicon glyphicon-circle-arrow-left"></span> Kembali', ['index'], ['class' => 'btn btn-warning']) ?>
+        <?= Html::a('<span class="glyphicon glyphicon-circle-arrow-left"></span> Kembali', ['index', '#' => 'data-penjualan-harta-tetap'], ['class' => 'btn btn-warning']) ?>
     </p>
 
     <div class="panel panel-primary">

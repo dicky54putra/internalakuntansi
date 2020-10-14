@@ -18,7 +18,7 @@ class AktStokOpnameSearch extends AktStokOpname
     {
         return [
             [['id_stok_opname'], 'integer'],
-            [['no_transaksi', 'tanggal_opname', 'id_pegawai'], 'safe'],
+            [['no_transaksi', 'tanggal_opname', 'keterangan'], 'safe'],
         ];
     }
 
@@ -41,7 +41,6 @@ class AktStokOpnameSearch extends AktStokOpname
     public function search($params)
     {
         $query = AktStokOpname::find();
-        $query->joinWith("pegawai");
 
         // add conditions that should always apply here
 
@@ -61,12 +60,11 @@ class AktStokOpnameSearch extends AktStokOpname
         $query->andFilterWhere([
             'id_stok_opname' => $this->id_stok_opname,
             'tanggal_opname' => $this->tanggal_opname,
-            // 'id_pegawai' => $this->id_pegawai,
+            'keterangan' => $this->keterangan,
             // 'id_akun_persediaan' => $this->id_akun_persediaan,
         ]);
 
-        $query->andFilterWhere(['like', 'no_transaksi', $this->no_transaksi])
-            ->andFilterWhere(['like', 'akt_pegawai.nama_pegawai', $this->id_pegawai]);
+        $query->andFilterWhere(['like', 'no_transaksi', $this->no_transaksi]);
 
         return $dataProvider;
     }
