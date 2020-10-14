@@ -17,7 +17,7 @@ class AktAkunSearch extends AktAkun
     public function rules()
     {
         return [
-            [['id_akun', 'saldo_akun', 'header', 'parent', 'jenis', 'status_aktif','saldo_normal'], 'integer'],
+            [['id_akun', 'saldo_akun', 'header', 'parent', 'jenis', 'status_aktif', 'saldo_normal'], 'integer'],
             [['kode_akun', 'nama_akun', 'klasifikasi'], 'safe'],
         ];
     }
@@ -43,6 +43,7 @@ class AktAkunSearch extends AktAkun
         // $query = AktAkun::find()->where(['!=', 'id_akun', 1]);
         $query = AktAkun::find();
         $query->joinWith("akt_klasifikasi");
+        $query->orderBy("kode_akun ASC");
 
         // add conditions that should always apply here
 
