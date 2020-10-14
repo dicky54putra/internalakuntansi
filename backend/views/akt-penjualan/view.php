@@ -627,13 +627,13 @@ $this->title = 'Detail Data Order Penjualan : ' . $model->no_order_penjualan;
                                     <?= $form->field($model, 'uang_muka')->widget(\yii\widgets\MaskedInput::className(), ['options' => ['required' => 'on', 'autocomplete' => 'off'], 'clientOptions' => ['alias' => 'decimal', 'groupSeparator' => '.', 'autoGroup' => true, 'removeMaskOnSubmit' => true, 'rightAlign' => false, 'min' => 0]]); ?>
 
                                 </div>
-                                <div class="col-md-6">
+                                <div class="col-md-6 kas-bank style-kas-bank">
                                     <?= $form->field($model, 'id_kas_bank')->widget(Select2::classname(), [
                                         'data' => $data_kas_bank,
                                         'language' => 'en',
-                                        'options' => ['placeholder' => 'Pilih Kas Bank Uang Muka', 'required' => 'on'],
+                                        'options' => ['placeholder' => 'Pilih Kas Bank Uang Muka', 'id' => 'id_kas_bank'],
                                         'pluginOptions' => [
-                                            'allowClear' => true
+                                            'allowClear' => true,
                                         ],
                                     ])
                                     ?>
@@ -688,73 +688,87 @@ $this->title = 'Detail Data Order Penjualan : ' . $model->no_order_penjualan;
             </div>
         </div>
     </div>
+</div>
 
-    <!-- add new customer -->
-    <div class="modal fade" id="modal-customer">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title">Tambah Data Customer</h4>
-                </div>
-                <?php $form = ActiveForm::begin([
-                    'method' => 'post',
-                    'action' => ['add-new-customer', 'id' => $_GET['id']],
-                ]); ?>
-                <div class="modal-body">
+<style>
+    .style-kas-bank {
+        display: none;
+    }
 
-                    <?= $form->field($model_new_customer, 'nama_mitra_bisnis')->textInput(['maxlength' => true]) ?>
+    @media (min-width: 992px) {
+        .modal-content {
+            margin: 0 -150px;
+        }
 
-                    <?= $form->field($model_new_customer, 'deskripsi_mitra_bisnis')->textarea(['rows' => 3]) ?>
+    }
+</style>
 
-                    <?= $form->field($model_new_customer, 'tipe_mitra_bisnis')->dropDownList(array(1 => "Customer", 3 => "Customer & Supplier")) ?>
-
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-danger pull-left" data-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-success"><span class="glyphicon glyphicon-plus"></span> Tambah</button>
-                </div>
-                <?php ActiveForm::end(); ?>
+<!-- add new customer -->
+<div class="modal fade" id="modal-customer">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Tambah Data Customer</h4>
             </div>
+            <?php $form = ActiveForm::begin([
+                'method' => 'post',
+                'action' => ['add-new-customer', 'id' => $_GET['id']],
+            ]); ?>
+            <div class="modal-body">
+
+                <?= $form->field($model_new_customer, 'nama_mitra_bisnis')->textInput(['maxlength' => true]) ?>
+
+                <?= $form->field($model_new_customer, 'deskripsi_mitra_bisnis')->textarea(['rows' => 3]) ?>
+
+                <?= $form->field($model_new_customer, 'tipe_mitra_bisnis')->dropDownList(array(1 => "Customer", 3 => "Customer & Supplier")) ?>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger pull-left" data-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-success"><span class="glyphicon glyphicon-plus"></span> Tambah</button>
+            </div>
+            <?php ActiveForm::end(); ?>
         </div>
     </div>
+</div>
 
-    <!-- add new sales -->
-    <div class="modal fade" id="modal-sales">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title">Tambah Data Sales</h4>
-                </div>
-                <?php $form = ActiveForm::begin([
-                    'method' => 'post',
-                    'action' => ['add-new-sales', 'id' => $_GET['id']],
-                ]); ?>
-                <div class="modal-body">
-
-                    <?= $form->field($model_new_sales, 'nama_sales')->textInput(['maxlength' => true]) ?>
-
-                    <?= $form->field($model_new_sales, 'telepon')->textInput(['maxlength' => true]) ?>
-
-                    <?= $form->field($model_new_sales, 'email')->textInput(['maxlength' => true]) ?>
-
-                    <?= $form->field($model_new_sales, 'alamat')->textarea(['rows' => 3]) ?>
-
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-danger pull-left" data-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-success"><span class="glyphicon glyphicon-plus"></span> Tambah</button>
-                </div>
-                <?php ActiveForm::end(); ?>
+<!-- add new sales -->
+<div class="modal fade" id="modal-sales">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Tambah Data Sales</h4>
             </div>
+            <?php $form = ActiveForm::begin([
+                'method' => 'post',
+                'action' => ['add-new-sales', 'id' => $_GET['id']],
+            ]); ?>
+            <div class="modal-body">
+
+                <?= $form->field($model_new_sales, 'nama_sales')->textInput(['maxlength' => true]) ?>
+
+                <?= $form->field($model_new_sales, 'telepon')->textInput(['maxlength' => true]) ?>
+
+                <?= $form->field($model_new_sales, 'email')->textInput(['maxlength' => true]) ?>
+
+                <?= $form->field($model_new_sales, 'alamat')->textarea(['rows' => 3]) ?>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger pull-left" data-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-success"><span class="glyphicon glyphicon-plus"></span> Tambah</button>
+            </div>
+            <?php ActiveForm::end(); ?>
         </div>
     </div>
+</div>
 
-    <?php
-    $script = <<< JS
+<?php
+$script = <<< JS
     
     let harga = document.querySelector('#harga');
     harga.addEventListener('keyup', function(e){
@@ -806,6 +820,16 @@ $this->title = 'Detail Data Order Penjualan : ' . $model->no_order_penjualan;
             
     }
 
+    if ($("#aktpenjualan-uang_muka").val() > "0")
+    {
+        $("#id_kas_bank").attr('required');
+    }
+
+    if ($("#aktpenjualan-uang_muka").val() == "0")
+    {
+        $("#id_kas_bank").removeAttr('required');
+    }
+
     if ($("#aktpenjualan-jenis_bayar").val() == "2")
     {
         $("#aktpenjualan-jumlah_tempo").show();
@@ -813,6 +837,7 @@ $this->title = 'Detail Data Order Penjualan : ' . $model->no_order_penjualan;
         // $("#aktpenjualan-tanggal_tempo").show();
         // $('#tanggal_tempo').show(); 
     }
+    });
 
     $("#aktpenjualan-jenis_bayar").change(function(){
 
@@ -834,7 +859,7 @@ $this->title = 'Detail Data Order Penjualan : ' . $model->no_order_penjualan;
     }
 
     });
-    });
+    
 
     // $('#jumlah_tempo').change(function(){
     //     var id = $('#id_penjualan').val();
@@ -898,5 +923,41 @@ $this->title = 'Detail Data Order Penjualan : ' . $model->no_order_penjualan;
     // })
      
 JS;
-    $this->registerJs($script);
-    ?>
+$this->registerJs($script);
+?>
+
+
+<script>
+    const kasBank = document.querySelector('.kas-bank');
+    const uangMuka = document.querySelector('#aktpenjualan-uang_muka');
+
+    if (uangMuka.value != 0) {
+        kasBank.classList.remove('style-kas-bank')
+    }
+
+    uangMuka.addEventListener("input", function(e) {
+        uangMuka.value = formatRupiah(this.value);
+        let val = e.target.value;
+        if (val == '' || val == 0) {
+            kasBank.classList.add('style-kas-bank')
+        } else(
+            kasBank.classList.remove('style-kas-bank')
+        )
+    });
+
+    function formatRupiah(angka, prefix) {
+        var number_string = angka.replace(/[^,\d]/g, '').toString(),
+            split = number_string.split(','),
+            sisa = split[0].length % 3,
+            rupiah = split[0].substr(0, sisa),
+            ribuan = split[0].substr(sisa).match(/\d{3}/gi);
+
+        if (ribuan) {
+            separator = sisa ? '.' : '';
+            rupiah += separator + ribuan.join('.');
+        }
+
+        rupiah = split[1] != undefined ? rupiah + ',' + split[1] : rupiah;
+        return prefix == undefined ? rupiah : (rupiah ? 'Rp. ' + rupiah : '');
+    }
+</script>
