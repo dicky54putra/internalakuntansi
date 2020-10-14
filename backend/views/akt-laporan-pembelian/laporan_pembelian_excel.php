@@ -106,8 +106,44 @@ foreach ($query_pembelian as $key => $data) {
         </tbody>
         <tfoot>
             <tr>
-                <th colspan="7">Total</th>
+                <th colspan="7" style="text-align: right;">Total</th>
                 <th style="text-align: right;"><?= ribuan($totalan_sub_total) ?></th>
+            </tr>
+            <tr>
+                <th colspan="7" style="text-align: right;">Diskon 0 %</th>
+                <th style="text-align: right;">
+                    <?php
+                    $diskon = ($data->diskon * $totalan_sub_total) / 100;
+                    echo ribuan($diskon);
+                    ?>
+                </th>
+            </tr>
+            <tr>
+                <th colspan="7" style="text-align: right;">Pajak 10 % ()</th>
+                <th style="text-align: right;">
+                    <?php
+                    $diskon = ($data->diskon * $totalan_sub_total) / 100;
+                    $pajak_ = (($totalan_sub_total - $diskon) * 10) / 100;
+                    $pajak = ($data->pajak == 1) ? $pajak_ : 0;
+                    echo ribuan($pajak);
+                    ?>
+                </th>
+            </tr>
+            <tr>
+                <th colspan="7" style="text-align: right;">Ongkir</th>
+                <th style="text-align: right;"><?= ribuan($data->ongkir) ?></th>
+            </tr>
+            <tr>
+                <th colspan="7" style="text-align: right;">Materai</th>
+                <th style="text-align: right;"><?= ribuan($data->materai) ?></th>
+            </tr>
+            <tr>
+                <th colspan="7" style="text-align: right;">Uang Muka</th>
+                <th style="text-align: right;"><?= ribuan($data->uang_muka) ?></th>
+            </tr>
+            <tr>
+                <th colspan="7" style="text-align: right;">Grand Total</th>
+                <th style="text-align: right;"><?= ribuan($data->total) ?></th>
             </tr>
         </tfoot>
     </table>
