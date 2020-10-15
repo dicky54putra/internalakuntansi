@@ -862,9 +862,11 @@ class AktPenjualanController extends Controller
         $model_diskon = Yii::$app->request->post('AktPenjualan')['diskon'];
         $model_jenis_bayar = Yii::$app->request->post('AktPenjualan')['jenis_bayar'];
         $model_jumlah_tempo = Yii::$app->request->post('AktPenjualan')['jumlah_tempo'];
-        $model_uang_muka = Yii::$app->request->post('AktPenjualan')['uang_muka'];
+        $model_uang_muka = preg_replace("/[^a-zA-Z0-9]/", "", Yii::$app->request->post('AktPenjualan')['uang_muka']);
         $model_id_kas_bank = Yii::$app->request->post('AktPenjualan')['id_kas_bank'];
         $model_tanggal_estimasi = Yii::$app->request->post('AktPenjualan')['tanggal_estimasi'];
+
+        // var_d
 
         $diskon = ($model_diskon > 0) ? ($model_diskon * $total_penjualan_detail) / 100 : 0;
         $pajak = ($model_pajak == 1) ? (($total_penjualan_detail - $diskon) * 10) / 100 : 0;

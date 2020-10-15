@@ -107,7 +107,8 @@ class AktPenjualanHartaTetapController extends Controller
                 ->where(['akt_pembelian_harta_tetap_detail.status' => 1])
                 ->andWhere(['NOT IN', 'id_pembelian_harta_tetap_detail', $hasil_array_id_pembelian_harta_tetap_detail])
                 ->andWhere(['akt_pembelian_harta_tetap.status' => 2])
-                ->andWhere(['!=', 'id_kelompok_aset_tetap', ''])
+                ->andWhere(['IS NOT', 'akt_pembelian_harta_tetap_detail.id_kelompok_aset_tetap', null])
+                ->asArray()
                 ->all(),
             'id_pembelian_harta_tetap_detail',
             function ($model) {
