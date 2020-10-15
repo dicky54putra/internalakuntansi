@@ -12,6 +12,11 @@ use backend\models\AktKelompokHartaTetap;
 use backend\models\AktPembelianHartaTetapDetail;
 use backend\models\AktPembelianHartaTetapDetailSearch;
 
+
+use backend\models\AktJurnalUmum;
+use backend\models\AktJurnalUmumDetail;
+use backend\models\AktHistoryTransaksi;
+
 use backend\models\AktHartaTetapSearch;
 use backend\models\AktPembelianHartaTetap;
 use backend\models\AktPembelianHartaTetapSearch;
@@ -144,7 +149,85 @@ class AktHartaTetapController extends Controller
                 $month = strtotime("+1 month", $month);
             }
 
+            // Create Jurnal Umum
+            $jurnal_umum = new AktJurnalUmum();
+            $akt_jurnal_umum = AktJurnalUmum::find()->select(["no_jurnal_umum"])->orderBy("id_jurnal_umum DESC")->limit(1)->one();
+            if (!empty($akt_jurnal_umum->no_jurnal_umum)) {
+                # code...
+                $no_bulan = substr($akt_jurnal_umum->no_jurnal_umum, 2, 4);
+                if ($no_bulan == date('ym')) {
+                    # code...
+                    $noUrut = substr($akt_jurnal_umum->no_jurnal_umum, -3);
+                    $noUrut++;
+                    $noUrut_2 = sprintf("%03s", $noUrut);
+                    $no_jurnal_umum = 'JU' . date('ym') . $noUrut_2;
+                } else {
+                    # code...
+                    $no_jurnal_umum = 'JU' . date('ym') . '001';
+                }
+            } else {
+                # code...
+                $no_jurnal_umum = 'JU' . date('ym') . '001';
+            }
+
+            $jurnal_umum->no_jurnal_umum = $no_jurnal_umum;
+            $jurnal_umum->tipe = 1;
+            $jurnal_umum->tanggal = date('Y-m-d');
+            $jurnal_umum->keterangan = 'Setting Depresiasi : ' .  $model->kode_pembelian;
+            $jurnal_umum->save(false);
+
+
             $model->save();
+
+
+            $kelompok_harta_tetap = AktKelompokHartaTetap::find()->where(['id_kelompok_harta_tetap' => $model->id_kelompok_aset_tetap])->one();
+            $akun_akumulasi = AktAkun::find()->where(['id_akun' => $kelompok_harta_tetap->id_akun_akumulasi])->one();
+            $akun_depresiasi = AktAkun::find()->where(['id_akun' => $kelompok_harta_tetap->id_akun_depresiasi])->one();
+            // echo intval($beban_per_bulan);
+            // die;
+
+
+            $jurnal_umum_detail_akumulasi = new AktJurnalUmumDetail();
+            $jurnal_umum_detail_akumulasi->id_jurnal_umum = $jurnal_umum->id_jurnal_umum;
+            $jurnal_umum_detail_akumulasi->id_akun = $akun_akumulasi->id_akun;
+            if ($akun_akumulasi->saldo_normal == 2) {
+                $jurnal_umum_detail_akumulasi->kredit = intval($beban_per_bulan);
+                $jurnal_umum_detail_akumulasi->debit = 0;
+            } else if ($akun_akumulasi->saldo_normal == 1) {
+                $jurnal_umum_detail_akumulasi->debit = intval($beban_per_bulan);
+                $jurnal_umum_detail_akumulasi->kredit = 0;
+            }
+            $jurnal_umum_detail_akumulasi->keterangan = 'Setting Depresiasi : ' .  $model->kode_pembelian;
+            $jurnal_umum_detail_akumulasi->save(false);
+
+            $akun_akumulasi->saldo_akun = $akun_akumulasi->saldo_akun + intval($beban_per_bulan);
+            $akun_akumulasi->save(false);
+
+
+            $jurnal_umum_detail_depresiasi = new AktJurnalUmumDetail();
+            $jurnal_umum_detail_depresiasi->id_jurnal_umum = $jurnal_umum->id_jurnal_umum;
+            $jurnal_umum_detail_depresiasi->id_akun = $akun_depresiasi->id_akun;
+            if ($akun_depresiasi->saldo_normal == 2) {
+                $jurnal_umum_detail_depresiasi->kredit = intval($beban_per_bulan);
+                $jurnal_umum_detail_depresiasi->debit = 0;
+            } else if ($akun_depresiasi->saldo_normal == 1) {
+                $jurnal_umum_detail_depresiasi->debit = intval($beban_per_bulan);
+                $jurnal_umum_detail_depresiasi->kredit = 0;
+            }
+            $jurnal_umum_detail_depresiasi->keterangan = 'Setting Depresiasi : ' .  $model->kode_pembelian;
+            $jurnal_umum_detail_depresiasi->save(false);
+
+            $akun_depresiasi->saldo_akun = $akun_depresiasi->saldo_akun + intval($beban_per_bulan);
+            $akun_depresiasi->save(false);
+
+
+            $history_transaksi = new AktHistoryTransaksi();
+            $history_transaksi->nama_tabel = 'akt_setting_depresiasi';
+            $history_transaksi->id_tabel = $model->id_pembelian_harta_tetap_detail;
+            $history_transaksi->id_jurnal_umum = $jurnal_umum->id_jurnal_umum;
+            $history_transaksi->save(false);
+
+
 
             return $this->redirect(['view-akutansi', 'id' => $model->id_pembelian_harta_tetap_detail]);
         }
@@ -167,6 +250,36 @@ class AktHartaTetapController extends Controller
 
         foreach ($depresiasi_harta_tetap as $d) {
             $d->delete();
+        }
+
+        $history_transaksi_count = AktHistoryTransaksi::find()->where(['id_tabel' => $id])->andWhere(['nama_tabel' => 'akt_setting_depresiasi'])->count();
+
+        // echo $history_transaksi_count;
+        // die;
+
+        if ($history_transaksi_count > 0) {
+
+            $history_transaksi = AktHistoryTransaksi::find()->where(['id_tabel' => $id])->andWhere(['nama_tabel' => 'akt_setting_depresiasi'])->one();
+            $jurnal_umum = AktJurnalUmum::find()->where(['id_jurnal_umum' => $history_transaksi['id_jurnal_umum']])->one();
+
+            $jurnal_umum_detail = AktJurnalUmumDetail::find()->where(['id_jurnal_umum' => $jurnal_umum['id_jurnal_umum']])->all();
+            foreach ($jurnal_umum_detail as $ju) {
+                $akun = AktAkun::find()->where(['id_akun' => $ju->id_akun])->one();
+                if ($akun->saldo_normal == 1 && $ju->debit > 0 || $ju->debit < 0) {
+                    $akun->saldo_akun = $akun->saldo_akun - $ju->debit;
+                } else if ($akun->saldo_normal == 1 && $ju->kredit > 0 || $ju->kredit < 0) {
+                    $akun->saldo_akun = $akun->saldo_akun + $ju->kredit;
+                } else if ($akun->saldo_normal == 2 && $ju->kredit > 0 || $ju->kredit < 0) {
+                    $akun->saldo_akun = $akun->saldo_akun - $ju->kredit;
+                } else if ($akun->saldo_normal == 2 && $ju->debit > 0 || $ju->debit < 0) {
+                    $akun->saldo_akun = $akun->saldo_akun + $ju->debit;
+                }
+                $akun->save(false);
+                $ju->delete();
+            }
+
+            $jurnal_umum->delete();
+            $history_transaksi->delete();
         }
 
 
