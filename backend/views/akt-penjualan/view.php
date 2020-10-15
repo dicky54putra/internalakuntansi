@@ -35,85 +35,75 @@ $this->title = 'Detail Data Order Penjualan : ' . $model->no_order_penjualan;
     <p>
         <?= Html::a('<span class="glyphicon glyphicon-circle-arrow-left"></span> Kembali', ['index'], ['class' => 'btn btn-warning']) ?>
         <?php
-        // $approve = AktApprover::find()->where(['id_jenis_approver' => 15])->all();
-        $approve = AktApprover::find()->leftJoin("akt_jenis_approver", "akt_jenis_approver.id_jenis_approver = akt_approver.id_jenis_approver")->where(['=', 'nama_jenis_approver', 'Order Penjualan'])->all();
+        $approve = AktApprover::find()
+            ->leftJoin('akt_jenis_approver', 'akt_jenis_approver.id_jenis_approver = akt_approver.id_jenis_approver')
+            ->where(['=', 'nama_jenis_approver', 'Order Penjualan'])
+            ->asArray()
+            ->all();
         $id_login =  Yii::$app->user->identity->id_login;
-        $nama_approver = Login::find()->where(['id_login' => $id_login])->one();
-        if ($model->status == 1) { ?>
+        $cek_login = AktApprover::find()
+            ->leftJoin('akt_jenis_approver', 'akt_jenis_approver.id_jenis_approver = akt_approver.id_jenis_approver')
+            ->where(['=', 'nama_jenis_approver', 'Order Penjualan'])
+            ->andWhere(['id_login' => $id_login])
+            ->asArray()
+            ->one();
 
-            <?php
-            # untuk menentukan yang login apakah approver, jika approver maka form tidak muncul
-            $string_approve = array();
-            foreach ($approve as $key => $value) {
-                # code...
-                $string_approve[] = $value['id_login'];
-            }
-            $hasil_string_approve = implode(", ", $string_approve);
-            $hasil_array_approve = explode(", ", $hasil_string_approve);
-            $angka_array_approve = 0;
-            if (in_array(Yii::$app->user->identity->id_login, $hasil_array_approve)) {
-                # code...
-                $angka_array_approve = 1;
-            }
-            ?>
+        $cek_detail = AktPenjualanDetail::find()
+            ->where(['id_penjualan' => $model->id_penjualan])
+            ->count();
+        ?>
 
-            <?php
-            if ($angka_array_approve == 0) {
-                # code...
-            ?>
-                <?= Html::a('<span class="glyphicon glyphicon-trash"></span> Hapus', ['delete', 'id' => $model->id_penjualan], [
-                    'class' => 'btn btn-danger btn-hapus-hidden',
+
+
+        <?php if ($model->status == 1 && $cek_login == null) {
+        ?>
+            <?= Html::a('<span class="glyphicon glyphicon-trash"></span> Hapus', ['delete', 'id' => $model->id_penjualan], [
+                'class' => 'btn btn-danger btn-hapus-hidden',
+                'data' => [
+                    'confirm' => 'Apakah anda yakin akan menghapus Data Order Penjualan : ' . $model->no_order_penjualan . ' ?',
+                    'method' => 'post',
+                ],
+            ]) ?>
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modal-ubah"><span class="glyphicon glyphicon-edit"></span> Ubah Order Penjualan</button>
+        <?php } ?>
+
+        <?php if ($cek_detail > 0 && $model->jenis_bayar != null) { ?>
+            <?php if ($model->status == 1 && $cek_login != null) { ?>
+                <?= Html::a('<span class="glyphicon glyphicon-ok"></span> Approve', ['approved', 'id' => $model->id_penjualan, 'id_login' => $id_login], [
+                    'class' => 'btn btn-success btn-approver-hidden',
                     'data' => [
-                        'confirm' => 'Apakah anda yakin akan menghapus Data Order Penjualan : ' . $model->no_order_penjualan . ' ?',
+                        'confirm' => 'Apakah anda yakin akan menyetujui Data Order Penjualan : ' . $model->no_order_penjualan . ' ?',
                         'method' => 'post',
                     ],
                 ]) ?>
-                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modal-ubah"><span class="glyphicon glyphicon-edit"></span> Ubah Order Penjualan</button>
+                <?= Html::a('<span class="glyphicon glyphicon-share"></span> Reject', ['reject', 'id' => $model->id_penjualan, 'id_login' => $id_login], [
+                    'class' => 'btn btn-danger',
+                    // $a => true,
+                    'data' => [
+                        'confirm' => 'Apakah anda yakin untuk menolak data ini ?',
+                        'method' => 'post',
+                    ],
+                ]) ?>
             <?php } ?>
 
-            <?php
-            foreach ($approve as $key => $value) {
-                if ($id_login == $value['id_login']) {
-            ?>
-                    <?php
-                    if ($total_cek == 0) {
-                        # code...
-                    ?>
-                        <?= Html::a('<span class="glyphicon glyphicon-ok"></span> Approve', ['approved', 'id' => $model->id_penjualan, 'id_login' => $id_login], [
-                            'class' => 'btn btn-success btn-approver-hidden',
+            <?php if ($model->status == 1 || $model->status == 2 || $model->status == 5) { ?>
+                <?php
+                foreach ($approve as $key => $value) {
+                    if ($id_login == $value['id_login']) {
+                ?>
+                        <?= Html::a('<span class="glyphicon glyphicon-pause"></span> Pending', ['pending', 'id' => $model->id_penjualan], [
+                            'class' => 'btn btn-info btn-pending-hidden',
                             'data' => [
-                                'confirm' => 'Apakah anda yakin akan menyetujui Data Order Penjualan : ' . $model->no_order_penjualan . ' ?',
+                                'confirm' => 'Apakah anda yakin untuk mempending data ini ?',
                                 'method' => 'post',
                             ],
                         ]) ?>
-                        <?= Html::a('<span class="glyphicon glyphicon-share"></span> Reject', ['reject', 'id' => $model->id_penjualan, 'id_login' => $id_login], [
-                            'class' => 'btn btn-danger',
-                            // $a => true,
-                            'data' => [
-                                'confirm' => 'Apakah anda yakin untuk menolak data ini ?',
-                                'method' => 'post',
-                            ],
-                        ]) ?>
-                    <?php } ?>
-        <?php
+            <?php }
                 }
-            }
-        } ?>
-        <?php if ($model->status == 1 || $model->status == 2) { ?>
-            <?php
-            foreach ($approve as $key => $value) {
-                if ($id_login == $value['id_login']) {
-            ?>
-                    <?= Html::a('<span class="glyphicon glyphicon-pause"></span> Pending', ['pending', 'id' => $model->id_penjualan], [
-                        'class' => 'btn btn-info btn-pending-hidden',
-                        'data' => [
-                            'confirm' => 'Apakah anda yakin untuk mempending data ini ?',
-                            'method' => 'post',
-                        ],
-                    ]) ?>
-        <?php }
-            }
-        } ?>
+            } ?>
+        <?php } ?>
+
+
         <?= Html::a('<span class="glyphicon glyphicon-print"></span> Cetak', ['cetak-order', 'id' => $model->id_penjualan], ['class' => 'btn btn-default', 'target' => '_BLANK']) ?>
     </p>
 
@@ -269,7 +259,7 @@ $this->title = 'Detail Data Order Penjualan : ' . $model->no_order_penjualan;
 
                                         <div class="row form-user">
                                             <?php
-                                            if ($model->status == 1 && $angka_array_approve == 0) {
+                                            if ($model->status == 1 && $cek_login == null) {
                                                 # code...
                                             ?>
                                                 <?php $form = ActiveForm::begin([
@@ -388,7 +378,7 @@ $this->title = 'Detail Data Order Penjualan : ' . $model->no_order_penjualan;
                                                         <td><?= $data['keterangan'] ?></td>
                                                         <td style="text-align: right;"><?= ribuan($data['total']) ?></td>
                                                         <?php
-                                                        if ($model->status == 1 && $angka_array_approve == 0) {
+                                                        if ($model->status == 1 && $cek_login == null) {
                                                             # code...
                                                         ?>
                                                             <td style="white-space: nowrap;">
