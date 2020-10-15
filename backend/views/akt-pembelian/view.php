@@ -48,7 +48,6 @@ $this->title = 'Detail Data Order Pembelian : ' . $model->no_order_pembelian;
             ->andWhere(['id_login' => $id_login])
             ->asArray()
             ->one();
-        // echo $approve->id_login;
         ?>
 
 
@@ -113,7 +112,7 @@ $this->title = 'Detail Data Order Pembelian : ' . $model->no_order_pembelian;
 
         <?php
         foreach ($approve as $key => $value) {
-            if ($id_login == $value['id_login'] && $model->status < 3) {
+            if ($id_login == $value['id_login'] && $model->status < 3 || $model->status == 6) {
         ?>
                 <?= Html::a('<span class="glyphicon glyphicon-pause"></span> Pending', ['pending', 'id' => $model->id_pembelian], [
                     'class' => 'btn btn-info btn-pending-hidden',
@@ -224,7 +223,7 @@ $this->title = 'Detail Data Order Pembelian : ' . $model->no_order_pembelian;
 
                                         <div class="row form-user">
                                             <?php
-                                            if ($model->status == 1) {
+                                            if ($model->status == 1 && $cek_login == null) {
                                                 # code...
                                             ?>
                                                 <?php $form = ActiveForm::begin([
@@ -333,7 +332,7 @@ $this->title = 'Detail Data Order Pembelian : ' . $model->no_order_pembelian;
                                                             <td><?= $data['keterangan'] ?></td>
                                                             <td style="text-align: right;"><?= ribuan($data['total']) ?></td>
                                                             <?php
-                                                            if ($model->status == 1) {
+                                                            if ($model->status == 1 && $cek_login == null) {
                                                                 # code...
                                                             ?>
                                                                 <td>
