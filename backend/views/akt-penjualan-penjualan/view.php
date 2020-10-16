@@ -50,7 +50,7 @@ $count_query_detail = AktPenjualanDetail::find()->where(['id_penjualan' => $mode
             <?php if ($count_query_detail != 0) { ?>
                 <?php if ($model->jenis_bayar == null) {
                 ?>
-                    <?= Html::a('<span class="glyphicon glyphicon-edit"></span> Ubah Data penjualan', ['#', 'id' => $model->id_penjualan], [
+                    <?= Html::a('<span class="glyphicon glyphicon-edit"></span> Ubah Data Penjualan', ['#', 'id' => $model->id_penjualan], [
                         'class' => 'btn btn-info',
                         'data-toggle' => 'modal',
                         'data-target' => '#modal-default'
@@ -58,7 +58,7 @@ $count_query_detail = AktPenjualanDetail::find()->where(['id_penjualan' => $mode
 
                 <?php  } else if ($model->jenis_bayar != null) {
                 ?>
-                    <?= Html::a('<span class="glyphicon glyphicon-trash"></span> Hapus Data Pembelian', ['hapus-data-penjualan', 'id' => $model->id_penjualan], [
+                    <?= Html::a('<span class="glyphicon glyphicon-trash"></span> Hapus Data Penjualan', ['hapus-data-penjualan', 'id' => $model->id_penjualan], [
                         'class' => 'btn btn-danger',
                         'data' => [
                             'confirm' => 'Anda yakin ingin menghapus data?',
