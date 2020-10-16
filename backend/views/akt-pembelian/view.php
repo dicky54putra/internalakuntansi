@@ -660,7 +660,7 @@ if (!empty($form)) {
                     <h4 class="modal-title">Tambah Supplier</h4>
                 </div>
                 <div class="modal-body">
-                    <?= Html::beginForm(['akt-pembelian/view', 'aksi' => 'supplier', 'id' => $model->id_pembelian], 'post') ?>
+                    <?= Html::beginForm(['akt-pembelian/view', 'aksi' => 'supplier', 'id' => $model->id_pembelian, 'tipe' => 'order_pembelian'], 'post') ?>
 
                     <div class="form-group">
                         <label for="">Nama Supplier</label>
