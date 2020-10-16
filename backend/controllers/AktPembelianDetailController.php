@@ -109,79 +109,27 @@ class AktPembelianDetailController extends Controller
 
         $item_stok = AktItemStok::findOne($model_id_item_stok);
 
-        // echo $model_id_item_stok;
-        // exit();
+
 
         $item = AktItem::findOne($item_stok->id_item);
 
         if ($count_barang == 0) {
-            # code...
-            // if ($model_qty <= $item_stok->qty) {
-            # code...
+
             $model->save();
             Yii::$app->session->setFlash('success', [['Perhatian!', 'Data Berhasil Disimpan']]);
-            // } else {
-            //     # code...
-            //     Yii::$app->session->setFlash('danger', [['Perhatian!', 'Qty Yang Di Inputkan Melebihi Stok Barang : ' . $item->nama_item . '<br>Sisa Stok ' . $item->nama_item . ' : ' . $item_stok->qty]]);
-            // }
         } else {
-            # code...
             Yii::$app->session->setFlash('danger', [['Perhatian!', 'Data Barang : ' . $item->nama_item . ' Sudah Ada']]);
         }
 
-        return $this->redirect(['akt-pembelian/view', 'id' => $model->id_pembelian]);
+        $button_submit =  Yii::$app->request->post('create-from-pembelian');
+        if (isset($button_submit)) {
+            $url = 'akt-pembelian-pembelian/view';
+            return $this->redirect([$url, 'id' => $model->id_pembelian]);
+        } else {
+            $url = 'akt-pembelian/view';
+            return $this->redirect([$url, 'id' => $model->id_pembelian]);
+        }
     }
-
-    // public function actionCreateFromDataPembelian()
-    // {
-    //     # get data
-    //     $model_id_pembelian = Yii::$app->request->post('AktPembelianDetail')['id_pembelian'];
-    //     $model_id_item_stok = Yii::$app->request->post('AktPembelianDetail')['id_item_stok'];
-    //     $model_qty = Yii::$app->request->post('AktPembelianDetail')['qty'];
-    //     $model_harga = Yii::$app->request->post('AktPembelianDetail')['harga'];
-    //     $model_diskon = Yii::$app->request->post('AktPembelianDetail')['diskon'];
-
-    //     $model_diskon_a = ($model_diskon > 0) ? (($model_qty * $model_harga) * $model_diskon) / 100 : 0;
-
-    //     $model_total = ($model_qty * $model_harga) - $model_diskon_a;
-
-    //     $model = new AktPembelianDetail();
-    //     $model->id_pembelian = $model_id_pembelian;
-    //     $model->id_item_stok = $model_id_item_stok;
-    //     $model->qty = $model_qty;
-    //     $model->harga = $model_harga;
-    //     $model->diskon = $model_diskon;
-    //     $model->total = $model_total;
-    //     $model->keterangan = Yii::$app->request->post('AktPembelianDetail')['keterangan'];
-
-    //     $count_barang = AktPembelianDetail::find()->where(['id_pembelian' => $model_id_pembelian])->andWhere(['id_item_stok' => $model_id_item_stok])->count();
-
-    //     $item_stok = AktItemStok::findOne($model_id_item_stok);
-    //     $item = AktItem::findOne($item_stok->id_item);
-
-    //     if ($count_barang == 0) {
-    //         # code...
-    //         $model->save();
-
-    //         # total pembelian barang termasuk yang barusan di add, makanya di taruh di bawah model->save
-    //         $query = (new \yii\db\Query())->from('akt_pembelian_detail')->where(['id_pembelian' => $model_id_pembelian]);
-    //         $total_pembelian_barang = $query->sum('total');
-
-    //         # get data pembelian, 
-    //         $data_pembelian = AktPembelian::find()->where(['id_pembelian' => $model_id_pembelian])->one();
-    //         $diskon = ($data_pembelian->diskon > 0) ? ($data_pembelian->diskon * $total_pembelian_barang) / 100 : 0;
-    //         $pajak = ($data_pembelian->pajak == 1) ? (($total_pembelian_barang - $diskon) * 10) / 100 : 0;
-    //         $data_pembelian->total = (($total_pembelian_barang - $diskon) + $pajak) + $data_pembelian->ongkir;
-    //         $data_pembelian->save(FALSE);
-
-    //         Yii::$app->session->setFlash('success', [['Perhatian!', '' . $item->nama_item . ' Berhasil di Simpan ke Data Barang Pembelian']]);
-    //     } else {
-    //         # code...
-    //         Yii::$app->session->setFlash('danger', [['Perhatian!', '' . $item->nama_item . ' sudah ada di Data Barang Pembelian']]);
-    //     }
-
-    //     return $this->redirect(['akt-pembelian-pembelian/view', 'id' => $model->id_pembelian]);
-    // }
 
     public function actionUpdateFromDataPembelian($id)
     {
@@ -430,6 +378,52 @@ class AktPembelianDetailController extends Controller
         ]);
     }
 
+    public function actionUpdateFromPembelian($id)
+    {
+        $model = $this->findModel($id);
+        $model_sebelumnya = $this->findModel($id);
+
+
+        $data_item_stok = AktPembelianDetail::dataItemStok();
+        $akt_pembelian = AktPembelian::findOne($model->id_pembelian);
+
+        if ($model->load(Yii::$app->request->post())) {
+
+            $count_barang = AktPembelianDetail::find()->where(['id_pembelian' => $model->id_pembelian])->andWhere(['id_item_stok' => $model->id_item_stok])->count();
+
+            $item_stok = AktItemStok::findOne($model->id_item_stok);
+            $item = AktItem::findOne($item_stok->id_item);
+
+            if ($model->id_item_stok == $model_sebelumnya->id_item_stok) {
+                # code...
+                $model_diskon_a = ($model->diskon > 0) ? (($model->qty * $model->harga) * $model->diskon) / 100 : 0;
+                $model->total = ($model->qty * $model->harga) - $model_diskon_a;
+                $model->save();
+                Yii::$app->session->setFlash('success', [['Perhatian!', 'Perubahan ' . $item->nama_item . ' Berhasil di Simpan ke Data Barang pembelian']]);
+            } else {
+                # code...
+                if ($count_barang == 0) {
+                    # code...
+                    $model_diskon_a = ($model->diskon > 0) ? (($model->qty * $model->harga) * $model->diskon) / 100 : 0;
+                    $model->total = ($model->qty * $model->harga) - $model_diskon_a;
+                    $model->save();
+                    Yii::$app->session->setFlash('success', [['Perhatian!', '' . $item->nama_item . ' Berhasil Disimpan ke Data Barang pembelian']]);
+                } else {
+                    # code...
+                    Yii::$app->session->setFlash('danger', [['Perhatian!', '' . $item->nama_item . ' Sudah Ada Di Order pembelian : ' . $akt_pembelian->no_order_pembelian]]);
+                }
+            }
+
+
+            return $this->redirect(['akt-pembelian-pembelian/view', 'id' => $model->id_pembelian]);
+        }
+        return $this->render('update_langsung', [
+            'model' => $model,
+            'akt_pembelian' => $akt_pembelian,
+            'data_item_stok' => $data_item_stok,
+        ]);
+    }
+
     /**
      * Deletes an existing AktPembelianDetail model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
@@ -444,7 +438,7 @@ class AktPembelianDetailController extends Controller
         return $this->redirect(['index']);
     }
 
-    public function actionDeleteFromOrderPembelian($id)
+    public function actionDeleteFromOrderPembelian($id, $type)
     {
         $model = $this->findModel($id);
         $model->delete();
@@ -453,8 +447,15 @@ class AktPembelianDetailController extends Controller
         $item = AktItem::findOne($item_stok->id_item);
 
         Yii::$app->session->setFlash('success', [['Perhatian!', '' . $item->nama_item . ' Berhasil Dihapus dari Data Barang Pembelian']]);
-        return $this->redirect(['akt-pembelian/view', 'id' => $model->id_pembelian]);
+
+        if ($type == 'order_pembelian') {
+            $url = 'akt-pembelian/view';
+        } else if ($type == 'pembelian_langsung') {
+            $url = 'akt-pembelian-pembelian/view';
+        }
+        return $this->redirect([$url, 'id' => $model->id_pembelian]);
     }
+
 
     public function actionDeleteFromDataPembelian($id)
     {

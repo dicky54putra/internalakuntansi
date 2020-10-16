@@ -73,7 +73,7 @@ class AktPembelianHartaTetapController extends Controller
     public function actionReject($id)
     {
         $model = $this->findModel($id);
-        $model->tanggal_approve = date("Y-m-d h:i:sa");
+        $model->tanggal_approve = date("Y-m-d");
         $model->id_login = Yii::$app->user->identity->id_login;
         $model->status = 3;
         $model->save(FALSE);
@@ -84,7 +84,7 @@ class AktPembelianHartaTetapController extends Controller
     public function actionPending($id)
     {
         $model = $this->findModel($id);
-        $model->tanggal_approve = date("Y-m-d h:i:sa");
+        $model->tanggal_approve = date("Y-m-d");
         $model->id_login = Yii::$app->user->identity->id_login;
         $model->status = 1;
         $model->save(FALSE);
@@ -134,7 +134,7 @@ class AktPembelianHartaTetapController extends Controller
     public function actionApprove($id)
     {
         $model = $this->findModel($id);
-        $model->tanggal_approve = date("Y-m-d h:i:sa");
+        $model->tanggal_approve = date("Y-m-d");
         $model->id_login = Yii::$app->user->identity->id_login;
         $model->status = 2;
 
