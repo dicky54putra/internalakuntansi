@@ -29,7 +29,18 @@ $cek_login = AktApprover::find()
 $count_query_detail = AktPembelianDetail::find()->where(['id_pembelian' => $model->id_pembelian])->count();
 ?>
 <div class="akt-pembelian-pembelian-view">
+    <style>
+        .style-kas-bank {
+            display: none;
+        }
 
+        @media (min-width: 992px) {
+            .modal-content {
+                margin: 0 -150px;
+            }
+
+        }
+    </style>
     <h1><?= Html::encode($this->title) ?></h1>
     <ul class="breadcrumb">
         <li><a href="/">Home</a></li>
@@ -45,8 +56,29 @@ $count_query_detail = AktPembelianDetail::find()->where(['id_pembelian' => $mode
         ?>
 
             <?php if ($count_query_detail != 0) { ?>
-                <?= Html::a('<span class="glyphicon glyphicon-edit"></span> Ubah Data Pembelian', ['update-data-pembelian', 'id' => $model->id_pembelian], ['class' => 'btn btn-success']) ?>
+                <?php if ($model->jenis_bayar == null) {
+                ?>
+                    <?= Html::a('<span class="glyphicon glyphicon-edit"></span> Ubah Data Pembelian', ['#', 'id' => $model->id_pembelian], [
+                        'class' => 'btn btn-info btn-ubah-hidden',
+                        'data-toggle' => 'modal',
+                        'data-target' => '#modal-default'
+                    ]) ?>
+
+                <?php  } else if ($model->jenis_bayar != null) {
+                ?>
+                    <?= Html::a('<span class="glyphicon glyphicon-trash"></span> Hapus Data Pembelian', ['hapus-data-pembelian', 'id' => $model->id_pembelian], [
+                        'class' => 'btn btn-danger',
+                        'data' => [
+                            'confirm' => 'Anda yakin ingin menghapus data?',
+                            'method' => 'post',
+                        ],
+                    ]) ?>
+                <?php  }
+                ?>
             <?php } ?>
+
+
+
             <?php
             $show_hide = 0;
             $query_detail = AktPembelianDetail::find()->where(['id_pembelian' => $model->id_pembelian])->all();
@@ -268,6 +300,12 @@ $count_query_detail = AktPembelianDetail::find()->where(['id_pembelian' => $mode
                                                         <th style="width: 7%;">Diskon %</th>
                                                         <th style="width: 20%;">Keterangan</th>
                                                         <th style="width: 10%;">Sub Total</th>
+                                                        <?php
+                                                        if ($model->status == 1 && $cek_login == null) {
+                                                            # code...
+                                                        ?>
+                                                            <th>Aksi</th>
+                                                        <?php } ?>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -288,17 +326,6 @@ $count_query_detail = AktPembelianDetail::find()->where(['id_pembelian' => $mode
                                                             <td>
                                                                 <?php
                                                                 echo $item->nama_item;
-                                                                // if ($model->status == 2) {
-                                                                //     # code...
-                                                                //     echo "<br>";
-                                                                //     if ($data['qty'] > $item_stok->qty) {
-                                                                //         # code...
-                                                                //         echo "<span class='label label-danger'>Stok Kosong</span>";
-                                                                //     } else {
-                                                                //         # code...
-                                                                //         echo "<span class='label label-success'>Stok Tersedia</span>";
-                                                                //     }
-                                                                // }
                                                                 ?>
                                                             </td>
                                                             <td><?= (!empty($gudang->nama_gudang)) ? $gudang->nama_gudang : '' ?></td>
@@ -308,21 +335,19 @@ $count_query_detail = AktPembelianDetail::find()->where(['id_pembelian' => $mode
                                                             <td><?= $data['keterangan'] ?></td>
                                                             <td style="text-align: right;"><?= ribuan($data['total']) ?></td>
                                                             <?php
-                                                            if ($model->status == 2) {
+                                                            if ($model->status <= 2 && $cek_login == null) {
                                                                 # code...
                                                             ?>
-                                                                <!-- <td> -->
-                                                                <?php // Html::a('<span class="glyphicon glyphicon-edit"></span>', ['akt-pembelian-detail/update-from-data-pembelian', 'id' => $data['id_pembelian_detail']], ['class' => 'btn btn-primary']) 
-                                                                ?>
-                                                                <?php  // Html::a('<span class="glyphicon glyphicon-trash"></span>', ['akt-pembelian-detail/delete-from-data-pembelian', 'id' => $data['id_pembelian_detail']], [
-                                                                //     'class' => 'btn btn-danger',
-                                                                //     'data' => [
-                                                                //         'confirm' => 'Are you sure you want to delete this item?',
-                                                                //         'method' => 'post',
-                                                                //     ],
-                                                                // ]) 
-                                                                ?>
-                                                                <!-- </td> -->
+                                                                <td>
+                                                                    <?= Html::a('<span class="glyphicon glyphicon-edit"></span>', ['akt-pembelian-detail/update-from-pembelian', 'id' => $data['id_pembelian_detail']], ['class' => 'btn btn-primary btn-ubah-detail']) ?>
+                                                                    <?= Html::a('<span class="glyphicon glyphicon-trash"></span>', ['akt-pembelian-detail/delete-from-order-pembelian', 'id' => $data['id_pembelian_detail'], 'type' => 'pembelian_langsung'], [
+                                                                        'class' => 'btn btn-danger btn-hapus-detail',
+                                                                        'data' => [
+                                                                            'confirm' => 'Apakah Anda yakin akan menghapus ' . $item->nama_item . ' dari Data Barang Pembelian?',
+                                                                            'method' => 'post',
+                                                                        ],
+                                                                    ]) ?>
+                                                                </td>
                                                             <?php } ?>
                                                         </tr>
                                                     <?php
@@ -556,13 +581,158 @@ $count_query_detail = AktPembelianDetail::find()->where(['id_pembelian' => $mode
             </div>
         </div>
 
+
+        <div class="modal fade" id="modal-default" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="vertical-alignment-helper">
+                <div class="modal-dialog vertical-align-center">
+                    <div class="modal-content modal-lg">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span></button>
+                            <h4 class="modal-title">Ubah Data Pembelian</h4>
+                        </div>
+                        <div class="modal-body">
+                            <?= Html::beginForm(['update-data-pembelian', 'id' => $model->id_pembelian], 'post') ?>
+                            <label class="label label-primary col-xs-12" style="font-size: 15px;">Data Order Pembelian</label>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-grop">
+                                        <?= $form->field($model, 'no_pembelian')->textInput(['readonly' => true, 'required' => 'on', 'autocomplete' => 'off']) ?>
+                                    </div>
+                                    <div class="form-group">
+                                        <?= $form->field($model, 'id_customer')->widget(Select2::classname(), [
+                                            'data' => $data_customer,
+                                            'language' => 'en',
+                                            'options' => ['placeholder' => 'Pilih Supplier'],
+                                            'pluginOptions' => [
+                                                'allowClear' => true
+                                            ],
+                                            'addon' => [
+                                                'prepend' => [
+                                                    'content' => Html::button('<i class="glyphicon glyphicon-plus"></i>', [
+                                                        'class' => 'btn btn-success',
+                                                        'title' => 'Add Supplier',
+                                                        'data-toggle' => 'modal',
+                                                        'data-target' => '#modal-supplier'
+                                                    ]),
+                                                    'asButton' => true,
+                                                ],
+                                            ],
+                                        ])->label('Supplier')
+                                        ?>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+
+                                    <div class="form-group">
+                                        <?= $form->field($model, 'id_mata_uang')->widget(Select2::classname(), [
+                                            'data' => $data_mata_uang,
+                                            'value' => $model->id_mata_uang = 1,
+                                            'language' => 'en',
+                                            'options' => ['placeholder' => 'Pilih Mata Uang'],
+                                            'pluginOptions' => [
+                                                'allowClear' => true,
+
+                                            ],
+                                        ])->label('Mata Uang')
+                                        ?>
+                                    </div>
+
+                                </div>
+                            </div>
+                            <label class="label label-primary col-xs-12" style="font-size: 15px;">Data Perhitungan Pembelian</label>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <?= $form->field($model, 'ongkir')->widget(\yii\widgets\MaskedInput::className(), ['clientOptions' => ['alias' => 'decimal', 'groupSeparator' => '.', 'autoGroup' => true, 'removeMaskOnSubmit' => true, 'rightAlign' => false, 'min' => 0], 'options' => ['value' => $model->ongkir == '' ? 0 : $model->ongkir]]); ?>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <?= $form->field($model, 'diskon')->textInput(['type' => 'number', 'autocomplete' => 'off'])->label('Diskon %') ?>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <?= $form->field($model, 'uang_muka')->textInput(['value' => $model->uang_muka == '' ? 0 : $model->uang_muka, 'autocomplete' => 'off'])->label('Uang Muka') ?>
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="row">
+                                            <div class="col-md-12 kas-bank style-kas-bank">
+                                                <?= $form->field($model, 'id_kas_bank')->widget(Select2::classname(), [
+                                                    'data' => $data_kas_bank,
+                                                    'language' => 'en',
+                                                    'options' => ['placeholder' => 'Pilih Kas Bank'],
+                                                    'pluginOptions' => [
+                                                        'allowClear' => true,
+
+                                                    ],
+                                                ])->label('Kas Bank')
+                                                ?>
+                                            </div>
+                                        </div>
+
+                                    </div>
+
+
+                                    <div class="form-group">
+                                        <table>
+                                            <tr>
+                                                <td style="height: 8px;"></td>
+                                            </tr>
+                                        </table>
+                                        <?= $form->field($model, 'pajak')->checkbox() ?>
+                                    </div>
+
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <?= $form->field($model, 'jenis_bayar')->dropDownList(
+                                            array(1 => "CASH", 2 => "CREDIT"),
+                                            [
+                                                'prompt' => 'Pilih Jenis Pembayaran',
+                                                'required' => 'on',
+                                            ]
+                                        ) ?>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <?= $form->field($model, 'jatuh_tempo', ['options' => ['id' => 'jatuh_tempo', 'hidden' => 'yes']])->dropDownList(array(
+                                            15 => 15,
+                                            30 => 30,
+                                            45 => 45,
+                                            60 => 60,
+                                        ), ['prompt' => 'Pilih Jatuh Tempo']) ?>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <?= $form->field($model, 'tanggal_tempo', ['options' => ['id' => 'tanggal_tempo', 'hidden' => 'yes']])->textInput(['readonly' => true]) ?>
+                                        <?= $form->field($model, 'id_pembelian')->textInput(['type' => 'hidden', 'readonly' => true, 'required' => 'on', 'autocomplete' => 'off', 'id' => 'id_pembelian'])->label(FALSE) ?>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <?= $form->field($model, 'materai')->textInput(['type' => 'number', 'value' => $model->materai == '' ? 0 : $model->materai]) ?>
+                                    </div>
+
+
+
+
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Close</button>
+                            <?= Html::submitButton('<span class="glyphicon glyphicon-floppy-saved"></span> Simpan', ['class' => 'btn btn-success']) ?>
+                            <?= Html::endForm() ?>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
         <?php
         $script = <<< JS
-
-
     $(document).ready(function(){ 
-        
-    $('#barang').DataTable();
 
     if ($("#aktpembelian-jenis_bayar").val() == "1")
     {
@@ -578,7 +748,7 @@ $count_query_detail = AktPembelianDetail::find()->where(['id_pembelian' => $mode
         $("#aktpembelian-jatuh_tempo").show();
         $('#jatuh_tempo').show(); 
         $("#aktpembelian-tanggal_tempo").show();
-        $('#tanggal_tempo').show(); 
+        $('#tanggal_tempo').hide(); 
     }
 
     $("#aktpembelian-jenis_bayar").change(function(){
@@ -597,12 +767,47 @@ $count_query_detail = AktPembelianDetail::find()->where(['id_pembelian' => $mode
         $("#aktpembelian-jatuh_tempo").show();
         $('#jatuh_tempo').show(); 
         $("#aktpembelian-tanggal_tempo").show();
-        $('#tanggal_tempo').show(); 
+        $('#tanggal_tempo').hide(); 
     }
     
     });
     });
-
+    
 JS;
         $this->registerJs($script);
         ?>
+
+        <script>
+            const kasBank = document.querySelector('.kas-bank');
+            const uangMuka = document.querySelector('#aktpembelian-uang_muka');
+
+            if (uangMuka.value != 0) {
+                kasBank.classList.remove('style-kas-bank')
+            }
+
+            uangMuka.addEventListener("input", function(e) {
+                uangMuka.value = formatRupiah(this.value);
+                let val = e.target.value;
+                if (val == '' || val == 0) {
+                    kasBank.classList.add('style-kas-bank')
+                } else(
+                    kasBank.classList.remove('style-kas-bank')
+                )
+            });
+
+            function formatRupiah(angka, prefix) {
+                var number_string = angka.replace(/[^,\d]/g, '').toString(),
+                    split = number_string.split(','),
+                    sisa = split[0].length % 3,
+                    rupiah = split[0].substr(0, sisa),
+                    ribuan = split[0].substr(sisa).match(/\d{3}/gi);
+
+                if (ribuan) {
+                    separator = sisa ? '.' : '';
+                    rupiah += separator + ribuan.join('.');
+                }
+
+                rupiah = split[1] != undefined ? rupiah + ',' + split[1] : rupiah;
+                return prefix == undefined ? rupiah : (rupiah ? 'Rp. ' + rupiah : '');
+            }
+        </script>

@@ -378,6 +378,52 @@ class AktPembelianDetailController extends Controller
         ]);
     }
 
+    public function actionUpdateFromPembelian($id)
+    {
+        $model = $this->findModel($id);
+        $model_sebelumnya = $this->findModel($id);
+
+
+        $data_item_stok = AktPembelianDetail::dataItemStok();
+        $akt_pembelian = AktPembelian::findOne($model->id_pembelian);
+
+        if ($model->load(Yii::$app->request->post())) {
+
+            $count_barang = AktPembelianDetail::find()->where(['id_pembelian' => $model->id_pembelian])->andWhere(['id_item_stok' => $model->id_item_stok])->count();
+
+            $item_stok = AktItemStok::findOne($model->id_item_stok);
+            $item = AktItem::findOne($item_stok->id_item);
+
+            if ($model->id_item_stok == $model_sebelumnya->id_item_stok) {
+                # code...
+                $model_diskon_a = ($model->diskon > 0) ? (($model->qty * $model->harga) * $model->diskon) / 100 : 0;
+                $model->total = ($model->qty * $model->harga) - $model_diskon_a;
+                $model->save();
+                Yii::$app->session->setFlash('success', [['Perhatian!', 'Perubahan ' . $item->nama_item . ' Berhasil di Simpan ke Data Barang pembelian']]);
+            } else {
+                # code...
+                if ($count_barang == 0) {
+                    # code...
+                    $model_diskon_a = ($model->diskon > 0) ? (($model->qty * $model->harga) * $model->diskon) / 100 : 0;
+                    $model->total = ($model->qty * $model->harga) - $model_diskon_a;
+                    $model->save();
+                    Yii::$app->session->setFlash('success', [['Perhatian!', '' . $item->nama_item . ' Berhasil Disimpan ke Data Barang pembelian']]);
+                } else {
+                    # code...
+                    Yii::$app->session->setFlash('danger', [['Perhatian!', '' . $item->nama_item . ' Sudah Ada Di Order pembelian : ' . $akt_pembelian->no_order_pembelian]]);
+                }
+            }
+
+
+            return $this->redirect(['akt-pembelian-pembelian/view', 'id' => $model->id_pembelian]);
+        }
+        return $this->render('update_langsung', [
+            'model' => $model,
+            'akt_pembelian' => $akt_pembelian,
+            'data_item_stok' => $data_item_stok,
+        ]);
+    }
+
     /**
      * Deletes an existing AktPembelianDetail model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
@@ -392,7 +438,7 @@ class AktPembelianDetailController extends Controller
         return $this->redirect(['index']);
     }
 
-    public function actionDeleteFromOrderPembelian($id)
+    public function actionDeleteFromOrderPembelian($id, $type)
     {
         $model = $this->findModel($id);
         $model->delete();
@@ -401,8 +447,15 @@ class AktPembelianDetailController extends Controller
         $item = AktItem::findOne($item_stok->id_item);
 
         Yii::$app->session->setFlash('success', [['Perhatian!', '' . $item->nama_item . ' Berhasil Dihapus dari Data Barang Pembelian']]);
-        return $this->redirect(['akt-pembelian/view', 'id' => $model->id_pembelian]);
+
+        if ($type == 'order_pembelian') {
+            $url = 'akt-pembelian/view';
+        } else if ($type == 'pembelian_langsung') {
+            $url = 'akt-pembelian-pembelian/view';
+        }
+        return $this->redirect([$url, 'id' => $model->id_pembelian]);
     }
+
 
     public function actionDeleteFromDataPembelian($id)
     {

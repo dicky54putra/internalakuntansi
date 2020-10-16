@@ -114,6 +114,8 @@ class AktPembelian extends \yii\db\ActiveRecord
 
     public static function dataCustomer()
     {
+
+
         $data_customer = ArrayHelper::map(
             AktMitraBisnis::find()
                 ->where(["!=", 'tipe_mitra_bisnis', 1])
@@ -141,5 +143,18 @@ class AktPembelian extends \yii\db\ActiveRecord
         );
 
         return $data_mata_uang;
+    }
+
+    public static function dataKasBank()
+    {
+        $data_kas_bank = ArrayHelper::map(
+            AktKasBank::find()->all(),
+            'id_kas_bank',
+            function ($model) {
+                return $model['kode_kas_bank'] . ' - ' . $model['keterangan'] . ' : ' . ribuan($model['saldo']);
+            }
+        );
+
+        return $data_kas_bank;
     }
 }

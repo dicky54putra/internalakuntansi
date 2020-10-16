@@ -285,7 +285,7 @@ $this->title = 'Detail Data Order Pembelian : ' . $model->no_order_pembelian;
                                                         <th style="width: 20%;">Keterangan</th>
                                                         <th style="width: 10%;">Sub Total</th>
                                                         <?php
-                                                        if ($model->status == 1) {
+                                                        if ($model->status == 1 && $cek_login == null) {
                                                             # code...
                                                         ?>
                                                             <th>Aksi</th>
@@ -328,7 +328,7 @@ $this->title = 'Detail Data Order Pembelian : ' . $model->no_order_pembelian;
                                                             ?>
                                                                 <td>
                                                                     <?= Html::a('<span class="glyphicon glyphicon-edit"></span>', ['akt-pembelian-detail/update-from-order-pembelian', 'id' => $data['id_pembelian_detail']], ['class' => 'btn btn-primary btn-ubah-detail']) ?>
-                                                                    <?= Html::a('<span class="glyphicon glyphicon-trash"></span>', ['akt-pembelian-detail/delete-from-order-pembelian', 'id' => $data['id_pembelian_detail']], [
+                                                                    <?= Html::a('<span class="glyphicon glyphicon-trash"></span>', ['akt-pembelian-detail/delete-from-order-pembelian', 'id' => $data['id_pembelian_detail'], 'type' => 'order_pembelian'], [
                                                                         'class' => 'btn btn-danger btn-hapus-detail',
                                                                         'data' => [
                                                                             'confirm' => 'Apakah Anda yakin akan menghapus ' . $item->nama_item . ' dari Data Barang Pembelian?',
@@ -488,7 +488,7 @@ if (!empty($form)) {
                         <h4 class="modal-title">Ubah Data Pembelian</h4>
                     </div>
                     <div class="modal-body">
-                        <?= Html::beginForm(['akt-pembelian/view', 'aksi' => 'ubah_data_pembelian', 'id' => $model->id_pembelian], 'post') ?>
+                        <?= Html::beginForm(['akt-pembelian/view', 'aksi' => 'ubah_data_pembelian',  'id' => $model->id_pembelian], 'post') ?>
                         <label class="label label-primary col-xs-12" style="font-size: 15px;">Data Order Pembelian</label>
                         <div class="row">
                             <div class="col-md-6">

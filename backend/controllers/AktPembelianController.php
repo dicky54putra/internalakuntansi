@@ -22,7 +22,6 @@ use backend\models\AktHistoryTransaksi;
 use backend\models\AktPembelianPenerimaan;
 use backend\models\JurnalTransaksi;
 use backend\models\JurnalTransaksiDetail;
-use backend\models\JurnalUmumDetail;
 use backend\models\AktJurnalUmumDetail;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Json;
