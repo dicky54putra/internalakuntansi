@@ -145,7 +145,16 @@ class AktPembelianController extends Controller
             $supplier->save(FALSE);
 
             Yii::$app->session->setFlash('success', [['Perhatian!', 'Supplier baru Berhasil Di Tambahkan']]);
-            return $this->redirect(['view', 'id' => $model->id_pembelian]);
+
+            $tipe = Yii::$app->request->get('tipe');
+
+            if ($tipe == 'order_pembelian') {
+                $url = 'view';
+            } else if ($tipe == 'pembelian_langsung') {
+                $url = 'akt-pembelian-pembelian/view';
+            }
+
+            return $this->redirect([$url, 'id' => $model->id_pembelian]);
         }
 
         $data_item_stok = ArrayHelper::map(
