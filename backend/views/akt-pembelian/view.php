@@ -314,15 +314,6 @@ $this->title = 'Detail Data Order Pembelian : ' . $model->no_order_pembelian;
                                                                 echo $item->nama_item;
                                                                 echo "<br>";
                                                                 if ($model->status == 1) {
-                                                                    # code...
-                                                                    // if ($data['qty'] > $item_stok->qty) {
-                                                                    //     # code...
-                                                                    //     echo "<span class='label label-danger'>Stok Kosong</span>";
-                                                                    // } else {
-
-                                                                    //     # code...
-                                                                    //     echo "<span class='label label-success'>Stok Tersedia</span>";
-                                                                    // }
                                                                 }
                                                                 ?>
                                                             </td>

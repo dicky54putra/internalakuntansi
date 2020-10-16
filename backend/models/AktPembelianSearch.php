@@ -41,6 +41,7 @@ class AktPembelianSearch extends AktPembelian
     public function search($params)
     {
         $query = AktPembelian::find();
+        $query->where(['!=', 'no_order_pembelian', 'null']);
         $query->orderBy("id_pembelian desc");
 
         // add conditions that should always apply here

@@ -186,6 +186,9 @@ class AktPembelianController extends Controller
             }
         );
 
+
+
+
         $data_penagih = ArrayHelper::map(AktMitraBisnis::find()->all(), 'id_mitra_bisnis', 'nama_mitra_bisnis');
         $data_pengirim = ArrayHelper::map(AktMitraBisnis::find()->all(), 'id_mitra_bisnis', 'nama_mitra_bisnis');
         return $this->render('view', [
@@ -198,7 +201,8 @@ class AktPembelianController extends Controller
             'data_penagih' => $data_penagih,
             'data_pengirim' => $data_pengirim,
             'data_customer' => $data_customer,
-            'data_mata_uang' => $data_mata_uang
+            'data_mata_uang' => $data_mata_uang,
+
         ]);
     }
 

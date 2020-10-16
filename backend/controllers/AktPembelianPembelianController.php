@@ -50,10 +50,12 @@ class AktPembelianPembelianController extends Controller
     {
         $searchModel = new AktPembelianSearch();
         $dataProvider = $searchModel->searchPembelian(Yii::$app->request->queryParams);
-
+        $is_pembelian = AktPembelian::cekButtonPembelian();
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
+            'is_pembelian' => $is_pembelian
+
         ]);
     }
 
@@ -120,9 +122,11 @@ class AktPembelianPembelianController extends Controller
         $count_data_pembelian_count = $count_model_no_pembelian + $count_model_tanggal_pembelian + 0 + 0 + $count_model_total + 0 + $count_model_jenis_bayar + 0 + $count_model_id_penagih;
         // + $count_model_no_faktur_pembelian + $count_model_tanggal_faktur_pembelian;
 
+        $is_pembelian = AktPembelian::cekButtonPembelian();
         return $this->render('view', [
             'model' => $model,
             'foto' => $foto,
+            'is_pembelian' => $is_pembelian,
             'model_pembelian_detail_baru' => $model_pembelian_detail_baru,
             'data_item_stok' => $data_item_stok,
             'count_data_pembelian_count' => $count_data_pembelian_count,
@@ -133,16 +137,6 @@ class AktPembelianPembelianController extends Controller
     {
         $model = $this->findModel($id);
         $model->status = 5;
-        // $query_detail = AktpembelianDetail::find()->where(['id_pembelian' => $model->id_pembelian])->all();
-        // foreach ($query_detail as $key => $data) {
-        //     # code...
-        //     $item_stok = AktItemStok::find()->where(['id_item_stok' => $data['id_item_stok']])->one();
-        //     $item_stok->qty = $item_stok->qty + $data['qty'];
-        //     // var_dump($item_stok->qty);
-        //     // var_dump($item_stok->id_item_stok);
-        //     // die;
-        //     $item_stok->save(FALSE);
-        // }
 
         $model->save(FALSE);
         return $this->redirect(['akt-pembelian-penerimaan-sendiri/view', 'id' => $model->id_pembelian]);
@@ -235,19 +229,54 @@ class AktPembelianPembelianController extends Controller
     }
 
 
-    // public function actionCetakInvoice($id)
-    // {
-    //     $model = $this->findModel($id);
+    public function actionCreate()
+    {
+        $model = new AktPembelian();
 
-    //     $data_setting = Setting::find()->one();
+        $nomor_sebelumnya = Yii::$app->db->createCommand("SELECT no_pembelian FROM `akt_pembelian` ORDER by no_pembelian DESC LIMIT 1")->queryScalar();
 
-    //     $query = (new \yii\db\Query())->from('akt_pembelian_detail')->where(['id_pembelian' => $model->id_pembelian]);
-    //     $total_pembelian_barang = $query->sum('total');
+        if (!empty($nomor_sebelumnya)) {
+            $noUrut = (int) substr($nomor_sebelumnya, 6);
+            $bulanNoUrut = substr($nomor_sebelumnya, -7, 4);
+            // echo $noUrut; die;
+            if ($bulanNoUrut !== date('ym')) {
+                $kode = 'PE' . date('ym') . '001';
+            } else {
+                // echo $noUrut; die;
+                if ($noUrut <= 999) {
+                    $noUrut++;
+                    $noUrut_2 = sprintf("%03s", $noUrut);
+                } elseif ($noUrut <= 9999) {
+                    $noUrut++;
+                    $noUrut_2 = sprintf("%04s", $noUrut);
+                } elseif ($noUrut <= 99999) {
+                    $noUrut++;
+                    $noUrut_2 = sprintf("%05s", $noUrut);
+                }
 
-    //     return $this->renderPartial('cetak_invoice', [
-    //         'model' => $model,
-    //         'data_setting' => $data_setting,
-    //         'total_pembelian_barang' => $total_pembelian_barang,
-    //     ]);
-    // }
+                $no_order_pembelian = "PE" . date('ym') . $noUrut_2;
+                $kode = $no_order_pembelian;
+            }
+        } else {
+            # code...
+            $kode = 'PE' . date('ym') . '001';
+        }
+
+        $model->no_pembelian = $kode;
+        $model->no_penerimaan = substr_replace($kode, "PQ", 0, 2);
+
+        $data_customer = AktPembelian::dataCustomer();
+        $data_mata_uang = AktPembelian::dataMataUang();
+
+        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            return $this->redirect(['view', 'id' => $model->id_pembelian]);
+        }
+
+        return $this->render('create', [
+            'model' => $model,
+            'nomor' => $kode,
+            'data_customer' => $data_customer,
+            'data_mata_uang' => $data_mata_uang,
+        ]);
+    }
 }
