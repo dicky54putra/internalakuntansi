@@ -5,12 +5,14 @@ use yii\widgets\DetailView;
 use backend\models\AktPembelianDetail;
 use backend\models\AktItemStok;
 use backend\models\AktItem;
+use backend\models\AktLevelHarga;
 use backend\models\AktGudang;
 use backend\models\AktPembelian;
 use yii\widgets\ActiveForm;
 use kartik\select2\Select2;
 use backend\models\Login;
 use backend\models\AktApprover;
+use yii\helpers\ArrayHelper;
 /* @var $this yii\web\View */
 /* @var $model backend\models\Aktpembelian */
 
@@ -579,10 +581,16 @@ $count_query_detail = AktPembelianDetail::find()->where(['id_pembelian' => $mode
                 </div>
             </div>
         </div>
-
         <?php
         if (!empty($form)) {
         ?>
+
+<<<<<<< HEAD
+        <?php
+        if (!empty($form)) {
+        ?>
+=======
+>>>>>>> b279c955a3057e91fb956d3ea46b65af9cdf8cdd
             <div class="modal fade" id="modal-default" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
                 <div class="vertical-alignment-helper">
                     <div class="modal-dialog vertical-align-center">
@@ -713,6 +721,15 @@ $count_query_detail = AktPembelianDetail::find()->where(['id_pembelian' => $mode
                                             <?= $form->field($model, 'materai')->textInput(['type' => 'number', 'value' => $model->materai == '' ? 0 : $model->materai]) ?>
                                         </div>
 
+                                        <div class="form-group">
+                                            <?= $form->field($model, 'tanggal_tempo', ['options' => ['id' => 'tanggal_tempo', 'hidden' => 'yes']])->textInput(['readonly' => true]) ?>
+                                            <?= $form->field($model, 'id_pembelian')->textInput(['type' => 'hidden', 'readonly' => true, 'required' => 'on', 'autocomplete' => 'off', 'id' => 'id_pembelian'])->label(FALSE) ?>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <?= $form->field($model, 'materai')->textInput(['type' => 'number', 'value' => $model->materai == '' ? 0 : $model->materai]) ?>
+                                        </div>
+
 
 
 
@@ -725,9 +742,61 @@ $count_query_detail = AktPembelianDetail::find()->where(['id_pembelian' => $mode
                                 <?= Html::submitButton('<span class="glyphicon glyphicon-floppy-saved"></span> Simpan', ['class' => 'btn btn-success']) ?>
                                 <?= Html::endForm() ?>
                             </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Close</button>
+                                <?= Html::submitButton('<span class="glyphicon glyphicon-floppy-saved"></span> Simpan', ['class' => 'btn btn-success']) ?>
+                                <?= Html::endForm() ?>
+                            </div>
                         </div>
                     </div>
                 </div>
+            </div>
+            <div class="modal fade" id="modal-supplier">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span></button>
+                            <h4 class="modal-title">Tambah Supplier</h4>
+                        </div>
+                        <div class="modal-body">
+                            <?= Html::beginForm(['akt-pembelian/view', 'aksi' => 'supplier', 'id' => $model->id_pembelian, 'tipe' => 'pembelian_langsung'], 'post') ?>
+
+                            <div class="form-group">
+                                <label for="">Nama Supplier</label>
+                                <input type="text" name="nama_mitra_bisnis" class="form-control" id="">
+                            </div>
+                            <div class="form-group">
+                                <label for="">Level Harga</label>
+                                <?php
+                                echo Select2::widget([
+                                    'name' => 'id_level_harga',
+                                    'data' => ArrayHelper::map(AktLevelHarga::find()->all(), 'id_level_harga', 'keterangan'),
+                                    'options' => [
+                                        'placeholder' => 'Pilih Level Harga ...',
+                                        // 'multiple' => true
+                                    ],
+                                ]);
+                                ?>
+                            </div>
+                            <div class="form-group">
+                                <label for="">Deskripsi Supplier</label>
+                                <textarea class="form-control" name="deskripsi_mitra_bisnis" id="" cols="10" rows="5"></textarea>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Close</button>
+                            <?= Html::submitButton('<span class="glyphicon glyphicon-floppy-saved"></span> Simpan', ['class' => 'btn btn-success']) ?>
+                            <?= Html::endForm() ?>
+                        </div>
+                    </div>
+                    <!-- /.modal-content -->
+                </div>
+                <!-- /.modal-dialog -->
             </div>
 
         <?php } ?>
