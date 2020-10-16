@@ -210,8 +210,7 @@ class AktPembelianPembelianController extends Controller
             $diskon = ($model->diskon > 0) ? ($model->diskon * $model_pembelian_detail) / 100 : 0;
             $pajak = ($model->pajak == 1) ? (($model_pembelian_detail - $diskon) * 10) / 100 : 0;
             $model_total = (($model_pembelian_detail - $diskon) + $pajak) + $model_ongkir + $model->materai - $model->uang_muka;
-            echo $model_total;
-            die;
+
             $model->ongkir = $model_ongkir;
             $model->total = $model_total;
 
