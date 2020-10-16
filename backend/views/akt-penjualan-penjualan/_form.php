@@ -21,9 +21,9 @@ use kartik\select2\Select2;
                     <div class="row">
                         <div class="col-md-6">
 
-                            <?= $form->field($model, 'no_order_penjualan')->textInput(['maxlength' => true, 'readonly' => true]) ?>
+                            <?= $form->field($model, 'no_penjualan')->textInput(['maxlength' => true, 'readonly' => true]) ?>
 
-                            <?= $form->field($model, 'tanggal_order_penjualan')->widget(\yii\jui\DatePicker::classname(), [
+                            <?= $form->field($model, 'tanggal_penjualan')->widget(\yii\jui\DatePicker::classname(), [
                                 'clientOptions' => [
                                     'changeMonth' => true,
                                     'changeYear' => true,
@@ -68,7 +68,10 @@ use kartik\select2\Select2;
                             <?= $form->field($model, 'id_mata_uang')->widget(Select2::classname(), [
                                 'data' => $data_mata_uang,
                                 'language' => 'en',
-                                'options' => ['placeholder' => 'Pilih Mata Uang'],
+                                'options' => [
+                                    'placeholder' => 'Pilih Mata Uang',
+                                    'value' => $model->id_mata_uang == 0 ? 1 : $model->id_mata_uang
+                                ],
                                 'pluginOptions' => [
                                     'allowClear' => true
                                 ],
@@ -79,7 +82,7 @@ use kartik\select2\Select2;
                             if ($model->isNewRecord) {
                                 # code...
                             ?>
-                                <?= $form->field($model, 'status')->dropDownList(array(1 => "Order Penjualan")) ?>
+                                <?= $form->field($model, 'status')->dropDownList(array(2 => "Penjualan")) ?>
                             <?php } ?>
 
                         </div>
@@ -118,13 +121,15 @@ use kartik\select2\Select2;
             </div>
             <?php $form = ActiveForm::begin([
                 'method' => 'post',
-                'action' => ['add-new-customer', 'type' => 'order_penjualan'],
+                'action' => ['akt-penjualan/add-new-customer', 'type' => 'penjualan_langsung'],
             ]); ?>
             <div class="modal-body">
 
                 <?= $form->field($model_new_customer, 'nama_mitra_bisnis')->textInput(['maxlength' => true]) ?>
 
                 <?= $form->field($model_new_customer, 'deskripsi_mitra_bisnis')->textarea(['rows' => 3]) ?>
+
+                <?= $form->field($model_new_customer, 'tipe_mitra_bisnis')->hiddenInput(['value' => 1])->label(false) ?>
 
             </div>
             <div class="modal-footer">
@@ -146,7 +151,7 @@ use kartik\select2\Select2;
             </div>
             <?php $form = ActiveForm::begin([
                 'method' => 'post',
-                'action' => ['add-new-sales', 'type' => 'order_penjualan'],
+                'action' => ['akt-penjualan/add-new-sales', 'type' => 'penjualan_langsung'],
             ]); ?>
             <div class="modal-body">
 

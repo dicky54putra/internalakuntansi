@@ -72,7 +72,6 @@ class PengaturanController extends Controller
      */
     public function actionUpdate()
     {
-
         $id = Yii::$app->request->post('id');
 
         $model = $this->findModel($id);

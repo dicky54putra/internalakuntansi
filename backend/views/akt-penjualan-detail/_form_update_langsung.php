@@ -60,7 +60,7 @@ use yii\helpers\Url;
                     </div>
 
                     <div class="form-group">
-                        <?= Html::a('<span class="glyphicon glyphicon-circle-arrow-left"></span> Kembali', ['akt-penjualan/view', 'id' => $model->id_penjualan], ['class' => 'btn btn-warning']) ?>
+                        <?= Html::a('<span class="glyphicon glyphicon-circle-arrow-left"></span> Kembali', ['akt-penjualan-penjualan/view', 'id' => $model->id_penjualan], ['class' => 'btn btn-warning']) ?>
                         <?= Html::submitButton('<span class="glyphicon glyphicon-floppy-disk"></span> Simpan', ['class' => 'btn btn-success']) ?>
                     </div>
 
