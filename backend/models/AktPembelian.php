@@ -44,8 +44,8 @@ class AktPembelian extends \yii\db\ActiveRecord
     {
         return [
             [['id_customer',], 'required'],
-            [['id_customer', 'id_mata_uang', 'diskon', 'pajak', 'total', 'jenis_bayar', 'jatuh_tempo', 'materai', 'id_penagih', 'status', 'uang_muka', 'id_kas_bank'], 'integer'],
-            [['tanggal_pembelian', 'tanggal_faktur_pembelian', 'tanggal_tempo', 'tanggal_order_pembelian', 'tanggal_penerimaan', 'tanggal_estimasi'], 'safe'],
+            [['id_customer', 'id_mata_uang', 'diskon', 'pajak', 'total', 'jenis_bayar', 'jatuh_tempo', 'id_penagih', 'status', 'id_kas_bank'], 'integer'],
+            [['tanggal_pembelian', 'tanggal_faktur_pembelian', 'tanggal_tempo', 'tanggal_order_pembelian', 'tanggal_penerimaan', 'tanggal_estimasi', 'uang_muka', 'materai'], 'safe'],
             [['no_order_pembelian', 'no_pembelian', 'no_faktur_pembelian', 'no_penerimaan', 'pengantar', 'penerima', 'no_spb'], 'string', 'max' => 255],
             [['keterangan_penerimaan'], 'string'],
         ];

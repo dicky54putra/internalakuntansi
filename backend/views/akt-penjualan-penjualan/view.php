@@ -14,6 +14,7 @@ use backend\models\AktPenjualan;
 use backend\models\AktItemHargaJual;
 use backend\models\AktLevelHarga;
 use backend\models\AktApprover;
+use backend\models\AktKasBank;
 /* @var $this yii\web\View */
 /* @var $model backend\models\AktPenjualan */
 
@@ -247,7 +248,7 @@ $count_query_detail = AktPenjualanDetail::find()->where(['id_penjualan' => $mode
                                         <div>
                                             <div class="row form-user">
                                                 <?php
-                                                if ($model->status <= 2 && $cek_login == null && $is_penjualan->status == 1) {
+                                                if ($model->status <= 2 && $cek_login == null && $is_penjualan->status == 1 && $model->jenis_bayar == null) {
                                                     # code...
                                                 ?>
                                                     <?php $form = ActiveForm::begin([
@@ -358,7 +359,7 @@ $count_query_detail = AktPenjualanDetail::find()->where(['id_penjualan' => $mode
                                                         <td><?= $data['keterangan'] ?></td>
                                                         <td style="text-align: right;"><?= ribuan($data['total']) ?></td>
                                                         <?php
-                                                        if ($model->status <= 2 && $cek_login == null && $is_penjualan->status == 1) {
+                                                        if ($model->status <= 2 && $cek_login == null && $is_penjualan->status == 1 && $model->jenis_bayar == null) {
                                                             # code...
                                                         ?>
                                                             <td style="white-space: nowrap;">
@@ -411,7 +412,10 @@ $count_query_detail = AktPenjualanDetail::find()->where(['id_penjualan' => $mode
                                                     <th style="text-align: right;"><?= ribuan($model->materai) ?></th>
                                                 </tr>
                                                 <tr>
-                                                    <th colspan="8" style="text-align: right;">Uang Muka</th>
+                                                    <?php
+                                                    $akt_kas_bank = AktKasBank::findOne($model->id_kas_bank);
+                                                    ?>
+                                                    <th colspan="8" style="text-align: right;">Uang Muka <?= $akt_kas_bank == false ? '' :  ' | ' . $akt_kas_bank['keterangan'] ?> </th>
                                                     <th style="text-align: right;"><?= ribuan($model->uang_muka) ?></th>
                                                 </tr>
                                                 <tr>
@@ -701,7 +705,9 @@ $count_query_detail = AktPenjualanDetail::find()->where(['id_penjualan' => $mode
                                 'alias' => 'decimal', 'groupSeparator' => '.', 'autoGroup' => true, 'removeMaskOnSubmit' => true, 'rightAlign' => false, 'min' => 0
                             ]]); ?>
 
-                            <?= $form->field($model, 'diskon')->textInput(['type' => 'number', 'autocomplete' => 'off', 'value' => $model->diskon == '' ? 0 : $model->diskon,]) ?>
+                            <?= $form->field($model, 'diskon')->widget(\yii\widgets\MaskedInput::className(), ['options' => ['autocomplete' => 'off', 'value' => $model->diskon == '' ? 0 : $model->diskon], 'clientOptions' => [
+                                'alias' => 'decimal', 'groupSeparator' => '.', 'autoGroup' => true, 'removeMaskOnSubmit' => true, 'rightAlign' => false, 'min' => 0
+                            ]]); ?>
 
                             <div class="row">
                                 <div class="col-md-12">
@@ -750,7 +756,7 @@ $count_query_detail = AktPenjualanDetail::find()->where(['id_penjualan' => $mode
                                 60 => 60,
                             ), ['prompt' => 'Pilih Jumlah Tempo']) ?>
 
-                            <?= $form->field($model, 'materai')->widget(\yii\widgets\MaskedInput::className(), ['options' => ['autocomplete' => 'off', 'value' => $model->materai == '' ? 0 : $model->materai], 'clientOptions' => ['alias' => 'decimal', 'groupSeparator' => '.', 'autoGroup' => true, 'removeMaskOnSubmit' => true, 'rightAlign' => false, 'min' => 0]]); ?>
+                            <?= $form->field($model, 'materai')->widget(\yii\widgets\MaskedInput::className(), ['options' => ['autocomplete' => 'off'], 'clientOptions' => ['alias' => 'decimal', 'groupSeparator' => '.', 'autoGroup' => true, 'removeMaskOnSubmit' => true, 'rightAlign' => false, 'min' => 0]]); ?>
 
                             <label for="total_penjualan_detail">Total Penjualan Barang</label>
                             <?= Html::input("text", "total_penjualan_detail", ribuan($total_penjualan_detail), ['class' => 'form-control', 'readonly' => true, 'id' => 'total_penjualan_detail']) ?>

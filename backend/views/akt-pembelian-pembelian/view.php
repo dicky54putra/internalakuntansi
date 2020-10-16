@@ -241,7 +241,7 @@ $count_query_detail = AktPembelianDetail::find()->where(['id_pembelian' => $mode
                                         <div class="col-md-12" style="margin-bottom:20px;">
                                             <div class="row form-user">
                                                 <?php
-                                                if ($model->status <= 2 && $cek_login == null && $is_pembelian->status == 1) {
+                                                if ($model->status <= 2 && $cek_login == null && $is_pembelian->status == 1 && $model->jenis_bayar == null) {
                                                     # code...
                                                 ?>
                                                     <?php $form = ActiveForm::begin([
@@ -302,7 +302,7 @@ $count_query_detail = AktPembelianDetail::find()->where(['id_pembelian' => $mode
                                                         <th style="width: 20%;">Keterangan</th>
                                                         <th style="width: 10%;">Sub Total</th>
                                                         <?php
-                                                        if ($model->status == 1 && $cek_login == null) {
+                                                        if ($model->status == 1 && $cek_login == null && $is_pembelian->status == 1 && $model->jenis_bayar == null) {
                                                             # code...
                                                         ?>
                                                             <th>Aksi</th>
@@ -336,7 +336,7 @@ $count_query_detail = AktPembelianDetail::find()->where(['id_pembelian' => $mode
                                                             <td><?= $data['keterangan'] ?></td>
                                                             <td style="text-align: right;"><?= ribuan($data['total']) ?></td>
                                                             <?php
-                                                            if ($model->status <= 2 && $cek_login == null) {
+                                                            if ($model->status <= 2 && $cek_login == null && $is_pembelian->status == 1 && $model->jenis_bayar == null) {
                                                                 # code...
                                                             ?>
                                                                 <td>
@@ -392,9 +392,12 @@ $count_query_detail = AktPembelianDetail::find()->where(['id_pembelian' => $mode
                                                         <th colspan="7" style="text-align: right;">Uang Muka</th>
                                                         <th style="text-align: right;"><?= ribuan($model->uang_muka) ?></th>
                                                     </tr>
+                                                    <?php
+                                                    $grand_total = $model->materai + $model->ongkir + $pajak + $totalan_total - $diskon - $model->uang_muka;
+                                                    ?>
                                                     <tr>
                                                         <th colspan="7" style="text-align: right;">Grand Total</th>
-                                                        <th style="text-align: right;"><?= ribuan($model_pembelian_detail) ?></th>
+                                                        <th style="text-align: right;"><?= ribuan($grand_total) ?></th>
                                                     </tr>
                                                 </tfoot>
                                             </table>
@@ -650,7 +653,7 @@ $count_query_detail = AktPembelianDetail::find()->where(['id_pembelian' => $mode
                                     </div>
 
                                     <div class="form-group">
-                                        <?= $form->field($model, 'diskon')->textInput(['type' => 'number', 'autocomplete' => 'off'])->label('Diskon %') ?>
+                                        <?= $form->field($model, 'diskon')->widget(\yii\widgets\MaskedInput::className(), ['clientOptions' => ['alias' => 'decimal', 'groupSeparator' => '.', 'autoGroup' => true, 'removeMaskOnSubmit' => true, 'rightAlign' => false, 'min' => 0], 'options' => ['value' => $model->diskon == '' ? 0 : $model->diskon]])->label('Diskon %'); ?>
                                     </div>
 
                                     <div class="form-group">
@@ -673,7 +676,6 @@ $count_query_detail = AktPembelianDetail::find()->where(['id_pembelian' => $mode
                                         </div>
 
                                     </div>
-
 
                                     <div class="form-group">
                                         <table>
@@ -711,24 +713,17 @@ $count_query_detail = AktPembelianDetail::find()->where(['id_pembelian' => $mode
                                     </div>
 
                                     <div class="form-group">
-                                        <?= $form->field($model, 'materai')->textInput(['type' => 'number', 'value' => $model->materai == '' ? 0 : $model->materai]) ?>
-                                    </div>
-
-                                    <div class="form-group">
                                         <?= $form->field($model, 'tanggal_tempo', ['options' => ['id' => 'tanggal_tempo', 'hidden' => 'yes']])->textInput(['readonly' => true]) ?>
                                         <?= $form->field($model, 'id_pembelian')->textInput(['type' => 'hidden', 'readonly' => true, 'required' => 'on', 'autocomplete' => 'off', 'id' => 'id_pembelian'])->label(FALSE) ?>
                                     </div>
 
                                     <div class="form-group">
-                                        <?= $form->field($model, 'materai')->textInput(['type' => 'number', 'value' => $model->materai == '' ? 0 : $model->materai]) ?>
+                                        <?= $form->field($model, 'materai')->widget(\yii\widgets\MaskedInput::className(), ['clientOptions' => ['alias' => 'decimal', 'groupSeparator' => '.', 'autoGroup' => true, 'removeMaskOnSubmit' => true, 'rightAlign' => false, 'min' => 0], 'options' => ['value' => $model->materai == '' ? 0 : $model->materai]]); ?>
                                     </div>
                                     <div class="form-group">
                                         <label for="total_pembelian_detail">Total pembelian Barang</label>
                                         <?= Html::input("text", "total_pembelian_detail", ribuan($model_pembelian_detail), ['class' => 'form-control', 'readonly' => true, 'id' => 'total_pembelian_detail']) ?>
                                     </div>
-
-
-
 
                                 </div>
                             </div>
