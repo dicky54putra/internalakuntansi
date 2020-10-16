@@ -394,7 +394,7 @@ $count_query_detail = AktPembelianDetail::find()->where(['id_pembelian' => $mode
                                                     </tr>
                                                     <tr>
                                                         <th colspan="7" style="text-align: right;">Grand Total</th>
-                                                        <th style="text-align: right;"><?= ribuan($model->total) ?></th>
+                                                        <th style="text-align: right;"><?= ribuan($model_pembelian_detail) ?></th>
                                                     </tr>
                                                 </tfoot>
                                             </table>
@@ -721,6 +721,10 @@ $count_query_detail = AktPembelianDetail::find()->where(['id_pembelian' => $mode
 
                                     <div class="form-group">
                                         <?= $form->field($model, 'materai')->textInput(['type' => 'number', 'value' => $model->materai == '' ? 0 : $model->materai]) ?>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="total_pembelian_detail">Total pembelian Barang</label>
+                                        <?= Html::input("text", "total_pembelian_detail", ribuan($model_pembelian_detail), ['class' => 'form-control', 'readonly' => true, 'id' => 'total_pembelian_detail']) ?>
                                     </div>
 
 
