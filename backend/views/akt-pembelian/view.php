@@ -569,7 +569,7 @@ if (!empty($form)) {
                                 </div>
 
                                 <div class="form-group">
-                                    <?= $form->field($model, 'diskon')->textInput(['type' => 'number', 'value' => $model->diskon == '' ? 0 : $model->diskon, 'autocomplete' => 'off'])->label('Diskon %') ?>
+                                    <?= $form->field($model, 'diskon')->widget(\yii\widgets\MaskedInput::className(), ['clientOptions' => ['alias' => 'decimal', 'groupSeparator' => '.', 'autoGroup' => true, 'removeMaskOnSubmit' => true, 'rightAlign' => false, 'min' => 0], 'options' => ['value' => $model->diskon == '' ? 0 : $model->diskon]])->label('Diskon %'); ?>
                                 </div>
 
                                 <div class="form-group">
@@ -630,7 +630,7 @@ if (!empty($form)) {
                                 </div>
 
                                 <div class="form-group">
-                                    <?= $form->field($model, 'materai')->textInput(['type' => 'number', 'value' => $model->materai == '' ? 0 : $model->materai]) ?>
+                                    <?= $form->field($model, 'materai')->widget(\yii\widgets\MaskedInput::className(), ['clientOptions' => ['alias' => 'decimal', 'groupSeparator' => '.', 'autoGroup' => true, 'removeMaskOnSubmit' => true, 'rightAlign' => false, 'min' => 0], 'options' => ['value' => $model->materai == '' ? 0 : $model->materai]]); ?>
                                 </div>
 
                                 <div class="form-group">

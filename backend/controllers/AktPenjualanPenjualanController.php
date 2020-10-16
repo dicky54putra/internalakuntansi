@@ -539,6 +539,7 @@ class AktPenjualanPenjualanController extends Controller
         $model->diskon = 0;
         $model->pajak = 0;
         $model->uang_muka = 0;
+        $model->materai = 0;
         $model->id_kas_bank = null;
         $model->the_approver = NULL;
         $model->the_approver_date = NULL;

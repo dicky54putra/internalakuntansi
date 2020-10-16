@@ -194,12 +194,11 @@ class AktPembelianPembelianController extends Controller
 
         if ($model->load(Yii::$app->request->post())) {
 
-            $model->ongkir = $model->ongkir == NULL ? 0 : $model->ongkir;
-            $model->diskon = $model->diskon == NULL ? 0 : $model->diskon;
-            $model->materai = $model->materai == NULL ? 0 : $model->materai;
+            $model->ongkir = $model->ongkir == '' ? 0 : $model->ongkir;
+            $model->diskon = $model->diskon == '' ? 0 : $model->diskon;
+            $model->materai = $model->materai == '' ? 0 : $model->materai;
 
             $model_ongkir = Yii::$app->request->post('AktPembelian')['ongkir'];
-
 
             $model->uang_muka = preg_replace("/[^0-9,]+/", "", $model->uang_muka);
             if ($model->uang_muka > 0 && $model->id_kas_bank == '') {
@@ -535,6 +534,7 @@ class AktPembelianPembelianController extends Controller
         $model->diskon = 0;
         $model->pajak = 0;
         $model->uang_muka = 0;
+        $model->materai = 0;
         $model->id_kas_bank = null;
         $model->save(false);
         $history_transaksi_count = AktHistoryTransaksi::find()->where(['id_tabel' => $id])->andWhere(['nama_tabel' => 'akt_pembelian'])->count();
