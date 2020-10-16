@@ -133,6 +133,8 @@ class AktPembelianPembelianController extends Controller
         $data_customer = AktPembelian::dataCustomer();
         $data_mata_uang = AktPembelian::dataMataUang();
         $data_kas_bank = AktPembelian::dataKasBank();
+
+
         return $this->render('view', [
             'model' => $model,
             'foto' => $foto,
