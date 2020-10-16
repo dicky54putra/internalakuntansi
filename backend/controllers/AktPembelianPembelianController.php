@@ -75,7 +75,8 @@ class AktPembelianPembelianController extends Controller
     public function actionView($id)
     {
         $model = $this->findModel($id);
-
+        $query = (new \yii\db\Query())->from('akt_pembelian_detail')->where(['id_pembelian' => $model->id_pembelian]);
+        $model_pembelian_detail = $query->sum('total');
         if (!empty(Yii::$app->request->get('id_hapus'))) {
             Foto::deleteAll(["id_foto" => Yii::$app->request->get('id_hapus')]);
             return $this->redirect(['view', 'id' => Yii::$app->request->get('id'), '#' => 'unggah-dokumen']);
@@ -133,9 +134,12 @@ class AktPembelianPembelianController extends Controller
         $data_customer = AktPembelian::dataCustomer();
         $data_mata_uang = AktPembelian::dataMataUang();
         $data_kas_bank = AktPembelian::dataKasBank();
+
+
         return $this->render('view', [
             'model' => $model,
             'foto' => $foto,
+            'model_pembelian_detail' => $model_pembelian_detail,
             'data_customer' => $data_customer,
             'data_kas_bank' => $data_kas_bank,
             'data_mata_uang' => $data_mata_uang,
@@ -206,7 +210,8 @@ class AktPembelianPembelianController extends Controller
             $diskon = ($model->diskon > 0) ? ($model->diskon * $model_pembelian_detail) / 100 : 0;
             $pajak = ($model->pajak == 1) ? (($model_pembelian_detail - $diskon) * 10) / 100 : 0;
             $model_total = (($model_pembelian_detail - $diskon) + $pajak) + $model_ongkir + $model->materai - $model->uang_muka;
-
+            echo $model_total;
+            die;
             $model->ongkir = $model_ongkir;
             $model->total = $model_total;
 

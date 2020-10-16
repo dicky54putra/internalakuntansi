@@ -117,11 +117,13 @@ $this->params['breadcrumbs'][] = $this->title;
 $script = <<< JS
     $(document).ready(function() {
 
-    $("#btn-ubah").click(function() {
-        var target = $(this).data("value"); 
-        var id_pengaturan = $(this).data("id"); 
-        var status = $('#pengaturan-status').val(target);
-        var id = $('#id_pengaturan').val(id_pengaturan);
+    $("a#btn-ubah" ).each(function(index) {
+        $(this).on("click", function(){
+            var target = $(this).data("value"); 
+            var id_pengaturan = $(this).data("id"); 
+            var status = $('#pengaturan-status').val(target);
+            var id = $('#id_pengaturan').val(id_pengaturan);
+        });
     });
 });
 JS;
