@@ -3,7 +3,7 @@
 use yii\helpers\Html;
 // use yii\grid\GridView;
 use kartik\grid\GridView;
-
+use backend\models\AktPenjualan;
 /* @var $this yii\web\View */
 /* @var $searchModel backend\models\AktPenjualanSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
@@ -33,47 +33,6 @@ $this->title = 'Data Penjualan';
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
 
-            // 'id_penjualan',
-            // 'no_order_penjualan',
-            // [
-            //     'attribute' => 'tanggal_order_penjualan',
-            //     'value' => function ($model) {
-            //         return tanggal_indo($model->tanggal_order_penjualan, true);
-            //     }
-            // ],
-            // [
-            //     'attribute' => 'id_customer',
-            //     'value' => function ($model) {
-            //         if (!empty($model->customer->nama_mitra_bisnis)) {
-            //             # code...
-            //             return $model->customer->nama_mitra_bisnis;
-            //         } else {
-            //             # code...
-            //         }
-            //     }
-            // ],
-            // [
-            //     'attribute' => 'id_sales',
-            //     'value' => function ($model) {
-            //         if (!empty($model->sales->nama_sales)) {
-            //             # code...
-            //             return $model->sales->nama_sales;
-            //         } else {
-            //             # code...
-            //         }
-            //     }
-            // ],
-            // [
-            //     'attribute' => 'id_mata_uang',
-            //     'value' => function ($model) {
-            //         if (!empty($model->mata_uang->mata_uang)) {
-            //             # code...
-            //             return $model->mata_uang->mata_uang;
-            //         } else {
-            //             # code...
-            //         }
-            //     }
-            // ],
             'no_penjualan',
             [
                 'attribute' => 'tanggal_penjualan',
@@ -135,8 +94,11 @@ $this->title = 'Data Penjualan';
                         # code...
                         return "<span class='label label-default'>Order Penjualan</span>";
                     } elseif ($model->status == 2) {
-                        # code...
-                        return "<span class='label label-warning'>Penjualan disetujui pada " . $the_approver_date . " oleh " . $the_approver_name . "</span>";
+                        if (AktPenjualan::cekButtonPenjualan()->status == 0 && $model->no_order_penjualan != null) {
+                            return "<span class='label label-warning'>Penjualan disetujui pada " . $the_approver_date . " oleh " . $the_approver_name . "</span>";
+                        } else if (AktPenjualan::cekButtonPenjualan()->status == 1 || $model->no_order_penjualan == null) {
+                            return "<span class='label label-warning'>Penjualan </span>";
+                        }
                     } elseif ($model->status == 3) {
                         # code...
                         return "<span class='label label-primary'>Pengiriman</span>";
