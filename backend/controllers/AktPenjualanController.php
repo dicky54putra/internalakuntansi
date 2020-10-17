@@ -123,34 +123,9 @@ class AktPenjualanController extends Controller
                 return $model['kode_mitra_bisnis'] . ' - ' . $model['nama_mitra_bisnis'];
             }
         );
-        $data_sales = ArrayHelper::map(
-            AktSales::find()
-                ->where(["=", 'status_aktif', 1])
-                ->all(),
-            'id_sales',
-            function ($model) {
-                return $model['kode_sales'] . ' - ' . $model['nama_sales'];
-            }
-        );
-        $data_mata_uang = ArrayHelper::map(
-            AktMataUang::find()
-                ->where(["=", 'status_default', 1])
-                ->all(),
-            'id_mata_uang',
-            function ($model) {
-                return $model['kode_mata_uang'] . ' - ' . $model['mata_uang'];
-            }
-        );
-
-        $data_kas_bank = ArrayHelper::map(
-            AktKasBank::find()
-                ->where(["=", 'status_aktif', 1])
-                ->all(),
-            'id_kas_bank',
-            function ($model) {
-                return $model['kode_kas_bank'] . ' - ' . $model['keterangan'] . ' : ' . ribuan($model['saldo']);
-            }
-        );
+        $data_sales = AktPenjualan::dataSales();
+        $data_mata_uang = AktPenjualan::dataMataUang();
+        $data_kas_bank = AktPenjualan::dataKasNank();
 
         $model_new_customer = new AktMitraBisnis();
         $model_new_sales = new AktSales();
@@ -289,56 +264,7 @@ class AktPenjualanController extends Controller
         ]);
     }
 
-    // public function actionUpdate($id)
-    // {
-    //     $model = $this->findModel($id);
 
-    //     $model_new_customer = new AktMitraBisnis();
-    //     $model_new_sales = new AktSales();
-
-    //     $data_customer = ArrayHelper::map(
-    //         AktMitraBisnis::find()
-    //             ->where(["!=", 'tipe_mitra_bisnis', 2])
-    //             ->all(),
-    //         'id_mitra_bisnis',
-    //         function ($model) {
-    //             return $model['kode_mitra_bisnis'] . ' - ' . $model['nama_mitra_bisnis'];
-    //         }
-    //     );
-    //     $data_sales = ArrayHelper::map(
-    //         AktSales::find()
-    //             ->where(["=", 'status_aktif', 1])
-    //             ->all(),
-    //         'id_sales',
-    //         function ($model) {
-    //             return $model['kode_sales'] . ' - ' . $model['nama_sales'];
-    //         }
-    //     );
-    //     $data_mata_uang = ArrayHelper::map(
-    //         AktMataUang::find()
-    //             ->where(["=", 'status_default', 1])
-    //             ->all(),
-    //         'id_mata_uang',
-    //         function ($model) {
-    //             return $model['kode_mata_uang'] . ' - ' . $model['mata_uang'];
-    //         }
-    //     );
-
-    //     if ($model->load(Yii::$app->request->post()) && $model->save()) {
-
-    //         Yii::$app->session->setFlash('success', [['Perhatian !', 'Perubahan Data Order Penjualan Berhasil Disimpan']]);
-    //         return $this->redirect(['view', 'id' => $model->id_penjualan]);
-    //     }
-
-    //     return $this->render('update', [
-    //         'model' => $model,
-    //         'data_customer' => $data_customer,
-    //         'data_sales' => $data_sales,
-    //         'data_mata_uang' => $data_mata_uang,
-    //         'model_new_customer' => $model_new_customer,
-    //         'model_new_sales' => $model_new_sales,
-    //     ]);
-    // }
 
     public function actionDelete($id)
     {
@@ -805,13 +731,25 @@ class AktPenjualanController extends Controller
         }
 
         $id = Yii::$app->request->get('id');
+        $type = Yii::$app->request->get('type');
 
-        if (!empty($id)) {
-            # code...
-            return $this->redirect(['view', 'id' => $id]);
-        } else {
-            # code...
-            return $this->redirect(['create']);
+        if ($type == 'order_penjualan') {
+
+            if (!empty($id)) {
+                # code...
+                return $this->redirect(['view', 'id' => $id]);
+            } else {
+                # code...
+                return $this->redirect(['create']);
+            }
+        } else if ($type == 'penjualan_langsung') {
+            if (!empty($id)) {
+                # code...
+                return $this->redirect(['akt-penjualan-penjualan/view', 'id' => $id]);
+            } else {
+                # code...
+                return $this->redirect(['akt-penjualan-penjualan/create']);
+            }
         }
     }
 
@@ -838,12 +776,25 @@ class AktPenjualanController extends Controller
 
         $id = Yii::$app->request->get('id');
 
-        if (!empty($id)) {
-            # code...
-            return $this->redirect(['view', 'id' => $id]);
-        } else {
-            # code...
-            return $this->redirect(['create']);
+        $type = Yii::$app->request->get('type');
+
+        if ($type == 'order_penjualan') {
+
+            if (!empty($id)) {
+                # code...
+                return $this->redirect(['view', 'id' => $id]);
+            } else {
+                # code...
+                return $this->redirect(['create']);
+            }
+        } else if ($type == 'penjualan_langsung') {
+            if (!empty($id)) {
+                # code...
+                return $this->redirect(['akt-penjualan-penjualan/view', 'id' => $id]);
+            } else {
+                # code...
+                return $this->redirect(['akt-penjualan-penjualan/create']);
+            }
         }
     }
 
@@ -862,9 +813,11 @@ class AktPenjualanController extends Controller
         $model_diskon = Yii::$app->request->post('AktPenjualan')['diskon'];
         $model_jenis_bayar = Yii::$app->request->post('AktPenjualan')['jenis_bayar'];
         $model_jumlah_tempo = Yii::$app->request->post('AktPenjualan')['jumlah_tempo'];
-        $model_uang_muka = Yii::$app->request->post('AktPenjualan')['uang_muka'];
+        $model_uang_muka = preg_replace("/[^a-zA-Z0-9]/", "", Yii::$app->request->post('AktPenjualan')['uang_muka']);
         $model_id_kas_bank = Yii::$app->request->post('AktPenjualan')['id_kas_bank'];
         $model_tanggal_estimasi = Yii::$app->request->post('AktPenjualan')['tanggal_estimasi'];
+
+        // var_d
 
         $diskon = ($model_diskon > 0) ? ($model_diskon * $total_penjualan_detail) / 100 : 0;
         $pajak = ($model_pajak == 1) ? (($total_penjualan_detail - $diskon) * 10) / 100 : 0;

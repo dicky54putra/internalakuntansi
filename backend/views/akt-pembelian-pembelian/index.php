@@ -4,12 +4,15 @@ use yii\helpers\Html;
 // use yii\grid\GridView;
 use kartik\grid\GridView;
 use backend\models\Login;
+use backend\models\AktPembelian;
 /* @var $this yii\web\View */
 /* @var $searchModel backend\models\AktpembelianSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
 $this->title = 'Data pembelian';
 // $this->params['breadcrumbs'][] = $this->title;
+
+
 ?>
 <div class="akt-pembelian-index">
 
@@ -20,6 +23,12 @@ $this->title = 'Data pembelian';
     </ul>
     <?php // echo $this->render('_search', ['model' => $searchModel]); 
     ?>
+    <?php if ($is_pembelian->status == 1) { ?>
+        <p>
+            <?= Html::a('<span class="glyphicon glyphicon-plus"></span> Tambah Baru', ['create'], ['class' => 'btn btn-success']) ?>
+        </p>
+    <?php } ?>
+
 
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
@@ -27,47 +36,6 @@ $this->title = 'Data pembelian';
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
 
-            // 'id_pembelian',
-            // 'no_order_pembelian',
-            // [
-            //     'attribute' => 'tanggal_order_pembelian',
-            //     'value' => function ($model) {
-            //         return tanggal_indo($model->tanggal_order_pembelian, true);
-            //     }
-            // ],
-            // [
-            //     'attribute' => 'id_customer',
-            //     'value' => function ($model) {
-            //         if (!empty($model->customer->nama_mitra_bisnis)) {
-            //             # code...
-            //             return $model->customer->nama_mitra_bisnis;
-            //         } else {
-            //             # code...
-            //         }
-            //     }
-            // ],
-            // [
-            //     'attribute' => 'id_sales',
-            //     'value' => function ($model) {
-            //         if (!empty($model->sales->nama_sales)) {
-            //             # code...
-            //             return $model->sales->nama_sales;
-            //         } else {
-            //             # code...
-            //         }
-            //     }
-            // ],
-            // [
-            //     'attribute' => 'id_mata_uang',
-            //     'value' => function ($model) {
-            //         if (!empty($model->mata_uang->mata_uang)) {
-            //             # code...
-            //             return $model->mata_uang->mata_uang;
-            //         } else {
-            //             # code...
-            //         }
-            //     }
-            // ],
             'no_pembelian',
             [
                 'attribute' => 'tanggal_pembelian',
@@ -91,18 +59,6 @@ $this->title = 'Data pembelian';
                     }
                 }
             ],
-            // 'no_faktur_pembelian',
-            // [
-            //     'attribute' => 'tanggal_faktur_pembelian',
-            //     'value' => function ($model) {
-            //         if (!empty($model->tanggal_faktur_pembelian)) {
-            //             # code...
-            //             return tanggal_indo($model->tanggal_faktur_pembelian, true);
-            //         } else {
-            //             # code...
-            //         }
-            //     }
-            // ],
             [
                 'attribute' => 'id_customer',
                 'label' => 'Supplier',
@@ -110,23 +66,7 @@ $this->title = 'Data pembelian';
                 'value' => 'customer.nama_mitra_bisnis',
             ],
 
-            //'ongkir',
-            //'pajak',
-            //'total',
-            //'bayar',
-            //'kekurangan',
-            //'jenis_bayar',
-            //'jumlah_tempo',
-            //'tanggal_tempo',
-            //'id_kas_bank',
-            //'materai',
-            //'id_penagih',
-            //'id_pengirim',
-            //'tanggal_antar',
-            //'pengantar',
-            //'penerima',
-            //'keterangan_antar:ntext',
-            //'tanggal_terima',
+
             [
                 'attribute' => 'status',
                 'format' => 'raw',
@@ -143,8 +83,12 @@ $this->title = 'Data pembelian';
                         return "<span class='label label-default'>Order pembelian</span>";
                     } elseif ($model->status == 2) {
                         # code...
-                        $nama_approver = Login::find()->where(['id_login' => $model->id_login])->one();
-                        return "<span class='label label-warning'>Pembelian, Disetujui pada " . tanggal_indo2(date('D, d F Y H:i', strtotime($model->tanggal_approve))) . " oleh " . $nama_approver->nama . "</span>";
+                        if (AktPembelian::cekButtonPembelian()->status == 0 && $model->no_order_pembelian != null) {
+                            $nama_approver = Login::find()->where(['id_login' => $model->id_login])->one();
+                            return "<span class='label label-warning'>Pembelian PO, Disetujui pada " . tanggal_indo2(date('D, d F Y H:i', strtotime($model->tanggal_approve))) . " oleh " . $nama_approver->nama . "</span>";
+                        } else if (AktPembelian::cekButtonPembelian()->status == 1 || $model->no_order_pembelian == null) {
+                            return "<span class='label label-warning'>Pembelian </span>";
+                        }
                     } elseif ($model->status == 3) {
                         # code...
                         return "<span class='label label-primary'>Penerimaan</span>";

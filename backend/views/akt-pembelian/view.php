@@ -48,7 +48,6 @@ $this->title = 'Detail Data Order Pembelian : ' . $model->no_order_pembelian;
             ->andWhere(['id_login' => $id_login])
             ->asArray()
             ->one();
-        // echo $approve->id_login;
         ?>
 
 
@@ -113,7 +112,7 @@ $this->title = 'Detail Data Order Pembelian : ' . $model->no_order_pembelian;
 
         <?php
         foreach ($approve as $key => $value) {
-            if ($id_login == $value['id_login'] && $model->status < 3) {
+            if ($id_login == $value['id_login'] && $model->status < 3 || $model->status == 6) {
         ?>
                 <?= Html::a('<span class="glyphicon glyphicon-pause"></span> Pending', ['pending', 'id' => $model->id_pembelian], [
                     'class' => 'btn btn-info btn-pending-hidden',
@@ -224,7 +223,7 @@ $this->title = 'Detail Data Order Pembelian : ' . $model->no_order_pembelian;
 
                                         <div class="row form-user">
                                             <?php
-                                            if ($model->status == 1) {
+                                            if ($model->status == 1 && $cek_login == null) {
                                                 # code...
                                             ?>
                                                 <?php $form = ActiveForm::begin([
@@ -286,7 +285,7 @@ $this->title = 'Detail Data Order Pembelian : ' . $model->no_order_pembelian;
                                                         <th style="width: 20%;">Keterangan</th>
                                                         <th style="width: 10%;">Sub Total</th>
                                                         <?php
-                                                        if ($model->status == 1) {
+                                                        if ($model->status == 1 && $cek_login == null) {
                                                             # code...
                                                         ?>
                                                             <th>Aksi</th>
@@ -315,15 +314,6 @@ $this->title = 'Detail Data Order Pembelian : ' . $model->no_order_pembelian;
                                                                 echo $item->nama_item;
                                                                 echo "<br>";
                                                                 if ($model->status == 1) {
-                                                                    # code...
-                                                                    // if ($data['qty'] > $item_stok->qty) {
-                                                                    //     # code...
-                                                                    //     echo "<span class='label label-danger'>Stok Kosong</span>";
-                                                                    // } else {
-
-                                                                    //     # code...
-                                                                    //     echo "<span class='label label-success'>Stok Tersedia</span>";
-                                                                    // }
                                                                 }
                                                                 ?>
                                                             </td>
@@ -333,12 +323,12 @@ $this->title = 'Detail Data Order Pembelian : ' . $model->no_order_pembelian;
                                                             <td><?= $data['keterangan'] ?></td>
                                                             <td style="text-align: right;"><?= ribuan($data['total']) ?></td>
                                                             <?php
-                                                            if ($model->status == 1) {
+                                                            if ($model->status == 1 && $cek_login == null) {
                                                                 # code...
                                                             ?>
                                                                 <td>
                                                                     <?= Html::a('<span class="glyphicon glyphicon-edit"></span>', ['akt-pembelian-detail/update-from-order-pembelian', 'id' => $data['id_pembelian_detail']], ['class' => 'btn btn-primary btn-ubah-detail']) ?>
-                                                                    <?= Html::a('<span class="glyphicon glyphicon-trash"></span>', ['akt-pembelian-detail/delete-from-order-pembelian', 'id' => $data['id_pembelian_detail']], [
+                                                                    <?= Html::a('<span class="glyphicon glyphicon-trash"></span>', ['akt-pembelian-detail/delete-from-order-pembelian', 'id' => $data['id_pembelian_detail'], 'type' => 'order_pembelian'], [
                                                                         'class' => 'btn btn-danger btn-hapus-detail',
                                                                         'data' => [
                                                                             'confirm' => 'Apakah Anda yakin akan menghapus ' . $item->nama_item . ' dari Data Barang Pembelian?',
@@ -498,7 +488,7 @@ if (!empty($form)) {
                         <h4 class="modal-title">Ubah Data Pembelian</h4>
                     </div>
                     <div class="modal-body">
-                        <?= Html::beginForm(['akt-pembelian/view', 'aksi' => 'ubah_data_pembelian', 'id' => $model->id_pembelian], 'post') ?>
+                        <?= Html::beginForm(['akt-pembelian/view', 'aksi' => 'ubah_data_pembelian',  'id' => $model->id_pembelian], 'post') ?>
                         <label class="label label-primary col-xs-12" style="font-size: 15px;">Data Order Pembelian</label>
                         <div class="row">
                             <div class="col-md-6">
@@ -579,7 +569,7 @@ if (!empty($form)) {
                                 </div>
 
                                 <div class="form-group">
-                                    <?= $form->field($model, 'diskon')->textInput(['type' => 'number', 'value' => $model->diskon == '' ? 0 : $model->diskon, 'autocomplete' => 'off'])->label('Diskon %') ?>
+                                    <?= $form->field($model, 'diskon')->widget(\yii\widgets\MaskedInput::className(), ['clientOptions' => ['alias' => 'decimal', 'groupSeparator' => '.', 'autoGroup' => true, 'removeMaskOnSubmit' => true, 'rightAlign' => false, 'min' => 0], 'options' => ['value' => $model->diskon == '' ? 0 : $model->diskon]])->label('Diskon %'); ?>
                                 </div>
 
                                 <div class="form-group">
@@ -640,7 +630,7 @@ if (!empty($form)) {
                                 </div>
 
                                 <div class="form-group">
-                                    <?= $form->field($model, 'materai')->textInput(['type' => 'number', 'value' => $model->materai == '' ? 0 : $model->materai]) ?>
+                                    <?= $form->field($model, 'materai')->widget(\yii\widgets\MaskedInput::className(), ['clientOptions' => ['alias' => 'decimal', 'groupSeparator' => '.', 'autoGroup' => true, 'removeMaskOnSubmit' => true, 'rightAlign' => false, 'min' => 0], 'options' => ['value' => $model->materai == '' ? 0 : $model->materai]]); ?>
                                 </div>
 
                                 <div class="form-group">
@@ -670,7 +660,7 @@ if (!empty($form)) {
                     <h4 class="modal-title">Tambah Supplier</h4>
                 </div>
                 <div class="modal-body">
-                    <?= Html::beginForm(['akt-pembelian/view', 'aksi' => 'supplier', 'id' => $model->id_pembelian], 'post') ?>
+                    <?= Html::beginForm(['akt-pembelian/view', 'aksi' => 'supplier', 'id' => $model->id_pembelian, 'tipe' => 'order_pembelian'], 'post') ?>
 
                     <div class="form-group">
                         <label for="">Nama Supplier</label>

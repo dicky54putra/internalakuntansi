@@ -383,7 +383,7 @@ $this->title = 'Detail Data Order Penjualan : ' . $model->no_order_penjualan;
                                                         ?>
                                                             <td style="white-space: nowrap;">
                                                                 <?= Html::a('<span class="glyphicon glyphicon-edit"></span>', ['akt-penjualan-detail/update-from-order-penjualan', 'id' => $data['id_penjualan_detail']], ['class' => 'btn btn-primary']) ?>
-                                                                <?= Html::a('<span class="glyphicon glyphicon-trash"></span>', ['akt-penjualan-detail/delete-from-order-penjualan', 'id' => $data['id_penjualan_detail']], [
+                                                                <?= Html::a('<span class="glyphicon glyphicon-trash"></span>', ['akt-penjualan-detail/delete-from-order-penjualan', 'id' => $data['id_penjualan_detail'], 'type' => 'order_penjualan'], [
                                                                     'class' => 'btn btn-danger',
                                                                     'data' => [
                                                                         'confirm' => 'Apakah Anda yakin akan menghapus ' . $item->nama_item . ' dari Data Barang Penjualan?',
@@ -509,179 +509,8 @@ $this->title = 'Detail Data Order Penjualan : ' . $model->no_order_penjualan;
             </div>
         </div>
     </div>
-    <style>
-        @media (min-width: 992px) {
-            .modal-content {
-                margin: 0 -150px;
-            }
 
-        }
-    </style>
-    <!-- update modal -->
-    <div class="modal fade" id="modal-ubah">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content modal-lg">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title">Ubah Data Penjualan</h4>
-                </div>
-                <?php $form = ActiveForm::begin([
-                    'method' => 'post',
-                    'action' => ['update-from-modal', 'id' => $_GET['id']],
-                ]); ?>
-                <div class="modal-body">
-
-                    <label class="label label-primary col-md-12" style="font-size: 15px;">Data Order Penjualan</label>
-
-                    <div class="row">
-                        <div class="col-md-6">
-
-                            <?= $form->field($model, 'no_order_penjualan')->textInput(['maxlength' => true, 'readonly' => true]) ?>
-
-                            <?= $form->field($model, 'tanggal_order_penjualan')->widget(\yii\jui\DatePicker::classname(), [
-                                'clientOptions' => [
-                                    'changeMonth' => true,
-                                    'changeYear' => true,
-                                ],
-                                'dateFormat' => 'yyyy-MM-dd',
-                                'options' => ['class' => 'form-control']
-                            ]) ?>
-
-                            <?= $form->field($model, 'id_customer')->widget(Select2::classname(), [
-                                'data' => $data_customer,
-                                'language' => 'en',
-                                'options' => ['placeholder' => 'Pilih Customer'],
-                                'pluginOptions' => [
-                                    'allowClear' => true
-                                ],
-                                'addon' => [
-                                    'prepend' => [
-                                        'content' => '<button type="button" class="btn btn-success" data-toggle="modal" data-target="#modal-customer"><span class="glyphicon glyphicon-plus"></span></button>',
-                                        'asButton' => true,
-                                    ],
-                                ],
-                            ]) ?>
-
-                        </div>
-                        <div class="col-md-6">
-
-                            <?= $form->field($model, 'id_sales')->widget(Select2::classname(), [
-                                'data' => $data_sales,
-                                'language' => 'en',
-                                'options' => ['placeholder' => 'Pilih Sales'],
-                                'pluginOptions' => [
-                                    'allowClear' => true
-                                ],
-                                'addon' => [
-                                    'prepend' => [
-                                        'content' => '<button type="button" class="btn btn-success" data-toggle="modal" data-target="#modal-sales"><span class="glyphicon glyphicon-plus"></span></button>',
-                                        'asButton' => true,
-                                    ],
-                                ],
-                            ])
-                            ?>
-
-                            <?= $form->field($model, 'id_mata_uang')->widget(Select2::classname(), [
-                                'data' => $data_mata_uang,
-                                'language' => 'en',
-                                'options' => ['placeholder' => 'Pilih Mata Uang'],
-                                'pluginOptions' => [
-                                    'allowClear' => true
-                                ],
-                            ])
-                            ?>
-
-                            <?= $form->field($model, 'tanggal_estimasi')->widget(\yii\jui\DatePicker::classname(), [
-                                'clientOptions' => [
-                                    'changeMonth' => true,
-                                    'changeYear' => true,
-                                ],
-                                'dateFormat' => 'yyyy-MM-dd',
-                                'options' => ['class' => 'form-control']
-                            ]) ?>
-
-                        </div>
-                    </div>
-
-                    <label class="label label-primary col-md-12" style="font-size: 15px;">Data Perhitungan Penjualan</label>
-
-                    <div class="row">
-                        <div class="col-md-6">
-                            <?= $form->field($model, 'ongkir')->widget(\yii\widgets\MaskedInput::className(), ['options' => ['required' => 'on', 'autocomplete' => 'off'], 'clientOptions' => ['alias' => 'decimal', 'groupSeparator' => '.', 'autoGroup' => true, 'removeMaskOnSubmit' => true, 'rightAlign' => false, 'min' => 0]]); ?>
-
-                            <?= $form->field($model, 'diskon')->textInput(['type' => 'number', 'required' => 'on', 'autocomplete' => 'off']) ?>
-
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <?php //$form->field($model, 'uang_muka')->widget(\yii\widgets\MaskedInput::className(), ['options' => ['required' => 'on', 'autocomplete' => 'off'], 'clientOptions' => ['alias' => 'decimal', 'groupSeparator' => '.', 'autoGroup' => true, 'removeMaskOnSubmit' => true, 'rightAlign' => false, 'min' => 0]]); 
-                                    ?>
-                                    <?= $form->field($model, 'uang_muka')->textInput(['value' => $model->uang_muka == '' ? 0 : $model->uang_muka, 'autocomplete' => 'off']); ?>
-
-                                </div>
-                                <div id="kas-bank" class="col-md-6 style-kas-bank">
-                                    <?= $form->field($model, 'id_kas_bank')->widget(Select2::classname(), [
-                                        'data' => $data_kas_bank,
-                                        'language' => 'en',
-                                        'options' => ['placeholder' => 'Pilih Kas Bank Uang Muka', 'id' => 'id_kas_bank'],
-                                        'pluginOptions' => [
-                                            'allowClear' => true,
-                                        ],
-                                    ])
-                                    ?>
-                                </div>
-                            </div>
-
-
-
-                            <table>
-                                <tr>
-                                    <td style="height: 14px;"></td>
-                                </tr>
-                            </table>
-                            <?= $form->field($model, 'pajak')->checkbox() ?>
-                            <table>
-                                <tr>
-                                    <td style="height: 14px;"></td>
-                                </tr>
-                            </table>
-
-                        </div>
-                        <div class="col-md-6">
-                            <?= $form->field($model, 'jenis_bayar')->dropDownList(
-                                array(1 => "CASH", 2 => "CREDIT"),
-                                [
-                                    'prompt' => 'Pilih Jenis Pembayaran',
-                                    'required' => 'on',
-                                ]
-                            ) ?>
-
-                            <?= $form->field($model, 'jumlah_tempo', ['options' => ['id' => 'jumlah_tempo', 'hidden' => 'yes']])->dropDownList(array(
-                                15 => 15,
-                                30 => 30,
-                                45 => 45,
-                                60 => 60,
-                            ), ['prompt' => 'Pilih Jumlah Tempo']) ?>
-
-                            <?= $form->field($model, 'materai')->widget(\yii\widgets\MaskedInput::className(), ['options' => ['required' => 'on', 'autocomplete' => 'off'], 'clientOptions' => ['alias' => 'decimal', 'groupSeparator' => '.', 'autoGroup' => true, 'removeMaskOnSubmit' => true, 'rightAlign' => false, 'min' => 0]]); ?>
-
-                            <label for="total_penjualan_detail">Total Penjualan Barang</label>
-                            <?= Html::input("text", "total_penjualan_detail", ribuan($total_penjualan_detail), ['class' => 'form-control', 'readonly' => true, 'id' => 'total_penjualan_detail']) ?>
-
-                        </div>
-                    </div>
-
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-danger pull-left" data-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-success"><span class="glyphicon glyphicon-floppy-saved"></span> Simpan</button>
-                </div>
-                <?php ActiveForm::end(); ?>
-            </div>
-        </div>
-    </div>
 </div>
-
 <style>
     .style-kas-bank {
         display: none;
@@ -694,6 +523,169 @@ $this->title = 'Detail Data Order Penjualan : ' . $model->no_order_penjualan;
 
     }
 </style>
+<!-- update modal -->
+<div class="modal fade" id="modal-ubah">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content modal-lg">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Ubah Data Penjualan</h4>
+            </div>
+            <?php $form = ActiveForm::begin([
+                'method' => 'post',
+                'action' => ['update-from-modal', 'id' => $_GET['id']],
+            ]); ?>
+            <div class="modal-body">
+
+                <label class="label label-primary col-md-12" style="font-size: 15px;">Data Order Penjualan</label>
+
+                <div class="row">
+                    <div class="col-md-6">
+
+                        <?= $form->field($model, 'no_order_penjualan')->textInput(['maxlength' => true, 'readonly' => true]) ?>
+
+                        <?= $form->field($model, 'tanggal_order_penjualan')->widget(\yii\jui\DatePicker::classname(), [
+                            'clientOptions' => [
+                                'changeMonth' => true,
+                                'changeYear' => true,
+                            ],
+                            'dateFormat' => 'yyyy-MM-dd',
+                            'options' => ['class' => 'form-control']
+                        ]) ?>
+
+                        <?= $form->field($model, 'id_customer')->widget(Select2::classname(), [
+                            'data' => $data_customer,
+                            'language' => 'en',
+                            'options' => ['placeholder' => 'Pilih Customer'],
+                            'pluginOptions' => [
+                                'allowClear' => true
+                            ],
+                            'addon' => [
+                                'prepend' => [
+                                    'content' => '<button type="button" class="btn btn-success" data-toggle="modal" data-target="#modal-customer"><span class="glyphicon glyphicon-plus"></span></button>',
+                                    'asButton' => true,
+                                ],
+                            ],
+                        ]) ?>
+
+                    </div>
+                    <div class="col-md-6">
+
+                        <?= $form->field($model, 'id_sales')->widget(Select2::classname(), [
+                            'data' => $data_sales,
+                            'language' => 'en',
+                            'options' => ['placeholder' => 'Pilih Sales'],
+                            'pluginOptions' => [
+                                'allowClear' => true
+                            ],
+                            'addon' => [
+                                'prepend' => [
+                                    'content' => '<button type="button" class="btn btn-success" data-toggle="modal" data-target="#modal-sales"><span class="glyphicon glyphicon-plus"></span></button>',
+                                    'asButton' => true,
+                                ],
+                            ],
+                        ])
+                        ?>
+
+                        <?= $form->field($model, 'id_mata_uang')->widget(Select2::classname(), [
+                            'data' => $data_mata_uang,
+                            'language' => 'en',
+                            'options' => ['placeholder' => 'Pilih Mata Uang'],
+                            'pluginOptions' => [
+                                'allowClear' => true
+                            ],
+                        ])
+                        ?>
+
+                        <?= $form->field($model, 'tanggal_estimasi')->widget(\yii\jui\DatePicker::classname(), [
+                            'clientOptions' => [
+                                'changeMonth' => true,
+                                'changeYear' => true,
+                            ],
+                            'dateFormat' => 'yyyy-MM-dd',
+                            'options' => ['class' => 'form-control']
+                        ]) ?>
+
+                    </div>
+                </div>
+
+                <label class="label label-primary col-md-12" style="font-size: 15px;">Data Perhitungan Penjualan</label>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <?= $form->field($model, 'ongkir')->widget(\yii\widgets\MaskedInput::className(), ['options' => ['required' => 'on', 'autocomplete' => 'off'], 'clientOptions' => ['alias' => 'decimal', 'groupSeparator' => '.', 'autoGroup' => true, 'removeMaskOnSubmit' => true, 'rightAlign' => false, 'min' => 0]]); ?>
+
+                        <?= $form->field($model, 'diskon')->textInput(['type' => 'number', 'required' => 'on', 'autocomplete' => 'off']) ?>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <?php //$form->field($model, 'uang_muka')->widget(\yii\widgets\MaskedInput::className(), ['options' => ['required' => 'on', 'autocomplete' => 'off'], 'clientOptions' => ['alias' => 'decimal', 'groupSeparator' => '.', 'autoGroup' => true, 'removeMaskOnSubmit' => true, 'rightAlign' => false, 'min' => 0]]); 
+                                ?>
+                                <?= $form->field($model, 'uang_muka')->textInput(['value' => $model->uang_muka == '' ? 0 : $model->uang_muka, 'autocomplete' => 'off']); ?>
+
+                            </div>
+                            <div id="kas-bank" class="col-md-6 style-kas-bank">
+                                <?= $form->field($model, 'id_kas_bank')->widget(Select2::classname(), [
+                                    'data' => $data_kas_bank,
+                                    'language' => 'en',
+                                    'options' => ['placeholder' => 'Pilih Kas Bank Uang Muka', 'id' => 'id_kas_bank'],
+                                    'pluginOptions' => [
+                                        'allowClear' => true,
+                                    ],
+                                ])
+                                ?>
+                            </div>
+                        </div>
+
+
+
+                        <table>
+                            <tr>
+                                <td style="height: 14px;"></td>
+                            </tr>
+                        </table>
+                        <?= $form->field($model, 'pajak')->checkbox() ?>
+                        <table>
+                            <tr>
+                                <td style="height: 14px;"></td>
+                            </tr>
+                        </table>
+
+                    </div>
+                    <div class="col-md-6">
+                        <?= $form->field($model, 'jenis_bayar')->dropDownList(
+                            array(1 => "CASH", 2 => "CREDIT"),
+                            [
+                                'prompt' => 'Pilih Jenis Pembayaran',
+                                'required' => 'on',
+                            ]
+                        ) ?>
+
+                        <?= $form->field($model, 'jumlah_tempo', ['options' => ['id' => 'jumlah_tempo', 'hidden' => 'yes']])->dropDownList(array(
+                            15 => 15,
+                            30 => 30,
+                            45 => 45,
+                            60 => 60,
+                        ), ['prompt' => 'Pilih Jumlah Tempo']) ?>
+
+                        <?= $form->field($model, 'materai')->widget(\yii\widgets\MaskedInput::className(), ['options' => ['required' => 'on', 'autocomplete' => 'off'], 'clientOptions' => ['alias' => 'decimal', 'groupSeparator' => '.', 'autoGroup' => true, 'removeMaskOnSubmit' => true, 'rightAlign' => false, 'min' => 0]]); ?>
+
+                        <label for="total_penjualan_detail">Total Penjualan Barang</label>
+                        <?= Html::input("text", "total_penjualan_detail", ribuan($total_penjualan_detail), ['class' => 'form-control', 'readonly' => true, 'id' => 'total_penjualan_detail']) ?>
+
+                    </div>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger pull-left" data-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-success"><span class="glyphicon glyphicon-floppy-saved"></span> Simpan</button>
+            </div>
+            <?php ActiveForm::end(); ?>
+        </div>
+    </div>
+</div>
 
 <!-- add new customer -->
 <div class="modal fade" id="modal-customer">
@@ -706,7 +698,7 @@ $this->title = 'Detail Data Order Penjualan : ' . $model->no_order_penjualan;
             </div>
             <?php $form = ActiveForm::begin([
                 'method' => 'post',
-                'action' => ['add-new-customer', 'id' => $_GET['id']],
+                'action' => ['add-new-customer', 'id' => $_GET['id'], 'type' => 'order_penjualan'],
             ]); ?>
             <div class="modal-body">
 
@@ -737,7 +729,7 @@ $this->title = 'Detail Data Order Penjualan : ' . $model->no_order_penjualan;
             </div>
             <?php $form = ActiveForm::begin([
                 'method' => 'post',
-                'action' => ['add-new-sales', 'id' => $_GET['id']],
+                'action' => ['add-new-sales', 'id' => $_GET['id'], 'type' => 'order_penjualan'],
             ]); ?>
             <div class="modal-body">
 
@@ -807,8 +799,6 @@ $script = <<< JS
     {
         $("#aktpenjualan-jumlah_tempo").hide();
         $('#jumlah_tempo').hide(); 
-        // $("#aktpenjualan-tanggal_tempo").hide();
-        // $('#tanggal_tempo').hide(); 
             
     }
 
@@ -826,8 +816,6 @@ $script = <<< JS
     {
         $("#aktpenjualan-jumlah_tempo").show();
         $('#jumlah_tempo').show(); 
-        // $("#aktpenjualan-tanggal_tempo").show();
-        // $('#tanggal_tempo').show(); 
     }
     });
 
@@ -837,8 +825,6 @@ $script = <<< JS
     {
         $("#aktpenjualan-jumlah_tempo").hide();
         $('#jumlah_tempo').hide(); 
-        // $("#aktpenjualan-tanggal_tempo").hide();
-        // $('#tanggal_tempo').hide(); 
             
     }
 
@@ -846,73 +832,12 @@ $script = <<< JS
     {
         $("#aktpenjualan-jumlah_tempo").show();
         $('#jumlah_tempo').show(); 
-        // $("#aktpenjualan-tanggal_tempo").show();
-        // $('#tanggal_tempo').show(); 
     }
 
     });
     
 
-    // $('#jumlah_tempo').change(function(){
-    //     var id = $('#id_penjualan').val();
-    //     $.ajax({
-    //         url:'index.php?r=akt-penjualan-penjualan/get-tanggal',
-    //         data: {id : id},
-    //         type:'GET',
-    //         dataType:'json',
-    //         success:function(data){
-    //             if ($('#aktpenjualan-jumlah_tempo').val() == 15) {
-    //                 var tgl = new Date(new Date(data.tanggal_penjualan).getTime() + (15*24*60*60*1000));
-    //                 var t = new Date(tgl), month = '' + (t.getMonth() + 1), day = '' + t.getDate(), year = t.getFullYear();
-    //                 if (month.length < 2) 
-    //                     month = '0' + month;
-    //                 if (day.length < 2) 
-    //                     day = '0' + day;
-
-    //                 var g = [year, month, day].join('-');
-                    
-    //                 $("#aktpenjualan-tanggal_tempo").val(g);
-    //             }
-    //             if ($('#aktpenjualan-jumlah_tempo').val() == 30) {
-    //                 var tgl = new Date(new Date(data.tanggal_penjualan).getTime() + (30*24*60*60*1000));
-    //                 var t = new Date(tgl), month = '' + (t.getMonth() + 1), day = '' + t.getDate(), year = t.getFullYear();
-    //                 if (month.length < 2) 
-    //                     month = '0' + month;
-    //                 if (day.length < 2) 
-    //                     day = '0' + day;
-
-    //                 var g = [year, month, day].join('-');
-                    
-    //                 $("#aktpenjualan-tanggal_tempo").val(g);
-    //             }
-    //             if ($('#aktpenjualan-jumlah_tempo').val() == 45) {
-    //                 var tgl = new Date(new Date(data.tanggal_penjualan).getTime() + (45*24*60*60*1000));
-    //                 var t = new Date(tgl), month = '' + (t.getMonth() + 1), day = '' + t.getDate(), year = t.getFullYear();
-    //                 if (month.length < 2) 
-    //                     month = '0' + month;
-    //                 if (day.length < 2) 
-    //                     day = '0' + day;
-
-    //                 var g = [year, month, day].join('-');
-                    
-    //                 $("#aktpenjualan-tanggal_tempo").val(g);
-    //             }
-    //             if ($('#aktpenjualan-jumlah_tempo').val() == 60) {
-    //                 var tgl = new Date(new Date(data.tanggal_penjualan).getTime() + (60*24*60*60*1000));
-    //                 var t = new Date(tgl), month = '' + (t.getMonth() + 1), day = '' + t.getDate(), year = t.getFullYear();
-    //                 if (month.length < 2) 
-    //                     month = '0' + month;
-    //                 if (day.length < 2) 
-    //                     day = '0' + day;
-
-    //                 var g = [year, month, day].join('-');
-                    
-    //                 $("#aktpenjualan-tanggal_tempo").val(g);
-    //             }
-    //         }
-    //     })
-
-    // })
+    
      
 JS;
 $this->registerJs($script);
@@ -930,7 +855,6 @@ $this->registerJs($script);
 
     uangMuka.addEventListener("input", function(e) {
         uangMuka.value = formatRupiah(this.value);
-        console.log('ok');
         let val = e.target.value;
         if (val == '' || val == 0) {
             kasBank.classList.add('style-kas-bank');

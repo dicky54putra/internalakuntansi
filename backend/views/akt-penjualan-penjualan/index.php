@@ -20,6 +20,12 @@ $this->title = 'Data Penjualan';
     </ul>
     <?php // echo $this->render('_search', ['model' => $searchModel]); 
     ?>
+    <?php if ($is_penjualan->status == 1) { ?>
+        <p>
+            <?= Html::a('<span class="glyphicon glyphicon-plus"></span> Tambah Baru', ['create'], ['class' => 'btn btn-success']) ?>
+        </p>
+    <?php } ?>
+
 
     <?= GridView::widget([
         'dataProvider' => $dataProvider,

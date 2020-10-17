@@ -3,6 +3,7 @@
 namespace backend\models;
 
 use Yii;
+use yii\helpers\ArrayHelper;
 
 /**
  * This is the model class for table "akt_pembelian".
@@ -42,9 +43,9 @@ class AktPembelian extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['no_order_pembelian', 'id_customer',], 'required'],
-            [['id_customer', 'id_mata_uang', 'diskon', 'pajak', 'total', 'jenis_bayar', 'jatuh_tempo', 'materai', 'id_penagih', 'status', 'uang_muka', 'id_kas_bank'], 'integer'],
-            [['tanggal_pembelian', 'tanggal_faktur_pembelian', 'tanggal_tempo', 'tanggal_order_pembelian', 'tanggal_penerimaan', 'tanggal_estimasi'], 'safe'],
+            [['id_customer',], 'required'],
+            [['id_customer', 'id_mata_uang', 'diskon', 'pajak', 'total', 'jenis_bayar', 'jatuh_tempo', 'id_penagih', 'status', 'id_kas_bank'], 'integer'],
+            [['tanggal_pembelian', 'tanggal_faktur_pembelian', 'tanggal_tempo', 'tanggal_order_pembelian', 'tanggal_penerimaan', 'tanggal_estimasi', 'uang_muka', 'materai'], 'safe'],
             [['no_order_pembelian', 'no_pembelian', 'no_faktur_pembelian', 'no_penerimaan', 'pengantar', 'penerima', 'no_spb'], 'string', 'max' => 255],
             [['keterangan_penerimaan'], 'string'],
         ];
@@ -102,5 +103,58 @@ class AktPembelian extends \yii\db\ActiveRecord
     public function getpengirim()
     {
         return $this->hasOne(AktMitraBisnis::className(), ['id_mitra_bisnis' => 'id_pengirim'])->from(["pengirim" => AktMitraBisnis::tableName()]);
+    }
+
+    public static function cekButtonPembelian()
+    {
+        $pengaturan = Pengaturan::find()->select(['status'])->where(['like', 'nama_pengaturan', 'Button Pembelian'])->one();
+
+        return $pengaturan;
+    }
+
+    public static function dataCustomer()
+    {
+
+
+        $data_customer = ArrayHelper::map(
+            AktMitraBisnis::find()
+                ->where(["!=", 'tipe_mitra_bisnis', 1])
+                ->all(),
+            'id_mitra_bisnis',
+            function ($model) {
+                return $model['kode_mitra_bisnis'] . ' - ' . $model['nama_mitra_bisnis'];
+            }
+        );
+
+        return $data_customer;
+    }
+
+
+    public static function dataMataUang()
+    {
+        $data_mata_uang = ArrayHelper::map(
+            AktMataUang::find()
+                ->where(["=", 'status_default', 1])
+                ->all(),
+            'id_mata_uang',
+            function ($model) {
+                return $model['kode_mata_uang'] . ' - ' . $model['mata_uang'];
+            }
+        );
+
+        return $data_mata_uang;
+    }
+
+    public static function dataKasBank()
+    {
+        $data_kas_bank = ArrayHelper::map(
+            AktKasBank::find()->all(),
+            'id_kas_bank',
+            function ($model) {
+                return $model['kode_kas_bank'] . ' - ' . $model['keterangan'] . ' : ' . ribuan($model['saldo']);
+            }
+        );
+
+        return $data_kas_bank;
     }
 }

@@ -22,7 +22,6 @@ use backend\models\AktHistoryTransaksi;
 use backend\models\AktPembelianPenerimaan;
 use backend\models\JurnalTransaksi;
 use backend\models\JurnalTransaksiDetail;
-use backend\models\JurnalUmumDetail;
 use backend\models\AktJurnalUmumDetail;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Json;
@@ -146,7 +145,16 @@ class AktPembelianController extends Controller
             $supplier->save(FALSE);
 
             Yii::$app->session->setFlash('success', [['Perhatian!', 'Supplier baru Berhasil Di Tambahkan']]);
-            return $this->redirect(['view', 'id' => $model->id_pembelian]);
+
+            $tipe = Yii::$app->request->get('tipe');
+
+            if ($tipe == 'order_pembelian') {
+                $url = 'view';
+            } else if ($tipe == 'pembelian_langsung') {
+                $url = 'akt-pembelian-pembelian/view';
+            }
+
+            return $this->redirect([$url, 'id' => $model->id_pembelian]);
         }
 
         $data_item_stok = ArrayHelper::map(
@@ -186,6 +194,9 @@ class AktPembelianController extends Controller
             }
         );
 
+
+
+
         $data_penagih = ArrayHelper::map(AktMitraBisnis::find()->all(), 'id_mitra_bisnis', 'nama_mitra_bisnis');
         $data_pengirim = ArrayHelper::map(AktMitraBisnis::find()->all(), 'id_mitra_bisnis', 'nama_mitra_bisnis');
         return $this->render('view', [
@@ -198,7 +209,8 @@ class AktPembelianController extends Controller
             'data_penagih' => $data_penagih,
             'data_pengirim' => $data_pengirim,
             'data_customer' => $data_customer,
-            'data_mata_uang' => $data_mata_uang
+            'data_mata_uang' => $data_mata_uang,
+
         ]);
     }
 

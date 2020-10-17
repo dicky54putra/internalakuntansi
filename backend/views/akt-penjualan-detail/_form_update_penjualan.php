@@ -34,20 +34,20 @@ use yii\helpers\Url;
                             ])
                             ?>
                             <?= $form->field($model, 'id_item_harga_jual')->widget(DepDrop::classname(), [
-                                    'data' => $data_level,
-                                    'type' => DepDrop::TYPE_SELECT2,
-                                    'options' => ['id'=>'id-harga-jual', 'placeholder' => 'Pilih Jenis...'],
-                                    'select2Options' => ['pluginOptions' => ['allowClear' => true]],
-                                    'pluginOptions' => [
-                                        'depends' => ['id_item_stok'],
-                                        'url'=>Url::to(['/akt-penjualan/level-harga'])
-                                    ]
-                                ])->label('Jenis');
+                                'data' => $data_level,
+                                'type' => DepDrop::TYPE_SELECT2,
+                                'options' => ['id' => 'id-harga-jual', 'placeholder' => 'Pilih Jenis...'],
+                                'select2Options' => ['pluginOptions' => ['allowClear' => true]],
+                                'pluginOptions' => [
+                                    'depends' => ['id_item_stok'],
+                                    'url' => Url::to(['/akt-penjualan/level-harga'])
+                                ]
+                            ])->label('Jenis');
                             ?>
 
                             <?= $form->field($model, 'qty')->textInput(['autocomplete' => 'off']) ?>
 
-                            <?= $form->field($model, 'harga')->textInput(['maxlength' => true, 'autocomplete' => 'off','id' => 'harga']) ?>
+                            <?= $form->field($model, 'harga')->textInput(['maxlength' => true, 'autocomplete' => 'off', 'id' => 'harga']) ?>
 
                         </div>
                         <div class="col-md-6">
@@ -60,7 +60,7 @@ use yii\helpers\Url;
                     </div>
 
                     <div class="form-group">
-                        <?= Html::a('<span class="glyphicon glyphicon-circle-arrow-left"></span> Kembali', ['akt-penjualan-penjualan/view', 'id' => $model->id_penjualan], ['class' => 'btn btn-warning']) ?>
+                        <?= Html::a('<span class="glyphicon glyphicon-circle-arrow-left"></span> Kembali', ['akt-penjualan/view', 'id' => $model->id_penjualan], ['class' => 'btn btn-warning']) ?>
                         <?= Html::submitButton('<span class="glyphicon glyphicon-floppy-disk"></span> Simpan', ['class' => 'btn btn-success']) ?>
                     </div>
 

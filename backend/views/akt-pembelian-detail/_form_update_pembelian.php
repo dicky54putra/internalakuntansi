@@ -44,7 +44,7 @@ use kartik\select2\Select2;
                     </div>
 
                     <div class="form-group">
-                        <?= Html::a('<span class="glyphicon glyphicon-circle-arrow-left"></span> Kembali', ['akt-pembelian-pembelian/view', 'id' => $model->id_pembelian], ['class' => 'btn btn-warning']) ?>
+                        <?= Html::a('<span class="glyphicon glyphicon-circle-arrow-left"></span> Kembali', ['akt-pembelian/view', 'id' => $model->id_pembelian], ['class' => 'btn btn-warning']) ?>
                         <?= Html::submitButton('<span class="glyphicon glyphicon-floppy-disk"></span> Simpan', ['class' => 'btn btn-success']) ?>
                     </div>
 

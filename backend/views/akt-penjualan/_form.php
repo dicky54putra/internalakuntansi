@@ -118,7 +118,7 @@ use kartik\select2\Select2;
             </div>
             <?php $form = ActiveForm::begin([
                 'method' => 'post',
-                'action' => ['add-new-customer'],
+                'action' => ['add-new-customer', 'type' => 'order_penjualan'],
             ]); ?>
             <div class="modal-body">
 
@@ -146,7 +146,7 @@ use kartik\select2\Select2;
             </div>
             <?php $form = ActiveForm::begin([
                 'method' => 'post',
-                'action' => ['add-new-sales'],
+                'action' => ['add-new-sales', 'type' => 'order_penjualan'],
             ]); ?>
             <div class="modal-body">
 

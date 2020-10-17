@@ -10,8 +10,11 @@ use yii\widgets\ActiveForm;
 use kartik\select2\Select2;
 use kartik\depdrop\DepDrop;
 use yii\helpers\Url;
+use backend\models\AktPenjualan;
 use backend\models\AktItemHargaJual;
 use backend\models\AktLevelHarga;
+use backend\models\AktApprover;
+use backend\models\AktKasBank;
 /* @var $this yii\web\View */
 /* @var $model backend\models\AktPenjualan */
 
@@ -19,6 +22,15 @@ $this->title = 'Detail Data Penjualan : ' . $model->no_penjualan;
 // $this->params['breadcrumbs'][] = ['label' => 'Akt Penjualans', 'url' => ['index']];
 // $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
+
+$id_login =  Yii::$app->user->identity->id_login;
+$cek_login = AktApprover::find()
+    ->leftJoin('akt_jenis_approver', 'akt_jenis_approver.id_jenis_approver = akt_approver.id_jenis_approver')
+    ->where(['=', 'nama_jenis_approver', 'Penjualan'])
+    ->andWhere(['id_login' => $id_login])
+    ->asArray()
+    ->one();
+$count_query_detail = AktPenjualanDetail::find()->where(['id_penjualan' => $model->id_penjualan])->count();
 ?>
 <div class="akt-penjualan-penjualan-view">
 
@@ -35,12 +47,33 @@ $this->title = 'Detail Data Penjualan : ' . $model->no_penjualan;
         if ($model->status == 2) {
             # code...
         ?>
-            <?php // Html::a('<span class="glyphicon glyphicon-copy"></span> Ubah Data Penjualan', ['update-data-penjualan', 'id' => $model->id_penjualan], ['class' => 'btn btn-success']) 
-            ?>
+
+            <?php if ($count_query_detail != 0) { ?>
+                <?php if ($model->jenis_bayar == null) {
+                ?>
+                    <?= Html::a('<span class="glyphicon glyphicon-edit"></span> Ubah Data penjualan', ['#', 'id' => $model->id_penjualan], [
+                        'class' => 'btn btn-info',
+                        'data-toggle' => 'modal',
+                        'data-target' => '#modal-default'
+                    ]) ?>
+
+                <?php  } else if ($model->jenis_bayar != null) {
+                ?>
+                    <?= Html::a('<span class="glyphicon glyphicon-trash"></span> Hapus Data Pembelian', ['hapus-data-penjualan', 'id' => $model->id_penjualan], [
+                        'class' => 'btn btn-danger',
+                        'data' => [
+                            'confirm' => 'Anda yakin ingin menghapus data?',
+                            'method' => 'post',
+                        ],
+                    ]) ?>
+                <?php  }
+                ?>
+            <?php } ?>
+
             <?php
             $show_hide = 0;
             $query_detail = AktPenjualanDetail::find()->where(['id_penjualan' => $model->id_penjualan])->all();
-            $count_query_detail = AktPenjualanDetail::find()->where(['id_penjualan' => $model->id_penjualan])->count();
+
             foreach ($query_detail as $key => $data) {
                 # code...
                 $item_stok = AktItemStok::findOne($data['id_item_stok']);
@@ -99,7 +132,6 @@ $this->title = 'Detail Data Penjualan : ' . $model->no_penjualan;
                                         'attribute' => 'tanggal_penjualan',
                                         'value' => function ($model) {
                                             if (!empty($model->tanggal_penjualan)) {
-                                                # code...
                                                 return tanggal_indo($model->tanggal_penjualan, true);
                                             } else {
                                                 # code...
@@ -179,7 +211,11 @@ $this->title = 'Detail Data Penjualan : ' . $model->no_penjualan;
                                                 return "<span class='label label-default'>Order Penjualan</span>";
                                             } elseif ($model->status == 2) {
                                                 # code...
-                                                return "<span class='label label-warning'>Penjualan disetujui pada " . $the_approver_date . " oleh " . $the_approver_name . "</span>";
+                                                if (AktPenjualan::cekButtonPenjualan()->status == 0 && $model->no_order_penjualan != null) {
+                                                    return "<span class='label label-warning'>Penjualan disetujui pada " . $the_approver_date . " oleh " . $the_approver_name . "</span>";
+                                                } else if (AktPenjualan::cekButtonPenjualan()->status == 1 || $model->no_order_penjualan == null) {
+                                                    return "<span class='label label-warning'>Penjualan </span>";
+                                                }
                                             } elseif ($model->status == 3) {
                                                 # code...
                                                 return "<span class='label label-primary'>Pengiriman</span>";
@@ -206,10 +242,68 @@ $this->title = 'Detail Data Penjualan : ' . $model->no_penjualan;
                         </ul>
                         <div class="tab-content">
 
-                            <div id="data-barang" class="tab-pane fade in active" style="margin-top:20px;">
-                                <div class="row" style="margin-top:30px;">
+                            <div id="data-barang" class="tab-pane fade in active" style="margin-top:10px;">
+                                <div class="row">
                                     <div class="col-md-12">
+                                        <div>
+                                            <div class="row form-user">
+                                                <?php
+                                                if ($model->status <= 2 && $cek_login == null && $is_penjualan->status == 1 && $model->jenis_bayar == null) {
+                                                    # code...
+                                                ?>
+                                                    <?php $form = ActiveForm::begin([
+                                                        'method' => 'post',
+                                                        'action' => ['akt-penjualan-detail/create-from-order-penjualan'],
+                                                    ]); ?>
 
+                                                    <?= $form->field($model_penjualan_detail_baru, 'id_penjualan')->textInput(['readonly' => true, 'type' => 'hidden'])->label(FALSE) ?>
+
+                                                    <div class="col-md-4">
+                                                        <?= $form->field($model_penjualan_detail_baru, 'id_item_stok')->widget(Select2::classname(), [
+                                                            'data' => $data_item_stok,
+                                                            'language' => 'en',
+                                                            'options' => ['placeholder' => 'Pilih Barang', 'id' => 'id_item_stok'],
+                                                            'pluginOptions' => [
+                                                                'allowClear' => true
+                                                            ],
+                                                        ])
+                                                        ?>
+                                                    </div>
+
+                                                    <div class="col-md-3">
+                                                        <?= $form->field($model_penjualan_detail_baru, 'id_item_harga_jual')->widget(DepDrop::classname(), [
+                                                            'type' => DepDrop::TYPE_SELECT2,
+                                                            'options' => ['id' => 'id-harga-jual', 'placeholder' => 'Pilih Jenis...'],
+                                                            'select2Options' => ['pluginOptions' => ['allowClear' => true]],
+                                                            'pluginOptions' => [
+                                                                'depends' => ['id_item_stok'],
+                                                                'url' => Url::to(['/akt-penjualan/level-harga'])
+                                                            ]
+                                                        ])->label('Jenis');
+                                                        ?>
+                                                    </div>
+                                                    <div class="col-md-2">
+                                                        <?= $form->field($model_penjualan_detail_baru, 'harga')->textInput(['maxlength' => true, 'readonly' => false, 'autocomplete' => 'off', 'id' => 'harga']) ?>
+                                                    </div>
+                                                    <div class="col-md-1">
+                                                        <?= $form->field($model_penjualan_detail_baru, 'qty')->textInput(['autocomplete' => 'off']) ?>
+                                                    </div>
+                                                    <div class="col-md-2">
+                                                        <?= $form->field($model_penjualan_detail_baru, 'diskon')->textInput(['placeholder' => 'Diskon %', 'autocomplete' => 'off']) ?>
+                                                    </div>
+
+                                                    <div class="col-md-10">
+                                                        <?= $form->field($model_penjualan_detail_baru, 'keterangan')->textarea(['rows' => 1, 'placeholder' => 'Keterangan'])->label(FALSE) ?>
+                                                    </div>
+
+                                                    <div class="col-md-2">
+                                                        <?= Html::submitButton('<span class="glyphicon glyphicon-plus"></span> Tambahkan', ['class' => 'btn btn-success', 'name' => 'create-from-penjualan', 'style' => 'width:100%;']) ?>
+                                                    </div>
+
+                                                    <?php ActiveForm::end(); ?>
+                                                <?php } ?>
+                                            </div>
+                                        </div>
                                         <table class="table">
                                             <thead>
                                                 <tr>
@@ -222,6 +316,7 @@ $this->title = 'Detail Data Penjualan : ' . $model->no_penjualan;
                                                     <th style="width: 10%;">Diskon %</th>
                                                     <th style="width: 20%;">Keterangan</th>
                                                     <th style="width: 10%;">Sub Total</th>
+
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -263,6 +358,21 @@ $this->title = 'Detail Data Penjualan : ' . $model->no_penjualan;
                                                         <td><?= $data['diskon'] ?></td>
                                                         <td><?= $data['keterangan'] ?></td>
                                                         <td style="text-align: right;"><?= ribuan($data['total']) ?></td>
+                                                        <?php
+                                                        if ($model->status <= 2 && $cek_login == null && $is_penjualan->status == 1 && $model->jenis_bayar == null) {
+                                                            # code...
+                                                        ?>
+                                                            <td style="white-space: nowrap;">
+                                                                <?= Html::a('<span class="glyphicon glyphicon-edit"></span>', ['akt-penjualan-detail/update-from-penjualan', 'id' => $data['id_penjualan_detail']], ['class' => 'btn btn-primary']) ?>
+                                                                <?= Html::a('<span class="glyphicon glyphicon-trash"></span>', ['akt-penjualan-detail/delete-from-order-penjualan', 'id' => $data['id_penjualan_detail'], 'type' => 'penjualan_langsung'], [
+                                                                    'class' => 'btn btn-danger',
+                                                                    'data' => [
+                                                                        'confirm' => 'Apakah Anda yakin akan menghapus ' . $item->nama_item . ' dari Data Barang Penjualan?',
+                                                                        'method' => 'post',
+                                                                    ],
+                                                                ]) ?>
+                                                            </td>
+                                                        <?php } ?>
                                                     </tr>
                                                 <?php
                                                 }
@@ -302,7 +412,10 @@ $this->title = 'Detail Data Penjualan : ' . $model->no_penjualan;
                                                     <th style="text-align: right;"><?= ribuan($model->materai) ?></th>
                                                 </tr>
                                                 <tr>
-                                                    <th colspan="8" style="text-align: right;">Uang Muka</th>
+                                                    <?php
+                                                    $akt_kas_bank = AktKasBank::findOne($model->id_kas_bank);
+                                                    ?>
+                                                    <th colspan="8" style="text-align: right;">Uang Muka <?= $akt_kas_bank == false ? '' :  ' | ' . $akt_kas_bank['keterangan'] ?> </th>
                                                     <th style="text-align: right;"><?= ribuan($model->uang_muka) ?></th>
                                                 </tr>
                                                 <tr>
@@ -330,7 +443,9 @@ $this->title = 'Detail Data Penjualan : ' . $model->no_penjualan;
                                                         [
                                                             'attribute' => 'tanggal_order_penjualan',
                                                             'value' => function ($model) {
-                                                                return tanggal_indo($model->tanggal_order_penjualan, true);
+                                                                if ($model->tanggal_order_penjualan != null) {
+                                                                    return tanggal_indo($model->tanggal_order_penjualan, true);
+                                                                }
                                                             }
                                                         ],
                                                         [
@@ -484,17 +599,248 @@ $this->title = 'Detail Data Penjualan : ' . $model->no_penjualan;
         </div>
     </div>
 
+    <style>
+        .style-kas-bank {
+            display: none;
+        }
+
+        @media (min-width: 992px) {
+            .modal-content {
+                margin: 0 -150px;
+            }
+
+        }
+    </style>
+    <div class="modal fade" id="modal-default">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content modal-lg">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Ubah Data Penjualan</h4>
+                </div>
+                <?php $form = ActiveForm::begin([
+                    'method' => 'post',
+                    'action' => ['update-from-modal', 'id' => $_GET['id']],
+                ]); ?>
+                <div class="modal-body">
+
+                    <label class="label label-primary col-md-12" style="font-size: 15px;">Data Penjualan</label>
+
+                    <div class="row">
+                        <div class="col-md-6">
+
+                            <?= $form->field($model, 'no_penjualan')->textInput(['maxlength' => true, 'readonly' => true]) ?>
+
+                            <?= $form->field($model, 'tanggal_penjualan')->widget(\yii\jui\DatePicker::classname(), [
+                                'clientOptions' => [
+                                    'changeMonth' => true,
+                                    'changeYear' => true,
+                                ],
+                                'dateFormat' => 'yyyy-MM-dd',
+                                'options' => ['class' => 'form-control']
+                            ]) ?>
+
+                            <?= $form->field($model, 'id_customer')->widget(Select2::classname(), [
+                                'data' => $data_customer,
+                                'language' => 'en',
+                                'options' => ['placeholder' => 'Pilih Customer'],
+                                'pluginOptions' => [
+                                    'allowClear' => true
+                                ],
+                                'addon' => [
+                                    'prepend' => [
+                                        'content' => '<button type="button" class="btn btn-success" data-toggle="modal" data-target="#modal-customer"><span class="glyphicon glyphicon-plus"></span></button>',
+                                        'asButton' => true,
+                                    ],
+                                ],
+                            ]) ?>
+
+                        </div>
+                        <div class="col-md-6">
+
+                            <?= $form->field($model, 'id_sales')->widget(Select2::classname(), [
+                                'data' => $data_sales,
+                                'language' => 'en',
+                                'options' => ['placeholder' => 'Pilih Sales'],
+                                'pluginOptions' => [
+                                    'allowClear' => true
+                                ],
+                                'addon' => [
+                                    'prepend' => [
+                                        'content' => '<button type="button" class="btn btn-success" data-toggle="modal" data-target="#modal-sales"><span class="glyphicon glyphicon-plus"></span></button>',
+                                        'asButton' => true,
+                                    ],
+                                ],
+                            ])
+                            ?>
+
+                            <?= $form->field($model, 'id_mata_uang')->widget(Select2::classname(), [
+                                'data' => $data_mata_uang,
+                                'language' => 'en',
+                                'options' => ['placeholder' => 'Pilih Mata Uang'],
+                                'pluginOptions' => [
+                                    'allowClear' => true
+                                ],
+                            ])
+                            ?>
+
+                            <?= $form->field($model, 'tanggal_estimasi')->widget(\yii\jui\DatePicker::classname(), [
+                                'clientOptions' => [
+                                    'changeMonth' => true,
+                                    'changeYear' => true,
+                                ],
+                                'dateFormat' => 'yyyy-MM-dd',
+                                'options' => ['class' => 'form-control']
+                            ]) ?>
+
+                        </div>
+                    </div>
+
+                    <label class="label label-primary col-md-12" style="font-size: 15px;">Data Perhitungan Penjualan</label>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <?= $form->field($model, 'ongkir')->widget(\yii\widgets\MaskedInput::className(), ['options' => ['autocomplete' => 'off', 'value' => $model->ongkir == '' ? 0 : $model->ongkir], 'clientOptions' => [
+                                'alias' => 'decimal', 'groupSeparator' => '.', 'autoGroup' => true, 'removeMaskOnSubmit' => true, 'rightAlign' => false, 'min' => 0
+                            ]]); ?>
+
+                            <?= $form->field($model, 'diskon')->widget(\yii\widgets\MaskedInput::className(), ['options' => ['autocomplete' => 'off', 'value' => $model->diskon == '' ? 0 : $model->diskon], 'clientOptions' => [
+                                'alias' => 'decimal', 'groupSeparator' => '.', 'autoGroup' => true, 'removeMaskOnSubmit' => true, 'rightAlign' => false, 'min' => 0
+                            ]]); ?>
+
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <?= $form->field($model, 'uang_muka')->textInput(['value' => $model->uang_muka == '' ? 0 : $model->uang_muka, 'autocomplete' => 'off']); ?>
+
+                                </div>
+                                <div id="kas-bank" class="col-md-12 kas-bank style-kas-bank">
+                                    <?= $form->field($model, 'id_kas_bank')->widget(Select2::classname(), [
+                                        'data' => $data_kas_bank,
+                                        'language' => 'en',
+                                        'options' => ['placeholder' => 'Pilih Kas Bank Uang Muka', 'id' => 'id_kas_bank'],
+                                        'pluginOptions' => [
+                                            'allowClear' => true,
+                                        ],
+                                    ])
+                                    ?>
+                                </div>
+                            </div>
+
+                            <table>
+                                <tr>
+                                    <td style="height: 14px;"></td>
+                                </tr>
+                            </table>
+                            <?= $form->field($model, 'pajak')->checkbox() ?>
+                            <table>
+                                <tr>
+                                    <td style="height: 14px;"></td>
+                                </tr>
+                            </table>
+
+                        </div>
+                        <div class="col-md-6">
+                            <?= $form->field($model, 'jenis_bayar')->dropDownList(
+                                array(1 => "CASH", 2 => "CREDIT"),
+                                [
+                                    'prompt' => 'Pilih Jenis Pembayaran',
+                                    'required' => 'on',
+                                ]
+                            ) ?>
+
+                            <?= $form->field($model, 'jumlah_tempo', ['options' => ['id' => 'jumlah_tempo', 'hidden' => 'yes']])->dropDownList(array(
+                                15 => 15,
+                                30 => 30,
+                                45 => 45,
+                                60 => 60,
+                            ), ['prompt' => 'Pilih Jumlah Tempo']) ?>
+
+                            <?= $form->field($model, 'materai')->widget(\yii\widgets\MaskedInput::className(), ['options' => ['autocomplete' => 'off'], 'clientOptions' => ['alias' => 'decimal', 'groupSeparator' => '.', 'autoGroup' => true, 'removeMaskOnSubmit' => true, 'rightAlign' => false, 'min' => 0]]); ?>
+
+                            <label for="total_penjualan_detail">Total Penjualan Barang</label>
+                            <?= Html::input("text", "total_penjualan_detail", ribuan($total_penjualan_detail), ['class' => 'form-control', 'readonly' => true, 'id' => 'total_penjualan_detail']) ?>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger pull-left" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-success"><span class="glyphicon glyphicon-floppy-saved"></span> Simpan</button>
+                </div>
+                <?php ActiveForm::end(); ?>
+            </div>
+        </div>
+    </div>
+
+    <!-- add new customer -->
+    <div class="modal fade" id="modal-customer">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Tambah Data Customer</h4>
+                </div>
+                <?php $form = ActiveForm::begin([
+                    'method' => 'post',
+                    'action' => ['akt-penjualan/add-new-customer', 'id' => $_GET['id'], 'type' => 'penjualan_langsung'],
+                ]); ?>
+                <div class="modal-body">
+
+                    <?= $form->field($model_new_customer, 'nama_mitra_bisnis')->textInput(['maxlength' => true]) ?>
+
+                    <?= $form->field($model_new_customer, 'deskripsi_mitra_bisnis')->textarea(['rows' => 3]) ?>
+
+                    <?= $form->field($model_new_customer, 'tipe_mitra_bisnis')->dropDownList(array(1 => "Customer", 3 => "Customer & Supplier")) ?>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger pull-left" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-success"><span class="glyphicon glyphicon-plus"></span> Tambah</button>
+                </div>
+                <?php ActiveForm::end(); ?>
+            </div>
+        </div>
+    </div>
+
+    <!-- add new sales -->
+    <div class="modal fade" id="modal-sales">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Tambah Data Sales</h4>
+                </div>
+                <?php $form = ActiveForm::begin([
+                    'method' => 'post',
+                    'action' => ['akt-penjualan/add-new-sales', 'id' => $_GET['id'], 'type' => 'penjualan_langsung'],
+                ]); ?>
+                <div class="modal-body">
+
+                    <?= $form->field($model_new_sales, 'nama_sales')->textInput(['maxlength' => true]) ?>
+
+                    <?= $form->field($model_new_sales, 'telepon')->textInput(['maxlength' => true]) ?>
+
+                    <?= $form->field($model_new_sales, 'email')->textInput(['maxlength' => true]) ?>
+
+                    <?= $form->field($model_new_sales, 'alamat')->textarea(['rows' => 3]) ?>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger pull-left" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-success"><span class="glyphicon glyphicon-plus"></span> Tambah</button>
+                </div>
+                <?php ActiveForm::end(); ?>
+            </div>
+        </div>
+    </div>
+
+
     <?php
     $script = <<< JS
 
-    // $('#id_item_stok').change(function(){
-	// var id = $(this).val();
-
-	// $.get('index.php?r=akt-penjualan-detail/get-harga-item',{ id : id },function(data){
-	// 	var data = $.parseJSON(data);
-	// 	$('#aktpenjualandetail-harga').attr('value',data.hpp);
-	// });
-    // });
 
     $(document).ready(function(){ 
 
@@ -579,3 +925,41 @@ $this->title = 'Detail Data Penjualan : ' . $model->no_penjualan;
 JS;
     $this->registerJs($script);
     ?>
+
+    <script>
+        const kasBank = document.querySelector('#kas-bank');
+        const uangMuka = document.querySelector('#aktpenjualan-uang_muka');
+        const idKasBank = document.querySelector('#id_kas_bank');
+
+        if (uangMuka.value != 0) {
+            kasBank.classList.remove('style-kas-bank')
+        }
+
+        uangMuka.addEventListener("input", function(e) {
+            uangMuka.value = formatRupiah(this.value);
+            let val = e.target.value;
+            if (val == '' || val == 0) {
+                kasBank.classList.add('style-kas-bank');
+                idKasBank.removeAttribute('required');
+            } else {
+                kasBank.classList.remove('style-kas-bank');
+                idKasBank.setAttribute('required', true);
+            }
+        });
+
+        function formatRupiah(angka, prefix) {
+            var number_string = angka.replace(/[^,\d]/g, '').toString(),
+                split = number_string.split(','),
+                sisa = split[0].length % 3,
+                rupiah = split[0].substr(0, sisa),
+                ribuan = split[0].substr(sisa).match(/\d{3}/gi);
+
+            if (ribuan) {
+                separator = sisa ? '.' : '';
+                rupiah += separator + ribuan.join('.');
+            }
+
+            rupiah = split[1] != undefined ? rupiah + ',' + split[1] : rupiah;
+            return prefix == undefined ? rupiah : (rupiah ? 'Rp. ' + rupiah : '');
+        }
+    </script>
