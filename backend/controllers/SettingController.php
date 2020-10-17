@@ -6,6 +6,7 @@ use backend\models\AktKota;
 use Yii;
 use backend\models\Setting;
 use backend\models\SettingSearch;
+use yii\web\UploadedFile;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -93,7 +94,9 @@ class SettingController extends Controller
 
         $data_kota = ArrayHelper::map(AktKota::find()->all(), 'id_kota', 'nama_kota');
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+        if ($model->load(Yii::$app->request->post())) {
+            $model->foto = UploadedFile::getInstance($model, 'foto');
+            $model->save();
             return $this->redirect(['view', 'id' => $model->id_setting]);
         }
 
@@ -102,6 +105,8 @@ class SettingController extends Controller
             'data_kota' => $data_kota,
         ]);
     }
+
+
 
     /**
      * Deletes an existing Setting model.

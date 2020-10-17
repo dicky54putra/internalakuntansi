@@ -68,41 +68,44 @@ use backend\models\AktSatuan;
         font-size: 12px;
         width: 100%;
     }
+
     @media print {
-        @page 
-    {
-        size: auto; 
-        margin: 0mm;
+        @page {
+            size: auto;
+            margin: 0mm;
+        }
     }
-}
 </style>
 <table class="table1">
     <thead>
         <tr>
-            <th class="header_kiri" style="font-size: 15px; font-weight: bold;"><?= $data_setting->nama ?></th>
-            <th colspan="2" style="font-size: 15px; font-weight: bold;">FAKTUR</th>
-            <th class="header_kiri" style="font-size: 13px;">Kepada Yth.</th>
+            <th class="header_kiri" style="font-size: 15px; font-weight: bold;" style="width: ;">
+                <img width="150px" src="upload/<?= $data_setting->foto ?>" alt="">
+                <!-- <?= $data_setting->nama ?> -->
+            </th>
+            <th></th>
+            <th></th>
         </tr>
         <tr>
-            <th class="header_kiri"><?= $data_setting->nama_usaha ?></th>
+            <th class="header_kiri" style="font-size: 13px; font-weight: bold;">
+                <?= $data_setting->alamat . '<br>' . $data_setting->kota->nama_kota . ', Telp ' . $data_setting->telepon ?>
+                <!-- <?= $data_setting->nama ?> -->
+            </th>
+            <th colspan="2" style="font-size: 15px; font-weight: bold;">FAKTUR PENJUALAN</th>
             <th class="header_kiri">No. Faktur</th>
             <th class="header_kiri">: <?= $model->no_faktur_penjualan ?></th>
-            <th class="header_kiri"><?= (!empty($model->customer->nama_mitra_bisnis)) ? $model->customer->nama_mitra_bisnis : '' ?></th>
         </tr>
         <tr>
-            <th class="header_kiri"><?= $data_setting->alamat ?></th>
-            <th class="header_kiri">Inv. Date</th>
+            <th class="header_kiri"></th>
+            <th class="header_kiri"></th>
+            <th class="header_kiri"></th>
+            <th class="header_kiri">Tanggal Penjualan</th>
             <th class="header_kiri">: <?= date('d/m/Y', strtotime($model->tanggal_penjualan)) . ' ' . date('H:i') ?></th>
-            <th class="header_kiri"><?= (!empty($model->mitra_bisnis_alamat->keterangan_alamat)) ? $model->mitra_bisnis_alamat->keterangan_alamat : '' ?></th>
         </tr>
         <tr>
-            <th class="header_kiri">Telp : <?= $data_setting->telepon ?>, Fax : <?= $data_setting->fax ?></th>
-            <th class="header_kiri">Sales</th>
-            <th class="header_kiri">: <?= (!empty($model->sales->nama_sales)) ? $model->sales->nama_sales : '' ?></th>
-            <th class="header_kiri"><?= (!empty($model->mitra_bisnis_alamat->kota->nama_kota)) ? $model->mitra_bisnis_alamat->kota->nama_kota : '' ?></th>
-        </tr>
-        <tr>
-            <th class="header_kiri">NPWP : <?= $data_setting->npwp ?></th>
+            <th class="header_kiri">Kepada Yth : </th>
+            <th class="header_kiri"></th>
+            <th class="header_kiri"></th>
             <?php
             if ($model->jenis_bayar == 1) {
                 # code...
@@ -118,7 +121,20 @@ use backend\models\AktSatuan;
             <?php
             }
             ?>
-            <th class="header_kiri">NPWP : </th>
+        </tr>
+        <tr>
+            <th class="header_kiri"><?= (!empty($model->customer->nama_mitra_bisnis)) ? $model->customer->nama_mitra_bisnis : '' ?></th>
+            <th class="header_kiri"></th>
+            <th class="header_kiri"></th>
+            <th class="header_kiri">No.SJ</th>
+            <th class="header_kiri">: </th>
+        </tr>
+        <tr>
+            <th class="header_kiri"></th>
+            <th class="header_kiri"></th>
+            <th class="header_kiri"></th>
+            <th class="header_kiri">Sales</th>
+            <th class="header_kiri">: <?= $model->sales->nama_sales ?></th>
         </tr>
     </thead>
 </table>
@@ -162,13 +178,14 @@ use backend\models\AktSatuan;
 <table class="table3" border="0">
     <thead>
         <tr>
-            <th colspan="3" style="text-align: left; font-size: 13px;"><?= terbilang($model->total) ?></th>
-            <th style="text-align: center;">Hormat Kami,</th>
+            <th colspan="3" style="text-align: left; font-size: 13px;">Terbilang:</th>
+            <th style="text-align: center;"></th>
             <th>DPP</th>
             <th><?= ribuan($total_penjualan_barang) ?></th>
         </tr>
         <tr>
-            <th rowspan="5" colspan="4"></th>
+            <th colspan="4" style="text-align: left; font-size: 13px;"><?= terbilang($model->total) ?> </th>
+            <!-- <th rowspan="5" colspan="4 "></th> -->
             <th>Diskon <?= $model->diskon ?>%</th>
             <th>
                 <?php
@@ -178,7 +195,8 @@ use backend\models\AktSatuan;
             </th>
         </tr>
         <tr>
-            <th>Pajak 10%</th>
+            <th rowspan="4" colspan="4"></th>
+            <th>PPN 10%</th>
             <th>
                 <?php
                 $pajak = ($model->pajak > 0) ? $pajak = (($total_penjualan_barang - $diskon) * 10) / 100 : 0;
@@ -199,10 +217,10 @@ use backend\models\AktSatuan;
             <th><?= ribuan($model->uang_muka) ?></th>
         </tr>
         <tr>
-            <th style="text-align: center; font-size: 15px;">Penerima</th>
-            <th style="text-align: center; font-size: 15px;">Gudang</th>
-            <th style="text-align: center; font-size: 15px;">Ekspedisi</th>
-            <th style="text-align: center; font-size: 15px;"><?= $data_setting->direktur ?></th>
+            <th style="text-align: center; font-size: 15px;">Keuangan</th>
+            <th style="text-align: center; font-size: 15px;"></th>
+            <th style="text-align: center; font-size: 15px;">Penagihan</th>
+            <th style="text-align: center; font-size: 15px;"></th>
             <th style="font-weight: bold; font-size: 15px;">Tagihan</th>
             <th style="font-weight: bold; font-size: 15px;"><?= ribuan($model->total) ?></th>
         </tr>
