@@ -269,13 +269,16 @@ class AktPenjualanController extends Controller
     public function actionDelete($id)
     {
         $model = $this->findModel($id);
-        $model->delete();
+        $cek_detail = AktPenjualanDetail::find()->where(['id_penjualan' => $id])->count();
 
-        AktPenjualanDetail::deleteAll(['id_penjualan' => $model->id_penjualan]);
-
-        Yii::$app->session->setFlash('success', [['Perhatian!', 'Data Order Penjualan ' . $model->no_order_penjualan . ' Berhasil Dihapus']]);
-
-        return $this->redirect(['index']);
+        if ($cek_detail > 0) {
+            Yii::$app->session->setFlash('danger', [['Perhatian!', 'Silahkan hapus data detail penjualan terlebih dahulu']]);
+            return $this->redirect(['view', 'id' => $id]);
+        } else {
+            $model->delete();
+            Yii::$app->session->setFlash('success', [['Perhatian!', 'Data Order Penjualan ' . $model->no_order_penjualan . ' Berhasil Dihapus']]);
+            return $this->redirect(['index']);
+        }
     }
 
     protected function findModel($id)

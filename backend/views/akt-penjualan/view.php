@@ -614,7 +614,7 @@ $this->title = 'Detail Data Order Penjualan : ' . $model->no_order_penjualan;
 
                 <div class="row">
                     <div class="col-md-6">
-                        <?= $form->field($model, 'ongkir')->widget(\yii\widgets\MaskedInput::className(), ['options' => ['required' => 'on', 'autocomplete' => 'off'], 'clientOptions' => ['alias' => 'decimal', 'groupSeparator' => '.', 'autoGroup' => true, 'removeMaskOnSubmit' => true, 'rightAlign' => false, 'min' => 0]]); ?>
+                        <?= $form->field($model, 'ongkir')->widget(\yii\widgets\MaskedInput::className(), ['options' => ['value' => $model->ongkir == '' ? 0 : $model->ongkir, 'autocomplete' => 'off'], 'clientOptions' => ['alias' => 'decimal', 'groupSeparator' => '.', 'autoGroup' => true, 'removeMaskOnSubmit' => true, 'rightAlign' => false, 'min' => 0]]); ?>
 
                         <?= $form->field($model, 'diskon')->textInput(['type' => 'number', 'required' => 'on', 'autocomplete' => 'off']) ?>
 
@@ -669,7 +669,7 @@ $this->title = 'Detail Data Order Penjualan : ' . $model->no_order_penjualan;
                             60 => 60,
                         ), ['prompt' => 'Pilih Jumlah Tempo']) ?>
 
-                        <?= $form->field($model, 'materai')->widget(\yii\widgets\MaskedInput::className(), ['options' => ['required' => 'on', 'autocomplete' => 'off'], 'clientOptions' => ['alias' => 'decimal', 'groupSeparator' => '.', 'autoGroup' => true, 'removeMaskOnSubmit' => true, 'rightAlign' => false, 'min' => 0]]); ?>
+                        <?= $form->field($model, 'materai')->widget(\yii\widgets\MaskedInput::className(), ['options' => ['value' => $model->materai == '' ? 0 : $model->materai, 'autocomplete' => 'off'], 'clientOptions' => ['alias' => 'decimal', 'groupSeparator' => '.', 'autoGroup' => true, 'removeMaskOnSubmit' => true, 'rightAlign' => false, 'min' => 0]]); ?>
 
                         <label for="total_penjualan_detail">Total Penjualan Barang</label>
                         <?= Html::input("text", "total_penjualan_detail", ribuan($total_penjualan_detail), ['class' => 'form-control', 'readonly' => true, 'id' => 'total_penjualan_detail']) ?>
