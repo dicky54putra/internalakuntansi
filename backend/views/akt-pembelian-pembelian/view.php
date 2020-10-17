@@ -56,12 +56,20 @@ $count_query_detail = AktPembelianDetail::find()->where(['id_pembelian' => $mode
         if ($model->status == 2) {
             # code...
         ?>
-
-            <?php if ($count_query_detail != 0) { ?>
+            <?php if ($is_pembelian->status == 1 && $model->jenis_bayar == null) { ?>
+                <?= Html::a('<span class="glyphicon glyphicon-trash"></span> Hapus', ['delete', 'id' => $model->id_pembelian], [
+                    'class' => 'btn btn-danger btn-hapus-hidden',
+                    'data' => [
+                        'confirm' => 'Are you sure you want to delete this item?',
+                        'method' => 'post',
+                    ],
+                ]) ?>
+            <?php } ?>
+            <?php if ($count_query_detail != 0 && $is_pembelian->status == 1) { ?>
                 <?php if ($model->jenis_bayar == null) {
                 ?>
                     <?= Html::a('<span class="glyphicon glyphicon-edit"></span> Ubah Data Pembelian', ['#', 'id' => $model->id_pembelian], [
-                        'class' => 'btn btn-info btn-ubah-hidden',
+                        'class' => 'btn btn-primary btn-ubah-hidden',
                         'data-toggle' => 'modal',
                         'data-target' => '#modal-default'
                     ]) ?>

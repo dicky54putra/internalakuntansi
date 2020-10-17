@@ -397,10 +397,15 @@ class AktPembelianController extends Controller
     public function actionDelete($id)
     {
         $model =  $this->findModel($id);
-        Yii::$app->db->createCommand("DELETE FROM `akt_pembelian_detail` WHERE `akt_pembelian_detail`.`id_pembelian` = " . $id . "")->execute();
-        $model->delete();
+        $cek_detail = AKtPembelianDetail::find()->where(['id_pembelian' => $id])->count();
 
-        return $this->redirect(['index']);
+        if ($cek_detail > 0) {
+            Yii::$app->session->setFlash('danger', [['Perhatian!', 'Silahkan hapus detail pembelian terlebih dahulu!']]);
+            return $this->redirect(['view', 'id' => $id]);
+        } else {
+            $model->delete();
+            return $this->redirect(['index']);
+        }
     }
 
     /**
