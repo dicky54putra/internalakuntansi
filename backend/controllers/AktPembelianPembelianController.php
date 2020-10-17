@@ -72,6 +72,21 @@ class AktPembelianPembelianController extends Controller
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
+
+    public function actionDelete($id)
+    {
+        $model =  $this->findModel($id);
+        $cek_detail = AKtPembelianDetail::find()->where(['id_pembelian' => $id])->count();
+
+        if ($cek_detail > 0) {
+            Yii::$app->session->setFlash('danger', [['Perhatian!', 'Silahkan hapus detail pembelian terlebih dahulu!']]);
+            return $this->redirect(['view', 'id' => $id]);
+        } else {
+            $model->delete();
+            return $this->redirect(['index']);
+        }
+    }
+
     public function actionView($id)
     {
         $model = $this->findModel($id);
