@@ -735,6 +735,7 @@ class AktPenjualanPenjualanController extends Controller
 
         $model = new AktPenjualan();
 
+        $model->tanggal_penjualan = date('Y-m-d');
         $nomor_sebelumnya = Yii::$app->db->createCommand("SELECT no_penjualan FROM `akt_penjualan` ORDER by no_penjualan DESC LIMIT 1")->queryScalar();
 
         if (!empty($nomor_sebelumnya)) {
