@@ -40,7 +40,7 @@ class AktPenjualanSearch extends AktPenjualan
      */
     public function search($params)
     {
-        $query = AktPenjualan::find()->where(['!=', 'no_order_penjualan', null])->orderBy("id_penjualan DESC");
+        $query = AktPenjualan::find()->where(['IS NOT', 'no_order_penjualan', null])->orderBy("id_penjualan DESC");
         $query->joinWith("customer");
         $query->joinWith("sales");
         $query->joinWith("mata_uang");
