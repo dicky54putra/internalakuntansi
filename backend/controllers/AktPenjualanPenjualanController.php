@@ -787,4 +787,19 @@ class AktPenjualanPenjualanController extends Controller
             'model_new_sales' => $model_new_sales,
         ]);
     }
+
+    public function actionDelete($id)
+    {
+        $model = $this->findModel($id);
+        $cek_detail = AktPenjualanDetail::find()->where(['id_penjualan' => $id])->count();
+
+        if ($cek_detail > 0) {
+            Yii::$app->session->setFlash('danger', [['Perhatian!', 'Silahkan hapus data detail penjualan terlebih dahulu']]);
+            return $this->redirect(['view', 'id' => $id]);
+        } else {
+            $model->delete();
+            Yii::$app->session->setFlash('success', [['Perhatian!', 'Data Order Penjualan ' . $model->no_order_penjualan . ' Berhasil Dihapus']]);
+            return $this->redirect(['index']);
+        }
+    }
 }
