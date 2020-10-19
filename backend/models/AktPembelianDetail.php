@@ -34,7 +34,8 @@ class AktPembelianDetail extends \yii\db\ActiveRecord
     {
         return [
             [['id_pembelian'], 'required'],
-            [['id_pembelian', 'id_item_stok', 'qty', 'diskon', 'total'], 'integer'],
+            [['id_pembelian', 'id_item_stok', 'qty', 'total'], 'integer'],
+            [['diskon'], 'safe'],
             [['keterangan'], 'string'],
         ];
     }

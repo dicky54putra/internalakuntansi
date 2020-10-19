@@ -48,8 +48,8 @@ class AktPenjualan extends \yii\db\ActiveRecord
     {
         return [
             [['id_customer', 'id_mata_uang', 'status'], 'required'],
-            [['tanggal_order_penjualan', 'tanggal_penjualan', 'tanggal_faktur_penjualan', 'tanggal_tempo', 'the_approver_date', 'tanggal_estimasi', 'materai', 'ongkir'], 'safe'],
-            [['id_customer', 'id_sales', 'id_mata_uang', 'pajak', 'jenis_bayar', 'jumlah_tempo', 'status', 'diskon', 'the_approver', 'id_kas_bank'], 'integer'],
+            [['tanggal_order_penjualan', 'tanggal_penjualan', 'tanggal_faktur_penjualan', 'tanggal_tempo', 'the_approver_date', 'tanggal_estimasi', 'materai', 'ongkir', 'diskon'], 'safe'],
+            [['id_customer', 'id_sales', 'id_mata_uang', 'pajak', 'jenis_bayar', 'jumlah_tempo', 'status', 'the_approver', 'id_kas_bank'], 'integer'],
             [['no_order_penjualan', 'no_penjualan', 'no_faktur_penjualan'], 'string', 'max' => 200],
         ];
     }

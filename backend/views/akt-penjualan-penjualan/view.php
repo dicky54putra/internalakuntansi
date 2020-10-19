@@ -714,10 +714,11 @@ $count_query_detail = AktPenjualanDetail::find()->where(['id_penjualan' => $mode
                             <?= $form->field($model, 'ongkir')->widget(\yii\widgets\MaskedInput::className(), ['options' => ['autocomplete' => 'off', 'value' => $model->ongkir == '' ? 0 : $model->ongkir], 'clientOptions' => [
                                 'alias' => 'decimal', 'groupSeparator' => '.', 'autoGroup' => true, 'removeMaskOnSubmit' => true, 'rightAlign' => false, 'min' => 0
                             ]]); ?>
-
-                            <?= $form->field($model, 'diskon')->widget(\yii\widgets\MaskedInput::className(), ['options' => ['autocomplete' => 'off', 'value' => $model->diskon == '' ? 0 : $model->diskon], 'clientOptions' => [
-                                'alias' => 'decimal', 'groupSeparator' => '.', 'autoGroup' => true, 'removeMaskOnSubmit' => true, 'rightAlign' => false, 'min' => 0
-                            ]]); ?>
+                            <?= $form->field($model, 'diskon')->textInput(['value' => $model->diskon == '' ? 0 : $model->diskon, 'autocomplete' => 'off'])->label('Diskon %') ?>
+                            <?php // $form->field($model, 'diskon')->widget(\yii\widgets\MaskedInput::className(), ['options' => ['autocomplete' => 'off', 'value' => $model->diskon == '' ? 0 : $model->diskon], 'clientOptions' => [
+                            // 'alias' => 'decimal', 'groupSeparator' => '.', 'autoGroup' => true, 'removeMaskOnSubmit' => true, 'rightAlign' => false, 'min' => 0
+                            // ]]); 
+                            ?>
 
                             <div class="row">
                                 <div class="col-md-12">

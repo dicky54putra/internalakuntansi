@@ -616,7 +616,7 @@ $this->title = 'Detail Data Order Penjualan : ' . $model->no_order_penjualan;
                     <div class="col-md-6">
                         <?= $form->field($model, 'ongkir')->widget(\yii\widgets\MaskedInput::className(), ['options' => ['value' => $model->ongkir == '' ? 0 : $model->ongkir, 'autocomplete' => 'off'], 'clientOptions' => ['alias' => 'decimal', 'groupSeparator' => '.', 'autoGroup' => true, 'removeMaskOnSubmit' => true, 'rightAlign' => false, 'min' => 0]]); ?>
 
-                        <?= $form->field($model, 'diskon')->textInput(['type' => 'number', 'required' => 'on', 'autocomplete' => 'off']) ?>
+                        <?= $form->field($model, 'diskon')->textInput(['value' => $model->diskon == '' ? 0 : $model->diskon, 'autocomplete' => 'off'])->label('Diskon %') ?>
 
                         <div class="row">
                             <div class="col-md-6">

@@ -37,7 +37,7 @@ $this->title = "Login Profile";
                 '
 
                 ?>
-                <?= $form->field($model, 'nama')->textInput(['maxlength' => true, 'readonly' => true]) ?>
+                <?= $form->field($model, 'nama')->textInput(['maxlength' => true]) ?>
 
                 <?= $form->field($model, 'foto')->fileInput() ?>
 
