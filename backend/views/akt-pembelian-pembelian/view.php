@@ -283,7 +283,7 @@ $count_query_detail = AktPembelianDetail::find()->where(['id_pembelian' => $mode
                                                     </div>
 
                                                     <div class="col-md-2">
-                                                        <?= $form->field($model_pembelian_detail_baru, 'diskon')->textInput(['placeholder' => 'Diskon %'])->label('Diskon %') ?>
+                                                        <?= $form->field($model_pembelian_detail_baru, 'diskon')->textInput(['placeholder' => 'Diskon %', 'pattern' => '^[0-9]'])->label('Diskon %') ?>
                                                     </div>
 
                                                     <div class="col-md-10">
@@ -662,8 +662,6 @@ $count_query_detail = AktPembelianDetail::find()->where(['id_pembelian' => $mode
 
                                     <div class="form-group">
                                         <?= $form->field($model, 'diskon')->textInput(['value' => $model->diskon == '' ? 0 : $model->diskon, 'autocomplete' => 'off'])->label('Diskon %') ?>
-                                        <?php // $form->field($model, 'diskon')->widget(\yii\widgets\MaskedInput::className(), ['clientOptions' => ['alias' => 'decimal', 'groupSeparator' => '.', 'autoGroup' => true, 'removeMaskOnSubmit' => true, 'rightAlign' => false, 'min' => 0], 'options' => ['value' => $model->diskon == '' ? 0 : $model->diskon]])->label('Diskon %'); 
-                                        ?>
                                     </div>
 
                                     <div class="form-group">
