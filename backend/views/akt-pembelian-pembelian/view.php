@@ -283,7 +283,7 @@ $count_query_detail = AktPembelianDetail::find()->where(['id_pembelian' => $mode
                                                     </div>
 
                                                     <div class="col-md-2">
-                                                        <?= $form->field($model_pembelian_detail_baru, 'diskon')->textInput(['placeholder' => 'Diskon %', 'pattern' => '[+-]?([0-9]*[.])?[0-9]+'])->label('Diskon %') ?>
+                                                        <?= $form->field($model_pembelian_detail_baru, 'diskon')->textInput(['placeholder' => 'Diskon %', 'pattern' => '[+-]?([0-9]*[.])?[0-9]+', 'id' => 'diskon-floating'])->label('Diskon %') ?>
                                                     </div>
 
                                                     <div class="col-md-10">
@@ -661,7 +661,7 @@ $count_query_detail = AktPembelianDetail::find()->where(['id_pembelian' => $mode
                                     </div>
 
                                     <div class="form-group">
-                                        <?= $form->field($model, 'diskon')->textInput(['value' => $model->diskon == '' ? 0 : $model->diskon, 'autocomplete' => 'off'])->label('Diskon %') ?>
+                                        <?= $form->field($model, 'diskon')->textInput(['value' => $model->diskon == '' ? 0 : $model->diskon, 'autocomplete' => 'off', 'pattern' => '[+-]?([0-9]*[.])?[0-9]+', 'id' => 'diskon-floating'])->label('Diskon %') ?>
                                     </div>
 
                                     <div class="form-group">
@@ -842,18 +842,18 @@ JS;
         ?>
 
         <script>
-            const elements = document.querySelector('#aktpembeliandetail-diskon');
-            elements.oninvalid = function(e) {
-                e.target.setCustomValidity("");
-                if (!e.target.validity.valid) {
-                    e.target.setCustomValidity("Diskon hanya menerima inputan angka dan titik");
-                }
-            };
-            elements.oninput = function(e) {
-                e.target.setCustomValidity("");
-            };
-
-
+            const elements = document.querySelectorAll('#diskon-floating');
+            for (var i = 0; i < elements.length; i++) {
+                elements[i].oninvalid = function(e) {
+                    e.target.setCustomValidity("");
+                    if (!e.target.validity.valid) {
+                        e.target.setCustomValidity("Diskon hanya menerima inputan angka dan titik");
+                    }
+                };
+                elements[i].oninput = function(e) {
+                    e.target.setCustomValidity("");
+                };
+            }
 
             const kasBank = document.querySelector('.kas-bank');
             const uangMuka = document.querySelector('#aktpembelian-uang_muka');
