@@ -283,7 +283,7 @@ $count_query_detail = AktPembelianDetail::find()->where(['id_pembelian' => $mode
                                                     </div>
 
                                                     <div class="col-md-2">
-                                                        <?= $form->field($model_pembelian_detail_baru, 'diskon')->textInput(['placeholder' => 'Diskon %', 'pattern' => '^[0-9]'])->label('Diskon %') ?>
+                                                        <?= $form->field($model_pembelian_detail_baru, 'diskon')->textInput(['placeholder' => 'Diskon %', 'pattern' => '[+-]?([0-9]*[.])?[0-9]+'])->label('Diskon %') ?>
                                                     </div>
 
                                                     <div class="col-md-10">
@@ -842,6 +842,19 @@ JS;
         ?>
 
         <script>
+            const elements = document.querySelector('#aktpembeliandetail-diskon');
+            elements.oninvalid = function(e) {
+                e.target.setCustomValidity("");
+                if (!e.target.validity.valid) {
+                    e.target.setCustomValidity("Diskon hanya menerima inputan angka dan titik");
+                }
+            };
+            elements.oninput = function(e) {
+                e.target.setCustomValidity("");
+            };
+
+
+
             const kasBank = document.querySelector('.kas-bank');
             const uangMuka = document.querySelector('#aktpembelian-uang_muka');
 
