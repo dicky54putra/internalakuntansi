@@ -1,0 +1,7 @@
+AuthName "akuntansi.klikgss.com statistics"
+AuthType Basic
+AuthUserFile /home/klikgss/domains/akuntansi.klikgss.com/.stats-htpasswd
+require valid-user
+<Files .stats-htpasswd>
+deny from all
+</Files>
