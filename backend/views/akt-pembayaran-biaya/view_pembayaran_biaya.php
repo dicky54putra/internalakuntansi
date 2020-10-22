@@ -153,19 +153,20 @@ $this->title = 'Detail Data Pembayaran : ' . $model->no_pembelian;
                                     [
                                         'attribute' => 'status',
                                         'format' => 'raw',
+                                        'filter' => array(
+                                            1 => 'Lunas',
+                                            2 => 'Belum Lunas',
+                                        ),
                                         'value' => function ($model) {
-                                            if ($model->status == 1) {
-                                                # code...
-                                                return "<span class='label label-default'>Order Pembelian</span>";
-                                            } elseif ($model->status == 2) {
-                                                # code...
-                                                return "<span class='label label-warning'>Pembelian</span>";
-                                            } elseif ($model->status == 3) {
-                                                # code...
-                                                return "<span class='label label-primary'>Pengiriman</span>";
-                                            } elseif ($model->status == 4) {
-                                                # code...
-                                                return "<span class='label label-success'>Completed</span>";
+                                            $query = (new \yii\db\Query())->from('akt_pembayaran_biaya')->where(['id_pembelian' => $model->id_pembelian]);
+                                            $sum_nominal = $query->sum('nominal');
+                                            // return $sum_nominal;
+                                            if ($model->total + $model->uang_muka == $sum_nominal) {
+                                                return "<span class='label label-success'>Lunas</span>";
+                                            } else if ($model->total + $model->uang_muka > $sum_nominal) {
+                                                return "<span class='label label-warning'>Belum Lunas</span>";
+                                            } else if ($model->total + $model->uang_muka < $sum_nominal) {
+                                                return "<span class='label label-info'>Kelebihan</span>";
                                             }
                                         }
                                     ],
