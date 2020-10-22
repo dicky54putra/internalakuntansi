@@ -272,7 +272,7 @@ $this->title = 'Detail Data Pembayaran : ' . $model->no_pembelian;
                                                         2 => "Transfer",
                                                         // 3 => "Giro"
                                                     ),
-                                                    ['prompt' => 'Pilih Cara Bayar'],
+                                                    ['prompt' => 'Pilih Cara Bayar']
 
                                                 ) ?>
                                                 <?= $form->field($model_pembayaran_biaya, 'id_kas_bank')->widget(DepDrop::classname(), [
