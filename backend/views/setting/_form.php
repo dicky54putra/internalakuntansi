@@ -43,6 +43,8 @@ use kartik\select2\Select2;
 
                     <?= $form->field($model, 'direktur')->textInput(['maxlength' => true]) ?>
 
+                    <?= $form->field($model, 'foto')->fileInput() ?>
+
                     <div class="form-group">
                         <?= Html::a('<span class="glyphicon glyphicon-circle-arrow-left"></span> Kembali', ['index'], ['class' => 'btn btn-warning']) ?>
                         <?= Html::submitButton('<span class="glyphicon glyphicon-floppy-disk"></span> Simpan', ['class' => 'btn btn-success']) ?>

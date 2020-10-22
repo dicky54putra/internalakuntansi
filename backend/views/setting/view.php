@@ -61,7 +61,15 @@ $this->title = $model->nama;
                                 'telepon',
                                 'fax',
                                 'npwp',
-                                // 'foto',
+                                [
+                                    'attribute' => 'foto',
+                                    'format' => 'raw',
+                                    'value' => function ($model) {
+                                        if (!empty($model->foto)) {
+                                            return '<img width="150px" src="upload/' . $model->foto . '" alt="">';
+                                        }
+                                    }
+                                ],
                             ],
                         ]) ?>
 

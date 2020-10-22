@@ -32,9 +32,9 @@ class AktPenjualanDetail extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['id_penjualan', 'id_item_stok', 'qty', 'harga', 'diskon', 'total'], 'required'],
+            [['id_penjualan', 'id_item_stok', 'qty', 'harga', 'total'], 'required'],
             [['id_penjualan', 'id_item_stok', 'total'], 'integer'],
-            [['diskon'], 'number'],
+            [['diskon'], 'safe'],
             [['keterangan'], 'string'],
             [['qty'], 'integer', 'min' => 1],
         ];

@@ -1,6 +1,7 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 # Webalizer V2.23-08 Incremental Data - 10/08/2020 04:11:31
 2020 10 8 4 11 31
 4107 1280 587 49 24 86 17378337 3877 881 0 0 0
@@ -29,6 +30,12 @@
 2020 10 15 20 31 33
 8663 6758 44 128 19 24 99599544 4767 150 0 0 0
 7 85 305 1 15
+>>>>>>> origin/main
+=======
+# Webalizer V2.23-08 Incremental Data - 10/19/2020 15:24:09
+2020 10 19 15 24 9
+10625 8084 52 133 19 25 118485656 5957 181 0 0 0
+7 18 305 1 19
 >>>>>>> origin/main
 385 284 7647077 5 254 9 0 0
 922 785 13556108 10 553 19 0 0
@@ -59,8 +66,14 @@
 768 505 7263278 4 358 9 0 0
 566 390 4598363 4 292 13 0 0
 997 774 9847430 7 643 14 0 0
+<<<<<<< HEAD
+>>>>>>> origin/main
+=======
+583 426 6141177 4 362 9 0 0
+1006 591 8501937 5 598 12 0 0
 >>>>>>> origin/main
 0 0 0 0 0 0 0 0
+373 309 4242998 7 230 11 0 0
 0 0 0 0 0 0 0 0
 0 0 0 0 0 0 0 0
 0 0 0 0 0 0 0 0
@@ -73,6 +86,7 @@
 0 0 0 0 0 0 0 0
 0 0 0 0 0 0 0 0
 0 0 0 0 0 0 0 0
+<<<<<<< HEAD
 0 0 0 0 0 0 0 0
 0 0 0 0 0 0 0 0
 <<<<<<< HEAD
@@ -106,29 +120,39 @@
 0 0 0 0 0 0
 0 0 0 0 0 0
 0 0 0 0 0 0
+=======
+33 18 177877 33 0 0
+65 46 1177147 41 0 0
+16 11 175786 4 0 0
+>>>>>>> origin/main
 0 0 0 0 0 0
 51 40 702621 15 0 0
 19 19 137310 18 0 0
 0 0 0 0 0 0
-77 55 1663246 21 0 0
-457 375 6548543 136 0 0
-896 709 11013161 376 0 0
-1057 889 11762520 672 0 0
-908 728 13685333 595 0 0
-514 349 4812275 249 0 0
-919 714 11072811 508 0 0
-1013 766 9861388 574 0 0
-622 413 5206737 346 0 0
+124 93 2027742 41 0 0
+512 419 7484963 141 0 0
+1272 1009 15207959 640 0 0
+1393 1090 13610534 891 0 0
+1121 857 15693208 701 0 0
+687 440 5479779 359 0 0
+1019 784 12729836 551 0 0
+1147 848 11106114 638 0 0
+658 443 5917348 360 0 0
 600 441 5714105 323 0 0
 63 48 511333 45 0 0
-524 451 7129862 260 0 0
-349 289 3019474 270 0 0
-220 180 2701894 145 0 0
+592 503 7659411 285 0 0
+495 396 4760980 355 0 0
+259 210 3168549 183 0 0
 210 166 2910926 120 0 0
+<<<<<<< HEAD
 107 73 721171 81 0 0
 57 53 424834 13 0 0
 >>>>>>> dfc65f5ea8394dd1426844786be5cc6cae51978d
 0
+=======
+160 113 1190891 128 0 0
+129 90 941237 85 0 0
+>>>>>>> origin/main
 0
 1280
 0
@@ -138,6 +162,7 @@
 2791
 >>>>>>> dfc65f5ea8394dd1426844786be5cc6cae51978d
 0
+<<<<<<< HEAD
 0
 0
 0
@@ -148,6 +173,9 @@
 =======
 6758
 >>>>>>> origin/main
+=======
+8084
+>>>>>>> origin/main
 0
 <<<<<<< HEAD
 0
@@ -156,30 +184,38 @@
 0
 0
 <<<<<<< HEAD
+<<<<<<< HEAD
 0
 =======
 4
 =======
 6
 >>>>>>> origin/main
+=======
+12
+>>>>>>> origin/main
 0
 1
-833
+1061
 0
-243
+482
 0
 0
+<<<<<<< HEAD
 <<<<<<< HEAD
 2
 >>>>>>> dfc65f5ea8394dd1426844786be5cc6cae51978d
 =======
 3
 >>>>>>> origin/main
+=======
+4
+>>>>>>> origin/main
 0
 53
 0
 22
-626
+754
 1
 0
 1239
@@ -199,6 +235,7 @@
 0
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 20
 =======
 108
@@ -208,6 +245,9 @@
 >>>>>>> origin/master
 =======
 170
+>>>>>>> origin/main
+=======
+204
 >>>>>>> origin/main
 0
 0
@@ -2337,15 +2377,15 @@ masscan/1.0 (https://github.com/robertdavidgraham/masscan)
 0 10 0 17883 0 0 0 0
 >>>>>>> origin/master
 /backend/web/assets/bcf24a70/js/i18n/id.js
-0 23 0 17398 0 0 0 0
+0 28 0 21179 0 0 0 0
 /backend/web/upload/1602730271_ben-gAe1pHGc6ms-unsplash.jpg
-1 24 0 1196387 0 0 0 0
+1 37 0 2830820 0 0 0 0
 /backend/web/assets/e283f548/css/bootstrap.css.map
 0 1 0 75944 0 0 0 0
 /backend/web/assets/deaf56a8/css/AdminLTE.min.css
 0 34 0 520221 0 0 0 0
 /backend/web/assets/e99dfa84/js/kv-grid-export.js
-0 49 0 261526 0 0 0 0
+0 61 0 325586 0 0 0 0
 /backend/web/assets/cc677097/jquery.pjax.js
 0 11 0 104195 0 0 0 0
 /backend/web/assets/6c700406/gii.js
@@ -2355,13 +2395,13 @@ masscan/1.0 (https://github.com/robertdavidgraham/masscan)
 /backend/web/assets/35e5617e/css/kv-widgets.css
 0 17 0 12624 0 0 0 0
 /backend/web/assets/154684f2/fonts/fontawesome-webfont.woff2
-0 65 0 2097328 0 0 0 0
+0 82 0 2686902 0 0 0 0
 /backend/web/assets/f8636939/yii.gridView.js
 0 23 0 68067 0 0 0 0
 /backend/web/assets/a1d06d27/fonts/glyphicons-halflings-regular.woff2
-0 70 0 574101 0 0 0 0
+0 85 0 667360 0 0 0 0
 /backend/web/assets/7dd63a40/themes/smoothness/images/ui-icons_222222_256x240.png
-1 7 0 43991 0 0 0 0
+1 10 0 58769 0 0 0 0
 /backend/web/assets/63178e68/css/datepicker-kv.css
 0 1 0 763 0 0 0 0
 /backend/web/assets/f8636939/yii.validation.js
@@ -2369,15 +2409,15 @@ masscan/1.0 (https://github.com/robertdavidgraham/masscan)
 /backend/web/assets/9e7ed1b0/themes/smoothness/images/ui-bg_glass_75_e6e6e6_1x400.png
 1 7 0 3772 0 0 0 0
 /backend/web/assets/eeed76ac/css/select2-addl.css
-0 42 0 32772 0 0 0 0
+0 50 0 39026 0 0 0 0
 /backend/web/assets/796e70dc/js/bootstrap-dialog.js
 0 24 0 218887 0 0 0 0
 /backend/web/assets/eeed76ac/css/loading.gif
-1 30 0 27139 0 0 0 0
+1 37 0 35707 0 0 0 0
 /backend/web/assets/7dd63a40/themes/smoothness/images/ui-bg_glass_55_fbf9ee_1x400.png
-1 7 0 3689 0 0 0 0
+1 10 0 5198 0 0 0 0
 /backend/web/upload/avatar5.png
-1 1 0 7855 0 0 0 0
+1 2 0 15710 0 0 0 0
 /backend/web/assets/1f154849/typeahead.bundle.js
 0 10 0 181037 0 0 0 0
 /backend/web/assets/a4420e30/jquery.js
@@ -2387,13 +2427,13 @@ masscan/1.0 (https://github.com/robertdavidgraham/masscan)
 /backend/web/upload/1602579079_max-duzij-qAjJk-un3BI-unsplash.jpg
 1 5 0 487191 0 0 0 0
 /backend/web/assets/7e13c0b/yii.activeForm.js
-0 62 0 456263 0 0 0 0
+0 77 0 566685 0 0 0 0
 /backend/web/assets/39ae2fa/css/dependent-dropdown.css
-0 18 0 11620 0 0 0 0
+0 22 0 14201 0 0 0 0
 /backend/web/assets/a026e893/img/loading.gif
 1 3 0 4424 0 0 0 0
 /backend/web/assets/c94a5424/css/bootstrap-dialog-bs3.css
-0 47 0 49609 0 0 0 0
+0 56 0 59120 0 0 0 0
 /backend/web/assets/f8636939/yii.activeForm.js
 0 33 0 242815 0 0 0 0
 /backend/web/assets/5bb5e102/fonts/fontawesome-webfont.woff2
@@ -2401,43 +2441,49 @@ masscan/1.0 (https://github.com/robertdavidgraham/masscan)
 /backend/web/assets/796e70dc/js/dialog.js
 0 23 0 42358 0 0 0 0
 /backend/web/assets/7dd63a40/themes/smoothness/images/ui-bg_glass_75_e6e6e6_1x400.png
-1 7 0 3342 0 0 0 0
+1 11 0 4456 0 0 0 0
 /backend/web/assets/7e55fa49/js/kv-grid-toggle.js
 0 4 0 3453 0 0 0 0
 /backend/web/assets/c10cb4ca/css/select2-addl.css
 0 16 0 12507 0 0 0 0
 /backend/web/assets/39ae2fa/img/loading.gif
-1 6 0 8848 0 0 0 0
+1 11 0 13616 0 0 0 0
 /backend/web/assets/9e7ed1b0/jquery-ui.js
 0 20 0 2495834 0 0 0 0
 /backend/web/assets/39ae2fa/js/dependent-dropdown.js
-0 18 0 62470 0 0 0 0
+0 22 0 76353 0 0 0 0
 /backend/web/assets/7dd63a40/themes/smoothness/jquery-ui.css
-0 26 0 228917 0 0 0 0
+0 31 0 272940 0 0 0 0
 /backend/web/assets/9e7ed1b0/themes/smoothness/jquery-ui.css
 0 16 0 140868 0 0 0 0
-/backend/web/images/hapus.png
-1 2 0 10792 0 0 0 0
+/backend/web/assets/f668a4e5/css/daterangepicker-kv.css
+0 1 0 779 0 0 0 0
+/backend/web/assets/f668a4e5/js/daterangepicker.js
+0 1 0 11665 0 0 0 0
 /backend/web/assets/77775fad/img/loading-plugin.gif
-1 30 0 19355 0 0 0 0
+1 38 0 24530 0 0 0 0
+/backend/web/images/hapus.png
+1 6 0 16706 0 0 0 0
 /backend/web/assets/77775fad/css/kv-widgets.css
-0 43 0 31880 0 0 0 0
+0 51 0 37822 0 0 0 0
 /backend/web/assets/796e70dc/js/dialog-yii.js
 0 23 0 17394 0 0 0 0
 /backend/web/upload/1598935038_GSS.png
-1 53 0 3075650 0 0 0 0
+1 236 0 3435907 0 0 0 0
+/backend/web/assets/f668a4e5/js/locales/id.js
+0 1 0 1305 0 0 0 0
 /backend/web/assets/e99dfa84/css/jquery.resizableColumns.css
-0 47 0 30061 0 0 0 0
+0 56 0 35830 0 0 0 0
 /backend/web/assets/a52aa703/jquery.inputmask.bundle.js
 0 15 0 580058 0 0 0 0
 /backend/web/assets/ff5e5da4/css/bootstrap-datepicker3.css
-0 12 0 34136 0 0 0 0
+0 16 0 45515 0 0 0 0
 /backend/web/css/site.css
-0 37 0 39270 0 0 0 0
+0 48 0 50946 0 0 0 0
 /backend/web/assets/bcf24a70/js/select2.full.js
-0 43 0 1659189 0 0 0 0
+0 54 0 2083663 0 0 0 0
 /backend/web/assets/7dd63a40/ui/i18n/datepicker-id.js
-0 26 0 24895 0 0 0 0
+0 31 0 29683 0 0 0 0
 /backend/web/assets/9e7ed1b0/ui/i18n/datepicker-id.js
 0 15 0 14360 0 0 0 0
 /backend/web/assets/63178e68/css/bootstrap-datepicker3.css
@@ -2445,63 +2491,67 @@ masscan/1.0 (https://github.com/robertdavidgraham/masscan)
 /backend/web/assets/c10cb4ca/js/select2-krajee.js
 0 16 0 37701 0 0 0 0
 /backend/web/assets/e99dfa84/css/kv-grid.css
-0 47 0 108209 0 0 0 0
+0 57 0 131241 0 0 0 0
 /backend/web/assets/77775fad/js/kv-widgets.js
-0 44 0 37660 0 0 0 0
+0 52 0 44528 0 0 0 0
 /backend/web/assets/1cffebf5/js/i18n/id.js
 0 13 0 9833 0 0 0 0
 /backend/web/images/aaa.jpg
-1 58 0 13955819 0 0 0 0
+1 70 0 15910078 0 0 0 0
 /backend/web/assets/9e7ed1b0/themes/smoothness/images/ui-bg_glass_75_dadada_1x400.png
 1 6 0 3163 0 0 0 0
 /backend/web/assets/672b288f/css/AdminLTE.min.css
-0 71 0 1086482 0 0 0 0
+0 85 0 1300735 0 0 0 0
 /backend/web/assets/4ebe7eef/js/depdrop.js
 0 7 0 5770 0 0 0 0
 /backend/web/assets/5bb5e102/css/font-awesome.min.css
 0 33 0 243474 0 0 0 0
 /backend/web/assets/ff5e5da4/js/bootstrap-datepicker.js
-0 13 0 208437 0 0 0 0
+0 18 0 288605 0 0 0 0
 /backend/web/assets/7e13c0b/yii.gridView.js
-0 49 0 144959 0 0 0 0
+0 61 0 180470 0 0 0 0
 /backend/web/assets/7e13c0b/yii.js
-0 75 0 460708 0 0 0 0
+0 92 0 565171 0 0 0 0
 /backend/web/assets/b75ebbad/jquery.pjax.js
-0 30 0 284174 0 0 0 0
+0 40 0 378897 0 0 0 0
 /backend/web/assets/63178e68/js/bootstrap-datepicker.js
 0 1 0 16034 0 0 0 0
 /backend/web/assets/7e55fa49/js/kv-grid-export.js
 0 23 0 122784 0 0 0 0
 /backend/web/assets/eeed76ac/js/select2-krajee.js
-0 43 0 101213 0 0 0 0
+0 51 0 120065 0 0 0 0
 /backend/web/assets/7dd63a40/jquery-ui.js
-0 26 0 3265275 0 0 0 0
+0 32 0 4018800 0 0 0 0
+/backend/web/assets/f668a4e5/css/daterangepicker.css
+0 1 0 2193 0 0 0 0
 /backend/web/upload/1602743543_kop_surat_sriyatno.png
 1 3 0 227188 0 0 0 0
 /backend/web/assets/f8636939/yii.js
 0 36 0 221105 0 0 0 0
 /backend/web/assets/eeed76ac/css/select2-krajee.css
-0 42 0 134960 0 0 0 0
+0 50 0 160676 0 0 0 0
 /backend/web/assets/63178e68/js/locales/bootstrap-datepicker.id.min.js
 0 1 0 631 0 0 0 0
 /backend/web/assets/c10cb4ca/css/select2-krajee.css
 0 16 0 51434 0 0 0 0
 /backend/web/assets/eeed76ac/css/search.png
-1 30 0 9511 0 0 0 0
+1 37 0 12576 0 0 0 0
 /backend/web/assets/a1d06d27/css/bootstrap.css
-0 71 0 1533910 0 0 0 0
+0 87 0 1879599 0 0 0 0
 /backend/web/assets/7e13c0b/yii.validation.js
-0 42 0 140819 0 0 0 0
+0 50 0 167663 0 0 0 0
 /backend/web/assets/7e55fa49/css/kv-grid.css
 0 23 0 52974 0 0 0 0
 /backend/web/assets/e283f548/fonts/glyphicons-halflings-regular.woff2
 0 37 0 568450 0 0 0 0
 /backend/web/assets/e283f548/js/bootstrap.js
 0 37 0 609443 0 0 0 0
+/backend/web/assets/f668a4e5/js/moment.js
+0 1 0 32976 0 0 0 0
 /backend/web/assets/ff5e5da4/css/datepicker-kv.css
-0 12 0 9156 0 0 0 0
+0 16 0 12207 0 0 0 0
 /backend/web/assets/e99dfa84/img/loading.gif
-1 23 0 112432 0 0 0 0
+1 31 0 138845 0 0 0 0
 /backend/web/assets/1cffebf5/js/select2.full.js
 0 18 0 694587 0 0 0 0
 /backend/web/upload/1602743425_Capture.png
@@ -2513,11 +2563,11 @@ masscan/1.0 (https://github.com/robertdavidgraham/masscan)
 /backend/web/assets/c10cb4ca/css/search.png
 1 11 0 4869 0 0 0 0
 /backend/web/assets/7dd63a40/themes/smoothness/images/ui-bg_highlight-soft_75_cccccc_1x100.png
-1 7 0 3346 0 0 0 0
+1 11 0 4461 0 0 0 0
 /backend/web/assets/a1d06d27/css/bootstrap.css.map
-0 7 0 531611 0 0 0 0
+0 8 0 607555 0 0 0 0
 /backend/web/assets/a933fb67/jquery.js
-0 75 0 6019048 0 0 0 0
+0 92 0 7397215 0 0 0 0
 /backend/web/upload/1601102709_banner-1631308_960_720.jpg
 1 3 0 154447 0 0 0 0
 /backend/web/assets/e283f548/css/bootstrap.css
@@ -2533,67 +2583,70 @@ masscan/1.0 (https://github.com/robertdavidgraham/masscan)
 /backend/web/assets/63178e68/js/datepicker-kv.js
 0 1 0 1010 0 0 0 0
 /backend/web/assets/ff5e5da4/js/datepicker-kv.js
-0 12 0 12116 0 0 0 0
+0 17 0 17165 0 0 0 0
 /backend/web/js/Chart.js
-0 63 0 6501984 0 0 0 0
+0 74 0 7667299 0 0 0 0
 /backend/web/assets/9e7ed1b0/themes/smoothness/images/ui-icons_454545_256x240.png
 1 2 0 14735 0 0 0 0
-/backend/web/assets/47324f1d/jquery.inputmask.bundle.js
-0 26 0 1005435 0 0 0 0
 /backend/web/assets/7e55fa49/css/jquery.resizableColumns.css
 0 23 0 14739 0 0 0 0
+/backend/web/assets/47324f1d/jquery.inputmask.bundle.js
+0 33 0 1276129 0 0 0 0
 /backend/web/assets/c10cb4ca/css/loading.gif
 1 11 0 16623 0 0 0 0
 /backend/web/assets/9e7ed1b0/themes/smoothness/images/ui-bg_glass_55_fbf9ee_1x400.png
 1 7 0 4186 0 0 0 0
 /backend/web/assets/c94a5424/js/dialog.js
-0 50 0 92026 0 0 0 0
+0 62 0 114127 0 0 0 0
 /backend/web/assets/672b288f/js/adminlte.min.js
-0 75 0 299277 0 0 0 0
+0 92 0 367145 0 0 0 0
 /backend/web/assets/a1d06d27/js/bootstrap.js
-0 75 0 1235435 0 0 0 0
+0 92 0 1515499 0 0 0 0
 /backend/web/assets/672b288f/css/skins/_all-skins.min.css
-0 71 0 261674 0 0 0 0
+0 85 0 313289 0 0 0 0
 /backend/web/assets/796e70dc/css/bootstrap-dialog-bs3.css
 0 23 0 24304 0 0 0 0
 /backend/web/assets/e99dfa84/js/kv-grid-toggle.js
-0 10 0 8636 0 0 0 0
+0 12 0 10362 0 0 0 0
 /backend/web/assets/ff5e5da4/js/locales/bootstrap-datepicker.id.min.js
-0 12 0 7581 0 0 0 0
+0 17 0 10740 0 0 0 0
 /backend/web/assets/154684f2/css/font-awesome.min.css
-0 71 0 523995 0 0 0 0
+0 85 0 627334 0 0 0 0
 /backend/web/assets/a7137c93/js/depdrop.js
-0 18 0 14841 0 0 0 0
+0 22 0 18139 0 0 0 0
 /backend/web/assets/a026e893/css/dependent-dropdown.css
 0 7 0 4518 0 0 0 0
 /backend/web/assets/c94a5424/js/bootstrap-dialog.js
-0 49 0 446844 0 0 0 0
+0 62 0 565409 0 0 0 0
 /backend/web/assets/7dd63a40/themes/smoothness/images/ui-bg_glass_75_dadada_1x400.png
-1 5 0 2993 0 0 0 0
+1 9 0 4107 0 0 0 0
 /backend/web/assets/7e55fa49/img/loading.gif
 1 6 0 51095 0 0 0 0
 /backend/web/assets/6c700406/logo.png
 1 10 0 8511 0 0 0 0
 /backend/web/assets/e99dfa84/js/jquery.resizableColumns.js
-0 49 0 120406 0 0 0 0
+0 61 0 149905 0 0 0 0
 /backend/web/js/modal.js
-0 90 0 91233 0 0 0 0
+0 104 0 105420 0 0 0 0
 /backend/web/assets/c94a5424/js/dialog-yii.js
-0 49 0 37010 0 0 0 0
+0 61 0 46089 0 0 0 0
 /backend/web/assets/9e7ed1b0/themes/smoothness/images/ui-bg_glass_65_ffffff_1x400.png
 1 2 0 1082 0 0 0 0
 /backend/web/assets/9e7ed1b0/themes/smoothness/images/ui-bg_highlight-soft_75_cccccc_1x100.png
 1 7 0 3778 0 0 0 0
 /backend/web/assets/bcf24a70/css/select2.css
-0 42 0 107947 0 0 0 0
+0 50 0 128519 0 0 0 0
 /backend/web/
-0 3687 0 21475916 82 104 0 0
+0 4534 0 27077370 95 127 0 0
 /backend/web/assets/deaf56a8/css/skins/_all-skins.min.css
 0 32 0 117872 0 0 0 0
 # End Of Table - urls
 # -sites- (monthly)
 66.102.6.248
 0 1 0 282 1 1602757838 0 0
+/backend/web/
+36.72.216.66
+0 235 196 1323800 4 1603100567 0 0
 /backend/web/
 125.161.129.228
 0 210 126 1396013 2 1602163499 0 0
@@ -2632,13 +2685,16 @@ masscan/1.0 (https://github.com/robertdavidgraham/masscan)
 0 40 33 665200 1 1601578759 0 0
 /backend/web/
 36.80.159.145
-0 409 335 4154930 9 1602791635 0 0
+0 658 518 6387062 14 1602943983 0 0
 /backend/web/
 182.253.62.98
-0 485 375 7617878 8 1602777065 0 0
+0 922 721 13811714 16 1603096213 0 0
 /backend/web/
 36.72.216.167
 0 23 15 273691 3 1602605800 0 0
+/backend/web/
+23.106.249.53
+0 5 4 25983 1 1603113942 0 0
 /backend/web/
 182.2.72.8
 0 25 19 795599 1 1601933078 0 0
@@ -2652,17 +2708,29 @@ masscan/1.0 (https://github.com/robertdavidgraham/masscan)
 36.72.218.234
 0 359 292 5437401 8 1601993881 0 0
 /backend/web/
+180.246.205.233
+0 18 15 590252 1 1603121047 0 0
+/backend/web/
 114.79.23.255
 0 16 13 52164 1 1601749060 0 0
 /backend/web/
 103.22.242.6
 0 14 12 487542 1 1601631619 0 0
 /backend/web/
+114.5.243.147
+0 81 59 1352933 2 1602903542 0 0
+/backend/web/
 36.73.37.192
 0 3 2 84231 1 1601842758 0 0
 /backend/web/
 36.72.219.105
 0 22 15 198473 2 1602087510 0 0
+/backend/web/
+180.254.17.48
+0 42 20 572532 1 1602945982 0 0
+/backend/web/
+182.253.62.99
+0 44 35 1153571 1 1603107178 0 0
 /backend/web/
 36.81.15.142
 0 2 1 3286 1 1601888370 0 0
@@ -2683,7 +2751,7 @@ masscan/1.0 (https://github.com/robertdavidgraham/masscan)
 0 25 18 468013 3 1601999433 0 0
 /backend/web/
 51.91.18.131
-0 704 579 8385552 8 1602341837 0 0
+0 1483 993 13143163 12 1602947245 0 0
 /backend/web/
 113.197.108.36
 0 13 12 487357 1 1601578615 0 0
@@ -2691,11 +2759,14 @@ masscan/1.0 (https://github.com/robertdavidgraham/masscan)
 36.72.219.128
 0 44 38 580189 3 1601915234 0 0
 /backend/web/
+114.4.221.1
+0 15 12 101582 1 1602862225 0 0
+/backend/web/
 36.72.216.98
 0 38 26 224882 3 1602691468 0 0
 /backend/web/
 51.83.3.220
-0 244 203 2557001 6 1602793893 0 0
+0 265 216 2861298 8 1603117671 0 0
 /backend/web/
 182.2.43.183
 0 59 55 956775 1 1601974137 0 0
@@ -2708,6 +2779,9 @@ masscan/1.0 (https://github.com/robertdavidgraham/masscan)
 /backend/web/
 114.5.109.24
 0 30 16 277867 1 1602505436 0 0
+/backend/web/
+114.79.20.129
+0 36 35 277583 1 1603108650 0 0
 /backend/web/
 36.72.219.93
 0 153 111 1140711 2 1602235797 0 0
@@ -2726,37 +2800,37 @@ masscan/1.0 (https://github.com/robertdavidgraham/masscan)
 /backend/web/
 # End Of Table - sites (monthly)
 # -sites- (daily)
-66.102.6.248
-0 1 0 282 1 1602757838 0 0
-/backend/web/
-66.102.6.250
-0 3 1 3585 1 1602757838 0 0
-/backend/web/
-36.72.216.202
-0 415 313 3781691 3 1602771836 0 0
-/backend/web/
-182.253.62.96
-0 272 210 2835554 4 1602770197 0 0
-/backend/web/
-36.80.159.145
-0 77 62 790638 2 1602791635 0 0
+36.72.216.66
+0 235 196 1323800 4 1603100567 0 0
 /backend/web/
 182.253.62.98
-0 138 109 1680837 2 1602777065 0 0
+0 14 13 567512 1 1603096213 0 0
+/backend/web/
+23.106.249.53
+0 5 4 25983 1 1603113942 0 0
+/backend/web/
+180.246.205.233
+0 18 15 590252 1 1603121047 0 0
+/backend/web/
+182.253.62.99
+0 44 35 1153571 1 1603107178 0 0
 /backend/web/
 51.83.3.220
-0 91 79 754843 1 1602793893 0 0
+0 21 13 304297 2 1603117671 0 0
+/backend/web/
+114.79.20.129
+0 36 35 277583 1 1603108650 0 0
 /backend/web/
 # End Of Table - sites (daily)
 # -referrers- 
 http://internalakuntansi.klikgss.com/backend/web/assets/7dd63a40/themes/smoothness/jquery-ui.css
-0 33
+0 51
 http://internalakuntansi.klikgss.com/backend/web/assets/154684f2/css/font-awesome.min.css
-0 65
+0 82
 http://internalakuntansi.klikgss.com/backend/web/assets/e283f548/css/bootstrap.css
 0 37
 http://internalakuntansi.klikgss.com/backend/web/assets/39ae2fa/css/dependent-dropdown.css
-0 6
+0 11
 http://internalakuntansi.klikgss.com/backend/web/assets/35e5617e/css/kv-widgets.css
 0 11
 http://internalakuntansi.klikgss.com/backend/web/assets/7e55fa49/css/kv-grid.css
@@ -2764,41 +2838,43 @@ http://internalakuntansi.klikgss.com/backend/web/assets/7e55fa49/css/kv-grid.css
 http://internalakuntansi.klikgss.com/backend/web/assets/9e7ed1b0/themes/smoothness/jquery-ui.css
 0 38
 http://internalakuntansi.klikgss.com/backend/web/assets/a1d06d27/css/bootstrap.css
-0 70
+0 85
 https://www.google.com/
 0 8
 - (Direct Request)
-0 518
+0 616
 http://internalakuntansi.klikgss.com/backend/web/
-0 66
+0 73
 http://internalakuntansi.klikgss.com/backend/web/assets/c10cb4ca/css/select2-krajee.css
 0 22
 http://internalakuntansi.klikgss.com/backend/web/assets/eeed76ac/css/select2-krajee.css
-0 60
+0 74
 http://internalakuntansi.klikgss.com/backend/web/index.php
-0 7633
+0 9402
 http://internalakuntansi.klikgss.com/backend/web/assets/77775fad/css/kv-widgets.css
-0 30
+0 38
 http://internalakuntansi.klikgss.com/backend/web/assets/e99dfa84/css/kv-grid.css
-0 23
+0 31
 http://internalakuntansi.klikgss.com/backend/web/assets/a026e893/css/dependent-dropdown.css
 0 3
 http://internalakuntansi.klikgss.com/backend/web/assets/5bb5e102/css/font-awesome.min.css
 0 33
 http://internalakuntansi.klikgss.com/
-0 1
+0 4
 # End Of Table - referrers
 # -agents- 
 Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.149 Safari/537.36
 0 59
+Mozilla/5.0 (Linux; Android 7.1.2; Redmi 4X) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.99 Mobile Safari/537.36
+0 57
 Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.75 Safari/537.36
-0 1050
+0 1129
 Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.121 Safari/537.36
-0 799
+0 827
 Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:81.0) Gecko/20100101 Firefox/81.0
 0 124
 Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.75 Safari/537.36
-0 1748
+0 2021
 WhatsApp/2.20.200.22 A
 0 5
 Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36
@@ -2824,7 +2900,7 @@ Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko)
 Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.102 Safari/537.36
 0 348
 Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.105 Safari/537.36
-0 2735
+0 3970
 Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/49.0.2623.75 Safari/537.36 Google Favicon
 0 4
 Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.135 Safari/537.36
@@ -2834,7 +2910,7 @@ Mozilla/5.0 (Linux; Android 10; SM-A507FN) AppleWebKit/537.36 (KHTML, like Gecko
 WhatsApp/2.2041.6 N
 0 3
 Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:81.0) Gecko/20100101 Firefox/81.0
-0 366
+0 656
 Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.121 Safari/537.36
 0 432
 >>>>>>> dfc65f5ea8394dd1426844786be5cc6cae51978d

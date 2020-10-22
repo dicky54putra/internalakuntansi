@@ -47,11 +47,21 @@ $count_query_detail = AktPenjualanDetail::find()->where(['id_penjualan' => $mode
         if ($model->status == 2) {
             # code...
         ?>
+            <?php if ($model->jenis_bayar == null && $is_penjualan->status == 1 && $cek_login == null) { ?>
+                <?= Html::a('<span class="glyphicon glyphicon-trash"></span> Hapus', ['delete', 'id' => $model->id_penjualan], [
+                    'class' => 'btn btn-danger btn-hapus-hidden',
+                    'data' => [
+                        'confirm' => 'Apakah anda yakin akan menghapus Data Penjualan : ' . $model->no_penjualan . ' ?',
+                        'method' => 'post',
+                    ],
+                ]) ?>
 
-            <?php if ($count_query_detail != 0) { ?>
+            <?php } ?>
+
+            <?php if ($count_query_detail != 0 && $is_penjualan->status == 1) { ?>
                 <?php if ($model->jenis_bayar == null) {
                 ?>
-                    <?= Html::a('<span class="glyphicon glyphicon-edit"></span> Ubah Data penjualan', ['#', 'id' => $model->id_penjualan], [
+                    <?= Html::a('<span class="glyphicon glyphicon-edit"></span> Ubah Data Penjualan', ['#', 'id' => $model->id_penjualan], [
                         'class' => 'btn btn-info',
                         'data-toggle' => 'modal',
                         'data-target' => '#modal-default'
@@ -59,7 +69,7 @@ $count_query_detail = AktPenjualanDetail::find()->where(['id_penjualan' => $mode
 
                 <?php  } else if ($model->jenis_bayar != null) {
                 ?>
-                    <?= Html::a('<span class="glyphicon glyphicon-trash"></span> Hapus Data Pembelian', ['hapus-data-penjualan', 'id' => $model->id_penjualan], [
+                    <?= Html::a('<span class="glyphicon glyphicon-trash"></span> Hapus Data Penjualan', ['hapus-data-penjualan', 'id' => $model->id_penjualan], [
                         'class' => 'btn btn-danger',
                         'data' => [
                             'confirm' => 'Anda yakin ingin menghapus data?',
@@ -289,7 +299,7 @@ $count_query_detail = AktPenjualanDetail::find()->where(['id_penjualan' => $mode
                                                         <?= $form->field($model_penjualan_detail_baru, 'qty')->textInput(['autocomplete' => 'off']) ?>
                                                     </div>
                                                     <div class="col-md-2">
-                                                        <?= $form->field($model_penjualan_detail_baru, 'diskon')->textInput(['placeholder' => 'Diskon %', 'autocomplete' => 'off']) ?>
+                                                        <?= $form->field($model_penjualan_detail_baru, 'diskon')->textInput(['placeholder' => 'Diskon %', 'autocomplete' => 'off', 'pattern' => '[+-]?([0-9]*[.])?[0-9]+', 'id' => 'diskon-floating']) ?>
                                                     </div>
 
                                                     <div class="col-md-10">
@@ -704,10 +714,11 @@ $count_query_detail = AktPenjualanDetail::find()->where(['id_penjualan' => $mode
                             <?= $form->field($model, 'ongkir')->widget(\yii\widgets\MaskedInput::className(), ['options' => ['autocomplete' => 'off', 'value' => $model->ongkir == '' ? 0 : $model->ongkir], 'clientOptions' => [
                                 'alias' => 'decimal', 'groupSeparator' => '.', 'autoGroup' => true, 'removeMaskOnSubmit' => true, 'rightAlign' => false, 'min' => 0
                             ]]); ?>
-
-                            <?= $form->field($model, 'diskon')->widget(\yii\widgets\MaskedInput::className(), ['options' => ['autocomplete' => 'off', 'value' => $model->diskon == '' ? 0 : $model->diskon], 'clientOptions' => [
-                                'alias' => 'decimal', 'groupSeparator' => '.', 'autoGroup' => true, 'removeMaskOnSubmit' => true, 'rightAlign' => false, 'min' => 0
-                            ]]); ?>
+                            <?= $form->field($model, 'diskon')->textInput(['value' => $model->diskon == '' ? 0 : $model->diskon, 'autocomplete' => 'off', 'pattern' => '[+-]?([0-9]*[.])?[0-9]+', 'id' => 'diskon-floating'])->label('Diskon %') ?>
+                            <?php // $form->field($model, 'diskon')->widget(\yii\widgets\MaskedInput::className(), ['options' => ['autocomplete' => 'off', 'value' => $model->diskon == '' ? 0 : $model->diskon], 'clientOptions' => [
+                            // 'alias' => 'decimal', 'groupSeparator' => '.', 'autoGroup' => true, 'removeMaskOnSubmit' => true, 'rightAlign' => false, 'min' => 0
+                            // ]]); 
+                            ?>
 
                             <div class="row">
                                 <div class="col-md-12">
@@ -756,7 +767,7 @@ $count_query_detail = AktPenjualanDetail::find()->where(['id_penjualan' => $mode
                                 60 => 60,
                             ), ['prompt' => 'Pilih Jumlah Tempo']) ?>
 
-                            <?= $form->field($model, 'materai')->widget(\yii\widgets\MaskedInput::className(), ['options' => ['autocomplete' => 'off'], 'clientOptions' => ['alias' => 'decimal', 'groupSeparator' => '.', 'autoGroup' => true, 'removeMaskOnSubmit' => true, 'rightAlign' => false, 'min' => 0]]); ?>
+                            <?= $form->field($model, 'materai')->widget(\yii\widgets\MaskedInput::className(), ['options' => ['value' => $model->materai == '' ? 0 : $model->materai, 'autocomplete' => 'off'], 'clientOptions' => ['alias' => 'decimal', 'groupSeparator' => '.', 'autoGroup' => true, 'removeMaskOnSubmit' => true, 'rightAlign' => false, 'min' => 0]]); ?>
 
                             <label for="total_penjualan_detail">Total Penjualan Barang</label>
                             <?= Html::input("text", "total_penjualan_detail", ribuan($total_penjualan_detail), ['class' => 'form-control', 'readonly' => true, 'id' => 'total_penjualan_detail']) ?>
@@ -927,6 +938,18 @@ JS;
     ?>
 
     <script>
+        const elements = document.querySelectorAll('#diskon-floating');
+        for (var i = 0; i < elements.length; i++) {
+            elements[i].oninvalid = function(e) {
+                e.target.setCustomValidity("");
+                if (!e.target.validity.valid) {
+                    e.target.setCustomValidity("Diskon hanya menerima inputan angka dan titik");
+                }
+            };
+            elements[i].oninput = function(e) {
+                e.target.setCustomValidity("");
+            };
+        }
         const kasBank = document.querySelector('#kas-bank');
         const uangMuka = document.querySelector('#aktpenjualan-uang_muka');
         const idKasBank = document.querySelector('#id_kas_bank');

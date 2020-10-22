@@ -22,7 +22,8 @@ $this->title = 'Detail Data Order Pembelian : ' . $model->no_order_pembelian;
 // $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
 
-
+$query_detail = AktPembelianDetail::find()->where(['id_pembelian' => $model->id_pembelian])->all();
+$count_query_detail = AktPembelianDetail::find()->where(['id_pembelian' => $model->id_pembelian])->count();
 ?>
 <div class="akt-pembelian-view">
 
@@ -34,7 +35,6 @@ $this->title = 'Detail Data Order Pembelian : ' . $model->no_order_pembelian;
     </ul>
     <p>
         <?= Html::a('<span class="glyphicon glyphicon-circle-arrow-left"></span> Kembali', ['index'], ['class' => 'btn btn-warning']) ?>
-        <?= Html::a('<span class="glyphicon glyphicon-edit"></span> Ubah', ['update', 'id' => $model->id_pembelian], ['class' => 'btn btn-primary hidden']) ?>
         <?php
         $approve = AktApprover::find()
             ->leftJoin('akt_jenis_approver', 'akt_jenis_approver.id_jenis_approver = akt_approver.id_jenis_approver')
@@ -48,7 +48,16 @@ $this->title = 'Detail Data Order Pembelian : ' . $model->no_order_pembelian;
             ->andWhere(['id_login' => $id_login])
             ->asArray()
             ->one();
+
+        $cek_detail = AktPembelianDetail::find()
+            ->where(['id_pembelian' => $model->id_pembelian])
+            ->count();
+
+        // echo $model->jenis_bayar;
+        // die;
+
         ?>
+
 
 
         <?php if ($model->status == 1 && $cek_login == null) {
@@ -56,76 +65,53 @@ $this->title = 'Detail Data Order Pembelian : ' . $model->no_order_pembelian;
             <?= Html::a('<span class="glyphicon glyphicon-trash"></span> Hapus', ['delete', 'id' => $model->id_pembelian], [
                 'class' => 'btn btn-danger btn-hapus-hidden',
                 'data' => [
-                    'confirm' => 'Are you sure you want to delete this item?',
+                    'confirm' => 'Apakah anda yakin akan menghapus Data Order pembelian : ' . $model->no_order_pembelian . ' ?',
                     'method' => 'post',
                 ],
             ]) ?>
-            <?= Html::a('<span class="glyphicon glyphicon-edit"></span> Ubah Data Pembelian', ['ubah_data_pembelian', 'id' => $model->id_pembelian], [
-                'class' => 'btn btn-info btn-ubah-hidden',
-                'data-toggle' => 'modal',
-                'data-target' => '#modal-default'
-            ]) ?>
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modal-default"><span class="glyphicon glyphicon-edit"></span> Ubah Order Pembelian</button>
         <?php } ?>
-        <?php
 
-        $show_hide = 0;
-        $query_detail = AktPembelianDetail::find()->where(['id_pembelian' => $model->id_pembelian])->all();
-        $count_query_detail = AktPembelianDetail::find()->where(['id_pembelian' => $model->id_pembelian])->count();
-
-        if ($model->status == 1 && $cek_login != null) {
-        ?>
+        <?php if ($cek_detail > 0 && $model->jenis_bayar != null) { ?>
             <?php
 
-            foreach ($query_detail as $key => $data) {
-                # code...
-                $item_stok = AktItemStok::findOne($data['id_item_stok']);
-                $a = ($data['qty'] > $item_stok->qty) ? 1 : 0;
-                $show_hide += $a;
-            }
-            if ($count_query_detail != 0) {
-                if ($model->ongkir >= null && $model->jenis_bayar != null && $model->diskon >= 0) {
-                    foreach ($approve as $key => $value) {
-                        if ($id_login == $value['id_login']) {
+            if ($model->status == 1 && $cek_login != null) {
             ?>
-                            <?= Html::a('<span class="glyphicon glyphicon-check"></span> Approved', ['approved', 'id' => $model->id_pembelian], [
-                                'class' => 'btn btn-success btn-approver-hidden',
-                                'data' => [
-                                    'confirm' => 'Apakah anda yakin akan menyetujui Data Order Pembelian : ' . $model->no_order_pembelian . ' ?',
-                                    'method' => 'post',
-                                ],
-                            ]) ?>
-                            <?= Html::a('<span class="glyphicon glyphicon-share"></span> Reject', ['reject', 'id' => $model->id_pembelian], [
-                                'class' => 'btn btn-danger btn-reject-hidden',
-                                'data' => [
-                                    'confirm' => 'Apakah anda yakin akan menolak Data Order Pembelian : ' . $model->no_order_pembelian . ' ?',
-                                    'method' => 'post',
-                                ],
-                            ]) ?>
-        <?php
-                        }
-                    }
-                }
-            }
-        }
-
-        ?>
-
-        <?php
-        foreach ($approve as $key => $value) {
-            if ($id_login == $value['id_login'] && $model->status < 3 || $model->status == 6) {
-        ?>
-                <?= Html::a('<span class="glyphicon glyphicon-pause"></span> Pending', ['pending', 'id' => $model->id_pembelian], [
-                    'class' => 'btn btn-info btn-pending-hidden',
+                <?= Html::a('<span class="glyphicon glyphicon-ok"></span> Approve', ['approved', 'id' => $model->id_pembelian, 'id_login' => $id_login], [
+                    'class' => 'btn btn-success',
                     'data' => [
-                        'confirm' => 'Apakah anda yakin akan mempause Data Order Pembelian : ' . $model->no_order_pembelian . ' ?',
+                        'confirm' => 'Apakah anda yakin akan menyetujui Data Order pembelian : ' . $model->no_order_pembelian . ' ?',
                         'method' => 'post',
                     ],
                 ]) ?>
-        <?php }
-        }
-        ?>
+                <?= Html::a('<span class="glyphicon glyphicon-share"></span> Reject', ['reject', 'id' => $model->id_pembelian, 'id_login' => $id_login], [
+                    'class' => 'btn btn-danger',
+                    // $a => true,
+                    'data' => [
+                        'confirm' => 'Apakah anda yakin untuk menolak data ini ?',
+                        'method' => 'post',
+                    ],
+                ]) ?>
+            <?php }
+            ?>
 
-        <?= Html::a('<span class="glyphicon glyphicon-print"></span> Cetak PO', ['cetak-order', 'id' => $model->id_pembelian], ['class' => 'btn btn-default', 'target' => '_BLANK']) ?>
+            <?php if ($model->status == 2 || $model->status == 6) { ?>
+                <?php
+                foreach ($approve as $key => $value) {
+                    if ($id_login == $value['id_login']) {
+                ?>
+                        <?= Html::a('<span class="glyphicon glyphicon-pause"></span> Pending', ['pending', 'id' => $model->id_pembelian], [
+                            'class' => 'btn btn-info btn-pending-hidden',
+                            'data' => [
+                                'confirm' => 'Apakah anda yakin untuk mempending data ini ?',
+                                'method' => 'post',
+                            ],
+                        ]) ?>
+            <?php }
+                }
+            } ?>
+        <?php } ?>
+
 
     </p>
 
@@ -174,6 +160,20 @@ $this->title = 'Detail Data Order Pembelian : ' . $model->no_order_pembelian;
                                             if (!empty($model->mata_uang->mata_uang)) {
                                                 # code...
                                                 return $model->mata_uang->mata_uang;
+                                            } else {
+                                                # code...
+                                            }
+                                        }
+                                    ],
+                                    [
+                                        'attribute' => 'jenis_bayar',
+                                        'value' => function ($model) {
+                                            if ($model->jenis_bayar == 1) {
+                                                # code...
+                                                return 'CASH';
+                                            } elseif ($model->jenis_bayar == 2) {
+                                                # code...
+                                                return 'CREDIT';
                                             } else {
                                                 # code...
                                             }
@@ -258,7 +258,7 @@ $this->title = 'Detail Data Order Pembelian : ' . $model->no_order_pembelian;
                                                 </div>
 
                                                 <div class="col-md-2">
-                                                    <?= $form->field($model_pembelian_detail_baru, 'diskon')->textInput(['placeholder' => 'Diskon %'])->label('Diskon %') ?>
+                                                    <?= $form->field($model_pembelian_detail_baru, 'diskon')->textInput(['placeholder' => 'Diskon %', 'pattern' => '[+-]?([0-9]*[.])?[0-9]+', 'id' => 'diskon-floating'])->label('Diskon %') ?>
                                                 </div>
 
                                                 <div class="col-md-10">
@@ -474,227 +474,230 @@ $this->title = 'Detail Data Order Pembelian : ' . $model->no_order_pembelian;
 
     }
 </style>
-<?php
-if (!empty($form)) {
-?>
-
-    <div class="modal fade" id="modal-default" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-        <div class="vertical-alignment-helper">
-            <div class="modal-dialog vertical-align-center">
-                <div class="modal-content modal-lg">
-                    <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span></button>
-                        <h4 class="modal-title">Ubah Data Pembelian</h4>
-                    </div>
-                    <div class="modal-body">
-                        <?= Html::beginForm(['akt-pembelian/view', 'aksi' => 'ubah_data_pembelian',  'id' => $model->id_pembelian], 'post') ?>
-                        <label class="label label-primary col-xs-12" style="font-size: 15px;">Data Order Pembelian</label>
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-grop">
-                                    <?= $form->field($model, 'no_order_pembelian')->textInput(['readonly' => true, 'required' => 'on', 'autocomplete' => 'off']) ?>
-                                </div>
-
-                                <div class="form-group">
-                                    <?= $form->field($model, 'tanggal_order_pembelian')->widget(
-                                        \yii\jui\DatePicker::classname(),
-                                        [
-                                            'clientOptions' => [
-                                                'changeMonth' => true,
-                                                'changeYear' => true,
-                                            ],
-                                            'dateFormat' => 'yyyy-MM-dd',
-                                            'options' => ['class' => 'form-control', 'required' => 'on', 'autocomplete' => 'off']
-                                        ]
-                                    ) ?>
-                                </div>
-                                <div class="form-group">
-                                    <?= $form->field($model, 'tanggal_estimasi')->widget(
-                                        \yii\jui\DatePicker::classname(),
-                                        [
-                                            'clientOptions' => [
-                                                'changeMonth' => true,
-                                                'changeYear' => true,
-                                            ],
-                                            'dateFormat' => 'yyyy-MM-dd',
-                                            'options' => ['class' => 'form-control', 'required' => 'on', 'autocomplete' => 'off']
-                                        ]
-                                    ) ?>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <?= $form->field($model, 'id_customer')->widget(Select2::classname(), [
-                                        'data' => $data_customer,
-                                        'language' => 'en',
-                                        'options' => ['placeholder' => 'Pilih Supplier'],
-                                        'pluginOptions' => [
-                                            'allowClear' => true
-                                        ],
-                                        'addon' => [
-                                            'prepend' => [
-                                                'content' => Html::button('<i class="glyphicon glyphicon-plus"></i>', [
-                                                    'class' => 'btn btn-success',
-                                                    'title' => 'Add Supplier',
-                                                    'data-toggle' => 'modal',
-                                                    'data-target' => '#modal-supplier'
-                                                ]),
-                                                'asButton' => true,
-                                            ],
-                                        ],
-                                    ])->label('Supplier')
-                                    ?>
-                                </div>
-                                <div class="form-group">
-                                    <?= $form->field($model, 'id_mata_uang')->widget(Select2::classname(), [
-                                        'data' => $data_mata_uang,
-                                        'value' => $model->id_mata_uang = 1,
-                                        'language' => 'en',
-                                        'options' => ['placeholder' => 'Pilih Mata Uang'],
-                                        'pluginOptions' => [
-                                            'allowClear' => true,
-
-                                        ],
-                                    ])->label('Mata Uang')
-                                    ?>
-                                </div>
-                            </div>
-                        </div>
-                        <label class="label label-primary col-xs-12" style="font-size: 15px;">Data Perhitungan Pembelian</label>
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <?= $form->field($model, 'ongkir')->widget(\yii\widgets\MaskedInput::className(), ['clientOptions' => ['alias' => 'decimal', 'groupSeparator' => '.', 'autoGroup' => true, 'removeMaskOnSubmit' => true, 'rightAlign' => false, 'min' => 0], 'options' => ['value' => $model->ongkir == '' ? 0 : $model->ongkir]]); ?>
-                                </div>
-
-                                <div class="form-group">
-                                    <?= $form->field($model, 'diskon')->widget(\yii\widgets\MaskedInput::className(), ['clientOptions' => ['alias' => 'decimal', 'groupSeparator' => '.', 'autoGroup' => true, 'removeMaskOnSubmit' => true, 'rightAlign' => false, 'min' => 0], 'options' => ['value' => $model->diskon == '' ? 0 : $model->diskon]])->label('Diskon %'); ?>
-                                </div>
-
-                                <div class="form-group">
-                                    <div class="row">
-                                        <div class="col-md-12">
-                                            <?= $form->field($model, 'uang_muka')->textInput(['value' => $model->uang_muka == '' ? 0 : $model->uang_muka, 'autocomplete' => 'off'])->label('Uang Muka') ?>
-                                        </div>
-                                        <div class="col-md-12 kas-bank style-kas-bank">
-                                            <?= $form->field($model, 'id_kas_bank')->widget(Select2::classname(), [
-                                                'data' => $data_kas_bank,
-                                                'language' => 'en',
-                                                'options' => ['placeholder' => 'Pilih Kas Bank'],
-                                                'pluginOptions' => [
-                                                    'allowClear' => true,
-
-                                                ],
-                                            ])->label('Kas Bank')
-                                            ?>
-                                        </div>
-                                    </div>
-
-                                </div>
 
 
-                                <div class="form-group">
-                                    <table>
-                                        <tr>
-                                            <td style="height: 8px;"></td>
-                                        </tr>
-                                    </table>
-                                    <?= $form->field($model, 'pajak')->checkbox() ?>
-                                </div>
-
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <?= $form->field($model, 'jenis_bayar')->dropDownList(
-                                        array(1 => "CASH", 2 => "CREDIT"),
-                                        [
-                                            'prompt' => 'Pilih Jenis Pembayaran',
-                                            'required' => 'on',
-                                        ]
-                                    ) ?>
-                                </div>
-
-                                <div class="form-group">
-                                    <?= $form->field($model, 'jatuh_tempo', ['options' => ['id' => 'jatuh_tempo', 'hidden' => 'yes']])->dropDownList(array(
-                                        15 => 15,
-                                        30 => 30,
-                                        45 => 45,
-                                        60 => 60,
-                                    ), ['prompt' => 'Pilih Jatuh Tempo']) ?>
-                                </div>
-
-                                <div class="form-group">
-                                    <?= $form->field($model, 'tanggal_tempo', ['options' => ['id' => 'tanggal_tempo', 'hidden' => 'yes']])->textInput(['readonly' => true]) ?>
-                                    <?= $form->field($model, 'id_pembelian')->textInput(['type' => 'hidden', 'readonly' => true, 'required' => 'on', 'autocomplete' => 'off', 'id' => 'id_pembelian'])->label(FALSE) ?>
-                                </div>
-
-                                <div class="form-group">
-                                    <?= $form->field($model, 'materai')->widget(\yii\widgets\MaskedInput::className(), ['clientOptions' => ['alias' => 'decimal', 'groupSeparator' => '.', 'autoGroup' => true, 'removeMaskOnSubmit' => true, 'rightAlign' => false, 'min' => 0], 'options' => ['value' => $model->materai == '' ? 0 : $model->materai]]); ?>
-                                </div>
-
-                                <div class="form-group">
-                                    <label for="total_pembelian_detail">Total pembelian Barang</label>
-                                    <?= Html::input("text", "total_pembelian_detail", ribuan($model_pembelian_detail), ['class' => 'form-control', 'readonly' => true, 'id' => 'total_pembelian_detail']) ?>
-                                </div>
-                            </div>
-                        </div>
-
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Close</button>
-                        <?= Html::submitButton('<span class="glyphicon glyphicon-floppy-saved"></span> Simpan', ['class' => 'btn btn-success']) ?>
-                        <?= Html::endForm() ?>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="modal fade" id="modal-supplier">
-        <div class="modal-dialog">
-            <div class="modal-content">
+<div class="modal fade" id="modal-default" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="vertical-alignment-helper">
+        <div class="modal-dialog vertical-align-center">
+            <div class="modal-content modal-lg">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title">Tambah Supplier</h4>
+                    <h4 class="modal-title">Ubah Data Pembelian</h4>
                 </div>
+                <?php $form = ActiveForm::begin([
+                    'method' => 'post',
+                    'action' => ['akt-pembelian/view', 'aksi' => 'ubah_data_pembelian',  'id' => $model->id_pembelian],
+                ]); ?>
                 <div class="modal-body">
-                    <?= Html::beginForm(['akt-pembelian/view', 'aksi' => 'supplier', 'id' => $model->id_pembelian, 'tipe' => 'order_pembelian'], 'post') ?>
+                    <label class="label label-primary col-xs-12" style="font-size: 15px;">Data Order Pembelian</label>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-grop">
+                                <?= $form->field($model, 'no_order_pembelian')->textInput(['readonly' => true, 'required' => 'on', 'autocomplete' => 'off']) ?>
+                            </div>
 
-                    <div class="form-group">
-                        <label for="">Nama Supplier</label>
-                        <input type="text" name="nama_mitra_bisnis" class="form-control" id="">
+                            <div class="form-group">
+                                <?= $form->field($model, 'tanggal_order_pembelian')->widget(
+                                    \yii\jui\DatePicker::classname(),
+                                    [
+                                        'clientOptions' => [
+                                            'changeMonth' => true,
+                                            'changeYear' => true,
+                                        ],
+                                        'dateFormat' => 'yyyy-MM-dd',
+                                        'options' => ['class' => 'form-control', 'required' => 'on', 'autocomplete' => 'off']
+                                    ]
+                                ) ?>
+                            </div>
+                            <div class="form-group">
+                                <?= $form->field($model, 'tanggal_estimasi')->widget(
+                                    \yii\jui\DatePicker::classname(),
+                                    [
+                                        'clientOptions' => [
+                                            'changeMonth' => true,
+                                            'changeYear' => true,
+                                        ],
+                                        'dateFormat' => 'yyyy-MM-dd',
+                                        'options' => ['class' => 'form-control', 'required' => 'on', 'autocomplete' => 'off']
+                                    ]
+                                ) ?>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <?= $form->field($model, 'id_customer')->widget(Select2::classname(), [
+                                    'data' => $data_customer,
+                                    'language' => 'en',
+                                    'options' => ['placeholder' => 'Pilih Supplier'],
+                                    'pluginOptions' => [
+                                        'allowClear' => true
+                                    ],
+                                    'addon' => [
+                                        'prepend' => [
+                                            'content' => Html::button('<i class="glyphicon glyphicon-plus"></i>', [
+                                                'class' => 'btn btn-success',
+                                                'title' => 'Add Supplier',
+                                                'data-toggle' => 'modal',
+                                                'data-target' => '#modal-supplier'
+                                            ]),
+                                            'asButton' => true,
+                                        ],
+                                    ],
+                                ])->label('Supplier')
+                                ?>
+                            </div>
+                            <div class="form-group">
+                                <?= $form->field($model, 'id_mata_uang')->widget(Select2::classname(), [
+                                    'data' => $data_mata_uang,
+                                    'value' => $model->id_mata_uang = 1,
+                                    'language' => 'en',
+                                    'options' => ['placeholder' => 'Pilih Mata Uang'],
+                                    'pluginOptions' => [
+                                        'allowClear' => true,
+
+                                    ],
+                                ])->label('Mata Uang')
+                                ?>
+                            </div>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label for="">Level Harga</label>
-                        <?php
-                        echo Select2::widget([
-                            'name' => 'id_level_harga',
-                            'data' => ArrayHelper::map(AktLevelHarga::find()->all(), 'id_level_harga', 'keterangan'),
-                            'options' => [
-                                'placeholder' => 'Pilih Level Harga ...',
-                                // 'multiple' => true
-                            ],
-                        ]);
-                        ?>
+                    <label class="label label-primary col-xs-12" style="font-size: 15px;">Data Perhitungan Pembelian</label>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <?= $form->field($model, 'ongkir')->widget(\yii\widgets\MaskedInput::className(), ['clientOptions' => ['alias' => 'decimal', 'groupSeparator' => '.', 'autoGroup' => true, 'removeMaskOnSubmit' => true, 'rightAlign' => false, 'min' => 0], 'options' => ['value' => $model->ongkir == '' ? 0 : $model->ongkir]]); ?>
+                            </div>
+
+                            <div class="form-group">
+                                <?= $form->field($model, 'diskon')->textInput(['value' => $model->diskon == '' ? 0 : $model->diskon, 'autocomplete' => 'off', 'pattern' => '[+-]?([0-9]*[.])?[0-9]+', 'id' => 'diskon-floating'])->label('Diskon %') ?>
+                            </div>
+
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <?= $form->field($model, 'uang_muka')->textInput(['value' => $model->uang_muka == '' ? 0 : $model->uang_muka, 'autocomplete' => 'off'])->label('Uang Muka') ?>
+                                    </div>
+                                    <div class="col-md-12 kas-bank style-kas-bank">
+                                        <?= $form->field($model, 'id_kas_bank')->widget(Select2::classname(), [
+                                            'data' => $data_kas_bank,
+                                            'language' => 'en',
+                                            'options' => ['placeholder' => 'Pilih Kas Bank'],
+                                            'pluginOptions' => [
+                                                'allowClear' => true,
+
+                                            ],
+                                        ])->label('Kas Bank')
+                                        ?>
+                                    </div>
+                                </div>
+
+                            </div>
+
+
+                            <div class="form-group">
+                                <table>
+                                    <tr>
+                                        <td style="height: 8px;"></td>
+                                    </tr>
+                                </table>
+                                <?= $form->field($model, 'pajak')->checkbox() ?>
+                            </div>
+
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <?= $form->field($model, 'jenis_bayar')->dropDownList(
+                                    array(1 => "CASH", 2 => "CREDIT"),
+                                    [
+                                        'prompt' => 'Pilih Jenis Pembayaran',
+                                        'required' => true,
+                                    ]
+                                ) ?>
+                            </div>
+
+                            <div class="form-group">
+                                <?= $form->field($model, 'jatuh_tempo', ['options' => ['id' => 'jatuh_tempo', 'hidden' => 'yes']])->dropDownList(array(
+                                    15 => 15,
+                                    30 => 30,
+                                    45 => 45,
+                                    60 => 60,
+                                ), ['prompt' => 'Pilih Jatuh Tempo']) ?>
+                            </div>
+
+                            <div class="form-group">
+                                <?= $form->field($model, 'tanggal_tempo', ['options' => ['id' => 'tanggal_tempo', 'hidden' => 'yes']])->textInput(['readonly' => true]) ?>
+                                <?= $form->field($model, 'id_pembelian')->textInput(['type' => 'hidden', 'readonly' => true, 'required' => 'on', 'autocomplete' => 'off', 'id' => 'id_pembelian'])->label(FALSE) ?>
+                            </div>
+
+                            <div class="form-group">
+                                <?= $form->field($model, 'materai')->widget(\yii\widgets\MaskedInput::className(), ['clientOptions' => ['alias' => 'decimal', 'groupSeparator' => '.', 'autoGroup' => true, 'removeMaskOnSubmit' => true, 'rightAlign' => false, 'min' => 0], 'options' => ['value' => $model->materai == '' ? 0 : $model->materai]]); ?>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="total_pembelian_detail">Total pembelian Barang</label>
+                                <?= Html::input("text", "total_pembelian_detail", ribuan($model_pembelian_detail), ['class' => 'form-control', 'readonly' => true, 'id' => 'total_pembelian_detail']) ?>
+                            </div>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label for="">Deskripsi Supplier</label>
-                        <textarea class="form-control" name="deskripsi_mitra_bisnis" id="" cols="10" rows="5"></textarea>
-                    </div>
+
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Close</button>
                     <?= Html::submitButton('<span class="glyphicon glyphicon-floppy-saved"></span> Simpan', ['class' => 'btn btn-success']) ?>
-                    <?= Html::endForm() ?>
+                </div>
+                <?php ActiveForm::end(); ?>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modal-supplier">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Tambah Supplier</h4>
+            </div>
+            <?php $form = ActiveForm::begin([
+                'method' => 'post',
+                'action' => ['akt-pembelian/view', 'aksi' => 'supplier', 'id' => $model->id_pembelian, 'tipe' => 'order_pembelian'],
+            ]); ?>
+            <div class="modal-body">
+
+                <div class="form-group">
+                    <label for="">Nama Supplier</label>
+                    <input type="text" name="nama_mitra_bisnis" class="form-control" id="">
+                </div>
+                <div class="form-group">
+                    <label for="">Level Harga</label>
+                    <?php
+                    echo Select2::widget([
+                        'name' => 'id_level_harga',
+                        'data' => ArrayHelper::map(AktLevelHarga::find()->all(), 'id_level_harga', 'keterangan'),
+                        'options' => [
+                            'placeholder' => 'Pilih Level Harga ...',
+                            // 'multiple' => true
+                        ],
+                    ]);
+                    ?>
+                </div>
+                <div class="form-group">
+                    <label for="">Deskripsi Supplier</label>
+                    <textarea class="form-control" name="deskripsi_mitra_bisnis" id="" cols="10" rows="5"></textarea>
                 </div>
             </div>
-            <!-- /.modal-content -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Close</button>
+                <?= Html::submitButton('<span class="glyphicon glyphicon-floppy-saved"></span> Simpan', ['class' => 'btn btn-success']) ?>
+            </div>
+            <?php ActiveForm::end(); ?>
         </div>
-        <!-- /.modal-dialog -->
+        <!-- /.modal-content -->
     </div>
-<?php } ?>
+    <!-- /.modal-dialog -->
+</div>
 <!-- /.modal -->
 
 
@@ -746,6 +749,18 @@ $this->registerJs($script);
 ?>
 
 <script>
+    const elements = document.querySelectorAll('#diskon-floating');
+    for (var i = 0; i < elements.length; i++) {
+        elements[i].oninvalid = function(e) {
+            e.target.setCustomValidity("");
+            if (!e.target.validity.valid) {
+                e.target.setCustomValidity("Diskon hanya menerima inputan angka dan titik");
+            }
+        };
+        elements[i].oninput = function(e) {
+            e.target.setCustomValidity("");
+        };
+    }
     const kasBank = document.querySelector('.kas-bank');
     const uangMuka = document.querySelector('#aktpembelian-uang_muka');
 

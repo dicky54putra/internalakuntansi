@@ -61,4 +61,24 @@ class Setting extends \yii\db\ActiveRecord
     {
         return $this->hasOne(AktKota::className(), ['id_kota' => 'id_kota']);
     }
+
+    public function beforeSave($insert)
+    {
+        if (parent::beforeSave($insert)) {
+            //if ($this->password != "") {
+            //    $this->password = md5($this->password);
+            //	//exit;
+            //}
+
+
+            if ($this->foto) {
+                $filename = time() . "_" . str_replace(" ", "_", $this->foto->baseName) . '.' . $this->foto->extension;
+                $this->foto->saveAs('upload/' . $filename);
+                $this->foto = $filename;
+            } else {
+                $this->foto = "1598935038_GSS.png";
+            }
+            return true;
+        }
+    }
 }
