@@ -26,25 +26,6 @@ $this->title = 'Data Perusahaan';
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
 
-            // 'id_setting',
-            'nama',
-            'nama_usaha',
-            'email:email',
-            'alamat:ntext',
-            [
-                'attribute' => 'id_kota',
-                'value' => function ($model) {
-                    if (!empty($model->kota->nama_kota)) {
-                        # code...
-                        return $model->kota->nama_kota;
-                    }
-                }
-            ],
-            'telepon',
-            'fax',
-            'npwp',
-            //'foto',
-
             [
                 'class' => 'yii\grid\ActionColumn',
                 'header' => 'Aksi',
@@ -88,6 +69,28 @@ $this->title = 'Data Perusahaan';
                         $url = 'index.php?r=setting/delete&id=' . $model->id_setting;
                         return $url;
                     }
+                }
+            ],
+            'nama',
+            'nama_usaha',
+            'email:email',
+            'alamat:ntext',
+            [
+                'attribute' => 'id_kota',
+                'value' => function ($model) {
+                    if (!empty($model->kota->nama_kota)) {
+                        return $model->kota->nama_kota;
+                    }
+                }
+            ],
+            'telepon',
+            'fax',
+            'npwp',
+            [
+                'attribute' => 'foto',
+                'format' => 'raw',
+                'value' => function ($model) {
+                    return '<img width="150px" src="upload/' . $model->foto . '" alt="">';
                 }
             ],
         ],
