@@ -80,10 +80,16 @@ class SiteController extends Controller
     public function actionIndex()
     {
 
-        $sum_pendapatan = Yii::$app->db->createCommand("SELECT SUM(saldo_akun) FROM akt_akun where jenis = 4")->queryScalar();
-        $sum_beban = Yii::$app->db->createCommand("SELECT SUM(saldo_akun) FROM akt_akun where jenis = 8")->queryScalar();
+        // $sum_pendapatan = Yii::$app->db->createCommand("SELECT SUM(saldo_akun) FROM akt_akun where jenis = 4")->queryScalar();
+        // $sum_beban = Yii::$app->db->createCommand("SELECT SUM(saldo_akun) FROM akt_akun where jenis = 8")->queryScalar();
+        $sum_pendapatan = Yii::$app->db->createCommand("SELECT SUM(nominal) FROM akt_penerimaan_pembayaran")->queryScalar();
 
-        $sum_omzet = $sum_pendapatan - $sum_beban;
+        // $sum_omzet = $sum_pendapatan - $sum_beban;
+        if (!empty($sum_pendapatan)) {
+            $sum_omzet = $sum_pendapatan;
+        } else {
+            $sum_omzet = 0;
+        }
 
         $saldo_kas = AktAkun::find()->where(['id_akun' => 1])->one();
         $saldo_piutang = Yii::$app->db->createCommand("SELECT SUM(saldo_akun) as saldo FROM `akt_akun` WHERE nama_akun LIKE '%piutang%'")->queryScalar();
