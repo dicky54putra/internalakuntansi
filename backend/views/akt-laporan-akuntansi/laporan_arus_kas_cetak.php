@@ -73,10 +73,17 @@ use backend\models\AktSaldoAwalAkunDetail;
             <td>Saldo Awal Kas</td>
             <td style="text-align: right;width: 20%;">
                 <?php
+<<<<<<< HEAD
                 if ($saldo_awal->debet != null) {
                     $saldo_awal_ = $saldo_awal->debet;
                     echo ribuan($saldo_awal->debet);
                 } elseif ($saldo_awal->kredit != null) {
+=======
+                if (!empty($saldo_awal->debet)) {
+                    $saldo_awal_ = $saldo_awal->debet;
+                    echo ribuan($saldo_awal->debet);
+                } elseif (!empty($saldo_awal->kredit)) {
+>>>>>>> 731cfed3fece0ab1886e838f6a727eb1810d8018
                     echo '-' . ribuan($saldo_awal->kredit);
                     $saldo_awal_ = $saldo_awal->kredit;
                 }
@@ -111,11 +118,19 @@ use backend\models\AktSaldoAwalAkunDetail;
             <th style="text-align: right;" colspan="2">Arus kas bersih dari aktivitas operasi</th>
             <th style="text-align: right;width: 20%;">
                 <?php
+<<<<<<< HEAD
                 if ($saldo_awal->debet != null) {
                     $hasil = $saldo_awal->debet + $debit - $kredit;
                     // echo 'Rp. ' . ribuan($hasil);
                     echo ribuan($hasil);
                 } elseif ($saldo_awal->kredit != null) {
+=======
+                if (!empty($saldo_awal->debet)) {
+                    $hasil = $saldo_awal->debet + $debit - $kredit;
+                    // echo 'Rp. ' . ribuan($hasil);
+                    echo ribuan($hasil);
+                } elseif (!empty($saldo_awal->kredit)) {
+>>>>>>> 731cfed3fece0ab1886e838f6a727eb1810d8018
                     $hasil = $debit - $kredit - $saldo_awal->debet;
                     // echo 'Rp. ' . ribuan($hasil);
                     echo ribuan($hasil);

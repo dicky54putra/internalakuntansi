@@ -105,6 +105,7 @@ class LoginController extends Controller
             } else {
                 $model->password = md5($model->password);
             }
+<<<<<<< HEAD
             $userrole = Yii::$app->db->createCommand("SELECT system_role.nama_role FROM user_role INNER JOIN system_role ON system_role.id_system_role = user_role.id_system_role WHERE user_role.id_login = " . Yii::$app->user->id . " AND  system_role.nama_role = 'DEMO PROGRAM'")->queryScalar();
             if ($userrole == 'DEMO PROGRAM') {
                 Yii::$app->session->setFlash('danger', [['Berhasil!', 'Mohon Maaf, Adnda tidak bisa mgubah profil dengan akun demo!']]);
@@ -118,6 +119,17 @@ class LoginController extends Controller
                     <p>Silahkan Login Dengan Username dan Password Yang Baru Diubah</p>
                 ']]);
             }
+=======
+            $model->save();
+
+            Yii::$app->user->logout();
+            return $this->goHome();
+
+            Yii::$app->session->setFlash('success', [['Berhasil!', '
+                <p>Data Profil Berhasil Di Ubah.</p>
+                <p>Silahkan Login Dengan Username dan Password Yang Baru Diubah</p>
+            ']]);
+>>>>>>> 731cfed3fece0ab1886e838f6a727eb1810d8018
         }
 
         return $this->render('view_profile', [

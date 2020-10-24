@@ -86,18 +86,38 @@ $this->title = 'Laporan Pajak PPN';
                                             if ($tipe == 'PPN Masukan') {
                                                 $masuk = 'selected';
                                                 $keluar = '';
+<<<<<<< HEAD
                                             } else {
                                                 $masuk = '';
                                                 $keluar = 'selected';
+=======
+                                                $semua = '';
+                                            } elseif ($tipe == 'PPN Keluaran') {
+                                                $masuk = '';
+                                                $keluar = 'selected';
+                                                $semua = '';
+                                            } else {
+                                                $masuk = '';
+                                                $keluar = '';
+                                                $semua = 'selected';
+>>>>>>> 731cfed3fece0ab1886e838f6a727eb1810d8018
                                             }
                                         } else {
                                             $masuk = '';
                                             $keluar = '';
+<<<<<<< HEAD
+=======
+                                            $semua = '';
+>>>>>>> 731cfed3fece0ab1886e838f6a727eb1810d8018
                                         }
                                         ?>
                                         <select name="tipe" id="tipe" class="form-control">
                                             <option value="PPN Masukan" <?= $masuk ?>>PPN Masukan</option>
                                             <option value="PPN Keluaran" <?= $keluar ?>>PPN Keluaran</option>
+<<<<<<< HEAD
+=======
+                                            <option value="PPN Semua" <?= $semua ?>>PPN Semua</option>
+>>>>>>> 731cfed3fece0ab1886e838f6a727eb1810d8018
                                         </select>
                                     </div>
                                 </td>
@@ -133,6 +153,17 @@ $this->title = 'Laporan Pajak PPN';
 
         <div class="box">
             <div class="panel panel-primary">
+<<<<<<< HEAD
+=======
+                <?php
+                if ($tipe == 'PPN Semua') {
+                    $tipe_ = 'PPN Masukan';
+                    $tipe__ = 'PPN Keluaran';
+                } else {
+                    $tipe_ = $tipe;
+                    $tipe__ = $tipe;
+                } ?>
+>>>>>>> 731cfed3fece0ab1886e838f6a727eb1810d8018
                 <div class="panel-heading"><span class="fa fa-file-text"></span> <?= $this->title . substr($tipe, 3) ?></div>
                 <div class="panel-body">
                     <div class="col-md-12" style="padding: 0;">
@@ -150,6 +181,7 @@ $this->title = 'Laporan Pajak PPN';
                                         <th style="width: 15%;">
                                             <p style=" float: right;">Jumlah</p>
                                         </th>
+<<<<<<< HEAD
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -164,6 +196,15 @@ $this->title = 'Laporan Pajak PPN';
                                     $gt = 0;
 
                                     $ju = Yii::$app->db->createCommand("SELECT * FROM `akt_jurnal_umum_detail` INNER JOIN `akt_jurnal_umum` ON akt_jurnal_umum.id_jurnal_umum = akt_jurnal_umum_detail.id_jurnal_umum INNER JOIN `akt_akun` ON akt_akun.id_akun = akt_jurnal_umum_detail.id_akun WHERE akt_jurnal_umum.tanggal BETWEEN '$tanggal_awal' AND ' $tanggal_akhir' AND akt_akun.nama_akun = '" . $tipe . "'")->queryAll();
+=======
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php
+                                    $gt = 0;
+                                    $ju = Yii::$app->db->createCommand("SELECT * FROM `akt_jurnal_umum_detail` INNER JOIN `akt_jurnal_umum` ON akt_jurnal_umum.id_jurnal_umum = akt_jurnal_umum_detail.id_jurnal_umum INNER JOIN `akt_akun` ON akt_akun.id_akun = akt_jurnal_umum_detail.id_akun WHERE akt_jurnal_umum.tanggal BETWEEN '$tanggal_awal' AND ' $tanggal_akhir' AND akt_akun.nama_akun = '" . $tipe_ . "'")->queryAll();
+>>>>>>> 731cfed3fece0ab1886e838f6a727eb1810d8018
 
                                     $no = 1;
                                     foreach ($ju as $k) {
@@ -186,6 +227,7 @@ $this->title = 'Laporan Pajak PPN';
                                                 }
                                                 ?>
                                             </td>
+<<<<<<< HEAD
                                         </tr>
                                     <?php } ?>
                                 </tbody>
@@ -194,6 +236,59 @@ $this->title = 'Laporan Pajak PPN';
                                         <th colspan="4" style="text-align: right;">Grand Total</th>
                                         <th style="text-align: right;"><?= ribuan($gt) ?></th>
                                     </tr>
+=======
+                                            <td></td>
+                                        </tr>
+                                    <?php } ?>
+                                    <tr>
+                                        <th colspan="5" style="text-align: left;">Total</th>
+                                        <th style="text-align: right; border-top: 1px solid #000000;"><?= ribuan($gt) ?></th>
+                                    </tr>
+                                    <?php
+                                    if ($tipe == 'PPN Semua') {
+                                        $gt_ = 0;
+                                        $ju = Yii::$app->db->createCommand("SELECT * FROM `akt_jurnal_umum_detail` INNER JOIN `akt_jurnal_umum` ON akt_jurnal_umum.id_jurnal_umum = akt_jurnal_umum_detail.id_jurnal_umum INNER JOIN `akt_akun` ON akt_akun.id_akun = akt_jurnal_umum_detail.id_akun WHERE akt_jurnal_umum.tanggal BETWEEN '$tanggal_awal' AND ' $tanggal_akhir' AND akt_akun.nama_akun = '" . $tipe__ . "'")->queryAll();
+
+                                        $no = 1;
+                                        foreach ($ju as $k) {
+                                            $gt_ += $k['debit'] += $k['kredit'];
+                                    ?>
+                                            <tr>
+                                                <td><?= $no++ ?></td>
+                                                <td><?= date('d/m/Y', strtotime($k['tanggal'])) ?></td>
+                                                <!-- <td><?php // $k['nama_akun'] 
+                                                            ?></td> -->
+                                                <td><?= $k['no_jurnal_umum'] ?></td>
+                                                <td><?= $k['keterangan'] ?></td>
+                                                <!-- <td>1.00</td> -->
+                                                <td style="text-align: right;">
+                                                    <?php
+                                                    if ($k['kredit'] == 0) {
+                                                        echo ribuan($k['debit']);
+                                                    } else {
+                                                        echo ribuan($k['kredit']);
+                                                    }
+                                                    ?>
+                                                </td>
+                                                <td></td>
+                                            </tr>
+                                        <?php } ?>
+                                        <tr>
+                                            <th colspan="5" style="text-align: left;">Total</th>
+                                            <th style="text-align: right; border-top: 1px solid #000000;"><?= ribuan($gt_) ?></th>
+                                        </tr>
+                                        <tr>
+                                            <th colspan="5" style="text-align: left;border-top: 1px solid #000000;"">Grand Total</th>
+                                            <th style=" text-align: right; border-top: 1px solid #000000;"><?= ribuan($gt_ - $gt) ?></th>
+                                        </tr>
+                                    <?php } ?>  
+                                </tbody>
+                                <tfoot>
+                                    <!-- <tr>
+                                        <th colspan="4" style="text-align: right;">Grand Total</th>
+                                        <th style="text-align: right;"><?= ribuan($gt) ?></th>
+                                    </tr> -->
+>>>>>>> 731cfed3fece0ab1886e838f6a727eb1810d8018
                                 </tfoot>
                             </table>
 
