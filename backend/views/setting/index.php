@@ -26,28 +26,6 @@ $this->title = 'Data Perusahaan';
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
 
-<<<<<<< HEAD
-            // 'id_setting',
-            'nama',
-            'nama_usaha',
-            'email:email',
-            'alamat:ntext',
-            [
-                'attribute' => 'id_kota',
-                'value' => function ($model) {
-                    if (!empty($model->kota->nama_kota)) {
-                        # code...
-                        return $model->kota->nama_kota;
-                    }
-                }
-            ],
-            'telepon',
-            'fax',
-            'npwp',
-            //'foto',
-
-=======
->>>>>>> 731cfed3fece0ab1886e838f6a727eb1810d8018
             [
                 'class' => 'yii\grid\ActionColumn',
                 'header' => 'Aksi',
@@ -93,8 +71,6 @@ $this->title = 'Data Perusahaan';
                     }
                 }
             ],
-<<<<<<< HEAD
-=======
             'nama',
             'nama_usaha',
             'email:email',
@@ -117,7 +93,6 @@ $this->title = 'Data Perusahaan';
                     return '<img width="150px" src="upload/' . $model->foto . '" alt="">';
                 }
             ],
->>>>>>> 731cfed3fece0ab1886e838f6a727eb1810d8018
         ],
         'containerOptions' => ['style' => 'overflow: auto'], // only set when $responsive = false
         'headerRowOptions' => ['class' => 'kartik-sheet-style'],

@@ -30,11 +30,7 @@ use kartik\select2\Select2;
                             <?= $form->field($model, 'header')->checkbox()
                             ?>
                             <?php
-<<<<<<< HEAD
-                            $model->parent = 1;
-=======
                             // $model->parent = 1;
->>>>>>> 731cfed3fece0ab1886e838f6a727eb1810d8018
                             echo $form->field($model, 'parent')->widget(Select2::classname(), [
                                 'data' => ArrayHelper::map(
                                     AktAkun::find()->where(['header' => 1])->all(),

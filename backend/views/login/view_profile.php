@@ -14,18 +14,7 @@ $this->title = "Login Profile";
     <div class="box-header">
         <div class="col-md-4" style="padding: 0;">
             <div class="box-body">
-<<<<<<< HEAD
-                <?php
-                // $userrole = Yii::$app->db->createCommand("SELECT system_role.nama_role FROM user_role INNER JOIN system_role ON system_role.id_system_role = user_role.id_system_role WHERE user_role.id_login = " . Yii::$app->user->id . " AND  system_role.nama_role = 'DEMO PROGRAM'")->queryScalar();
-                // if ($userrole == 'DEMO PROGRAM') {
-                //     $read = true;
-                // } else {
-                //     $read = false;
-                // }
-                ?>
-=======
 
->>>>>>> 731cfed3fece0ab1886e838f6a727eb1810d8018
                 <?php $form = ActiveForm::begin(['options' => ['enctype' => 'multipart/form-data']]); ?>
 
                 <?= $form->field($model, 'username')->textInput(['maxlength' => true]) ?>
@@ -87,8 +76,4 @@ JS;
 
 $this->registerJs($script);
 
-<<<<<<< HEAD
 ?>
-=======
-?>
->>>>>>> 731cfed3fece0ab1886e838f6a727eb1810d8018

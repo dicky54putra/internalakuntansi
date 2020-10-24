@@ -122,50 +122,6 @@ $data_setting = Setting::find()->one();
         <p style="float: right;">
             Periode : <?= date('d/m/Y', strtotime($tanggal_awal)) . ' s/d ' . date('d/m/Y', strtotime($tanggal_akhir))  ?>
         </p>
-<<<<<<< HEAD
-        <table class="table2">
-            <tr>
-                <th style="width: 1%;">#</th>
-                <th style="width: 5%;">Tanggal</th>
-                <!-- <th style="width: 10%;">Tipe Transaksi</th> -->
-                <th style="width: 15%;">No. Referensi</th>
-                <th>Keterangan</th>
-                <!-- <th style="width: 1%;">Kurs</th> -->
-                <th style="width: 15%;" align="right">Jumlah</th>
-            </tr>
-            <?php
-            $gt = 0;
-
-            $ju = Yii::$app->db->createCommand("SELECT * FROM `akt_jurnal_umum_detail` INNER JOIN `akt_jurnal_umum` ON akt_jurnal_umum.id_jurnal_umum = akt_jurnal_umum_detail.id_jurnal_umum INNER JOIN `akt_akun` ON akt_akun.id_akun = akt_jurnal_umum_detail.id_akun WHERE akt_jurnal_umum.tanggal BETWEEN '$tanggal_awal' AND ' $tanggal_akhir' AND akt_akun.nama_akun = '" . $tipe . "'")->queryAll();
-
-            $no = 1;
-            foreach ($ju as $k) {
-                $gt += $k['debit'] += $k['kredit'];
-            ?>
-                <tr>
-                    <td><?= $no++ ?></td>
-                    <td><?= date('d/m/Y', strtotime($k['tanggal'])) ?></td>
-                    <!-- <td><?php // $k['nama_akun'] 
-                                ?></td> -->
-                    <td><?= $k['no_jurnal_umum'] ?></td>
-                    <td><?= $k['keterangan'] ?></td>
-                    <!-- <td>1.00</td> -->
-                    <td style="text-align: right;">
-                        <?php
-                        if ($k['kredit'] == 0) {
-                            echo ribuan($k['debit']);
-                        } else {
-                            echo ribuan($k['kredit']);
-                        }
-                        ?>
-                    </td>
-                </tr>
-            <?php } ?>
-            <tr>
-                <th colspan="4" style="text-align: right;">Grand Total</th>
-                <th style="text-align: right;"><?= ribuan($gt) ?></th>
-            </tr>
-=======
         <table class="table1">
             <?php
             if ($tipe == 'PPN Semua') {
@@ -267,7 +223,6 @@ $data_setting = Setting::find()->one();
                                         <th style="text-align: right;"><?= ribuan($gt) ?></th>
                                     </tr> -->
             </tfoot>
->>>>>>> 731cfed3fece0ab1886e838f6a727eb1810d8018
         </table>
         <br>
     </div>

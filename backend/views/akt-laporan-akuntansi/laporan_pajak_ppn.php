@@ -86,11 +86,6 @@ $this->title = 'Laporan Pajak PPN';
                                             if ($tipe == 'PPN Masukan') {
                                                 $masuk = 'selected';
                                                 $keluar = '';
-<<<<<<< HEAD
-                                            } else {
-                                                $masuk = '';
-                                                $keluar = 'selected';
-=======
                                                 $semua = '';
                                             } elseif ($tipe == 'PPN Keluaran') {
                                                 $masuk = '';
@@ -100,24 +95,17 @@ $this->title = 'Laporan Pajak PPN';
                                                 $masuk = '';
                                                 $keluar = '';
                                                 $semua = 'selected';
->>>>>>> 731cfed3fece0ab1886e838f6a727eb1810d8018
                                             }
                                         } else {
                                             $masuk = '';
                                             $keluar = '';
-<<<<<<< HEAD
-=======
                                             $semua = '';
->>>>>>> 731cfed3fece0ab1886e838f6a727eb1810d8018
                                         }
                                         ?>
                                         <select name="tipe" id="tipe" class="form-control">
                                             <option value="PPN Masukan" <?= $masuk ?>>PPN Masukan</option>
                                             <option value="PPN Keluaran" <?= $keluar ?>>PPN Keluaran</option>
-<<<<<<< HEAD
-=======
                                             <option value="PPN Semua" <?= $semua ?>>PPN Semua</option>
->>>>>>> 731cfed3fece0ab1886e838f6a727eb1810d8018
                                         </select>
                                     </div>
                                 </td>
@@ -153,8 +141,6 @@ $this->title = 'Laporan Pajak PPN';
 
         <div class="box">
             <div class="panel panel-primary">
-<<<<<<< HEAD
-=======
                 <?php
                 if ($tipe == 'PPN Semua') {
                     $tipe_ = 'PPN Masukan';
@@ -163,7 +149,6 @@ $this->title = 'Laporan Pajak PPN';
                     $tipe_ = $tipe;
                     $tipe__ = $tipe;
                 } ?>
->>>>>>> 731cfed3fece0ab1886e838f6a727eb1810d8018
                 <div class="panel-heading"><span class="fa fa-file-text"></span> <?= $this->title . substr($tipe, 3) ?></div>
                 <div class="panel-body">
                     <div class="col-md-12" style="padding: 0;">
@@ -181,22 +166,6 @@ $this->title = 'Laporan Pajak PPN';
                                         <th style="width: 15%;">
                                             <p style=" float: right;">Jumlah</p>
                                         </th>
-<<<<<<< HEAD
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <!-- <tr>
-                                        <td colspan="4">Saldo Awal</td>
-                                        <?php
-                                        $sa = AktAkun::find()->where(['nama_akun' => $tipe])->one();
-                                        ?>
-                                        <td style="text-align: right;"><?= $sa->saldo_akun ?></td>
-                                    </tr> -->
-                                    <?php
-                                    $gt = 0;
-
-                                    $ju = Yii::$app->db->createCommand("SELECT * FROM `akt_jurnal_umum_detail` INNER JOIN `akt_jurnal_umum` ON akt_jurnal_umum.id_jurnal_umum = akt_jurnal_umum_detail.id_jurnal_umum INNER JOIN `akt_akun` ON akt_akun.id_akun = akt_jurnal_umum_detail.id_akun WHERE akt_jurnal_umum.tanggal BETWEEN '$tanggal_awal' AND ' $tanggal_akhir' AND akt_akun.nama_akun = '" . $tipe . "'")->queryAll();
-=======
                                         <th></th>
                                     </tr>
                                 </thead>
@@ -204,7 +173,6 @@ $this->title = 'Laporan Pajak PPN';
                                     <?php
                                     $gt = 0;
                                     $ju = Yii::$app->db->createCommand("SELECT * FROM `akt_jurnal_umum_detail` INNER JOIN `akt_jurnal_umum` ON akt_jurnal_umum.id_jurnal_umum = akt_jurnal_umum_detail.id_jurnal_umum INNER JOIN `akt_akun` ON akt_akun.id_akun = akt_jurnal_umum_detail.id_akun WHERE akt_jurnal_umum.tanggal BETWEEN '$tanggal_awal' AND ' $tanggal_akhir' AND akt_akun.nama_akun = '" . $tipe_ . "'")->queryAll();
->>>>>>> 731cfed3fece0ab1886e838f6a727eb1810d8018
 
                                     $no = 1;
                                     foreach ($ju as $k) {
@@ -227,16 +195,6 @@ $this->title = 'Laporan Pajak PPN';
                                                 }
                                                 ?>
                                             </td>
-<<<<<<< HEAD
-                                        </tr>
-                                    <?php } ?>
-                                </tbody>
-                                <tfoot>
-                                    <tr>
-                                        <th colspan="4" style="text-align: right;">Grand Total</th>
-                                        <th style="text-align: right;"><?= ribuan($gt) ?></th>
-                                    </tr>
-=======
                                             <td></td>
                                         </tr>
                                     <?php } ?>
@@ -288,7 +246,6 @@ $this->title = 'Laporan Pajak PPN';
                                         <th colspan="4" style="text-align: right;">Grand Total</th>
                                         <th style="text-align: right;"><?= ribuan($gt) ?></th>
                                     </tr> -->
->>>>>>> 731cfed3fece0ab1886e838f6a727eb1810d8018
                                 </tfoot>
                             </table>
 
