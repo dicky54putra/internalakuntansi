@@ -131,7 +131,10 @@ $count_query_detail = AktPembelianDetail::find()->where(['id_pembelian' => $mode
                                         'attribute' => 'tanggal_order_pembelian',
                                         'label' => 'Tanggal Order',
                                         'value' => function ($model) {
-                                            return tanggal_indo($model->tanggal_order_pembelian, true);
+                                            if (!empty($model->tanggal_order_pembelian)) {
+                                                # code...
+                                                return tanggal_indo($model->tanggal_order_pembelian, true);
+                                            }
                                         }
                                     ],
                                     [
@@ -189,7 +192,7 @@ $count_query_detail = AktPembelianDetail::find()->where(['id_pembelian' => $mode
                                             } elseif ($model->status == 2) {
                                                 # code...
                                                 $nama_approver = Login::find()->where(['id_login' => $model->id_login])->one();
-                                                return "<span class='label label-warning'>Pembelian, Disetujui pada " . tanggal_indo2(date('D, d F Y H:i', strtotime($model->tanggal_approve))) . " oleh " . $nama_approver->nama . "</span>";
+                                                return "<span class='label label-warning'>Pembelian, Disetujui pada " . tanggal_indo2(date('D, d F Y H:i', strtotime($model->tanggal_approve))) . " oleh " . $nama_approver['nama'] . "</span>";
                                             } elseif ($model->status == 3) {
                                                 # code...
                                                 return "<span class='label label-primary'>Penerimaan</span>";
@@ -202,7 +205,7 @@ $count_query_detail = AktPembelianDetail::find()->where(['id_pembelian' => $mode
                                             } elseif ($model->status == 6) {
                                                 # code...
                                                 $nama_approver = Login::find()->where(['id_login' => $model->id_login])->one();
-                                                return "<span class='label label-danger'>Ditolak pada " . tanggal_indo2(date('D, d F Y H:i', strtotime($model->tanggal_approve))) . " oleh " . $nama_approver->nama . "</span>";
+                                                return "<span class='label label-danger'>Ditolak pada " . tanggal_indo2(date('D, d F Y H:i', strtotime($model->tanggal_approve))) . " oleh " . $nama_approver['nama'] . "</span>";
                                             }
                                         }
                                     ],
