@@ -1,4 +1,4 @@
-<?php 
+ set<?php 
 /**
  * This file contains the Backup_Database class wich performs
  * a partial or complete backup of any given MySQL database
@@ -9,9 +9,9 @@
 /**
  * Define database parameters here
  */
-define("DB_USER", 'ycpt-semarang');
+define("DB_USER", 'klikgss');
 define("DB_PASSWORD", 'qwe-123-123');
-define("DB_NAME", 'ycpt_semarang');
+define("DB_NAME", 'internalakuntansi');
 define("DB_HOST", 'localhost');
 define("BACKUP_DIR", 'mysql-backup-files'); // Comment this line to use same script's directory ('.')
 define("TABLES", '*'); // Full backup

@@ -78,7 +78,7 @@ $this->title = 'Home';
         <div class="col-md-12">
             <div class="panel panel-primary">
                 <div class="panel-heading panel-primary">
-                    <h4 style="font-weight: bold;"> Data Penjualan Dan Pembelian Per Hari </h4>
+                    <h4 style="font-weight: bold;"> Data Penjualan Dan Pembelian per Hari </h4>
                 </div>
                 <div class="panel-body">
                     <div class="col-md-6">
@@ -88,6 +88,19 @@ $this->title = 'Home';
                         <canvas id="chart-area2" style="height:350px;"></canvas>
                     </div>
                     <!-- <canvas id="chart-area" style="height:500px;"></canvas> -->
+                </div>
+            </div>
+            <div class="panel panel-primary">
+                <div class="panel-heading panel-primary">
+                    <h4 style="font-weight: bold;"> Data Penjualan per Bulan </h4>
+                </div>
+                <div class="panel-body">
+                    <div class="col-md-6">
+                        <canvas id="chart-area-penjualan" style="height:350px;"></canvas>
+                    </div>
+                    <div class="col-md-6">
+                        <canvas id="chart-area-pie" style="height:350px;"></canvas>
+                    </div>
                 </div>
             </div>
         </div>
@@ -151,11 +164,12 @@ $this->title = 'Home';
     </div>
 
 
-
     <script type="text/javascript" src="js/Chart.js"></script>
     <script>
         const ctx = document.getElementById("chart-area").getContext('2d');
         const ctx2 = document.getElementById("chart-area2").getContext('2d');
+        const ctx3 = document.getElementById("chart-area-penjualan").getContext('2d');
+        const ctx4 = document.getElementById("chart-area-pie").getContext('2d');
         var myChart = new Chart(ctx, {
             type: 'bar',
             data: {
@@ -163,7 +177,7 @@ $this->title = 'Home';
                     data: [
                         <?php
                         foreach ($tanggal as $t) {
-                            $data_count = Yii::$app->db->createCommand("SELECT COUNT(id_penjualan) as penjualan FROM akt_penjualan WHERE tanggal_order_penjualan = '$t[tanggal_order_penjualan]' AND status >= 3")->query();
+                            $data_count = Yii::$app->db->createCommand("SELECT COUNT(id_penjualan) as penjualan FROM akt_penjualan WHERE tanggal_penjualan = '$t[tanggal_penjualan]' AND status >= 3")->query();
                             foreach ($data_count as $g) {
                                 echo '"' . $g['penjualan'] . '",';
                             }
@@ -179,50 +193,12 @@ $this->title = 'Home';
                 labels: [
                     <?php
                     foreach ($tanggal_label as $tgl) {
-                        echo '"' . tanggal_indo($tgl['tanggal_order_penjualan']) . '",';
+                        echo '"' . tanggal_indo($tgl['tanggal_penjualan']) . '",';
                     }
                     ?>
                 ]
             },
-            options: {
-                segmentShowStroke: true,
-                segmentStrokeColor: '#fff',
-                segmentStrokeWidth: 1,
-                percentageInnerCutout: 0,
-                animationSteps: 100,
-                animationEasing: 'easeOutBounce',
-                animateRotate: true,
-                animateScale: false,
-                responsive: true,
-                maintainAspectRatio: false,
-                legendTemplate: '<ul class="<%=name.toLowerCase()%>-legend"><% for (var i=0; i<segments.length; i++){%><li><span style="background-color:<%=segments[i].fillColor%>"></span><%if(segments[i].label){%><%=segments[i].label%><%}%></li><%}%></ul>',
-                legend: {
-                    display: true,
-                    position: 'bottom',
-                    fontSize: 10,
-                    boxWidth: 20
-                },
-                title: {
-                    display: false,
-                },
-                chartArea: {
-                    backgroundColor: 'rgba(255, 255, 255, 1)'
-                },
-                tooltips: {
-                    callbacks: {
-                        label: function(tooltipItem, data) {
-                            return 'Jumlah : ' + tooltipItem.yLabel.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-                        },
-                    },
-                },
-                scales: {
-                    xAxes: [{
-                        ticks: {
-                            fontSize: 10
-                        }
-                    }]
-                }
-            }
+            options: configOptions,
         });
         var myChart = new Chart(ctx2, {
             type: 'bar',
@@ -247,49 +223,109 @@ $this->title = 'Home';
                 labels: [
                     <?php
                     foreach ($tanggal_label2 as $tgl) {
-                        echo '"' . tanggal_indo($tgl['tanggal_order_pembelian']) . '",';
+                        echo '"' . tanggal_indo($tgl['tanggal_pembelian']) . '",';
                     }
                     ?>
                 ]
             },
-            options: {
-                segmentShowStroke: true,
-                segmentStrokeColor: '#fff',
-                segmentStrokeWidth: 1,
-                percentageInnerCutout: 0,
-                animationSteps: 100,
-                animationEasing: 'easeOutBounce',
-                animateRotate: true,
-                animateScale: false,
-                responsive: true,
-                maintainAspectRatio: false,
-                legendTemplate: '<ul class="<%=name.toLowerCase()%>-legend"><% for (var i=0; i<segments.length; i++){%><li><span style="background-color:<%=segments[i].fillColor%>"></span><%if(segments[i].label){%><%=segments[i].label%><%}%></li><%}%></ul>',
-                legend: {
-                    display: true,
-                    position: 'bottom',
-                    fontSize: 10,
-                    boxWidth: 20
-                },
-                title: {
-                    display: false,
-                },
-                chartArea: {
-                    backgroundColor: 'rgba(255, 255, 255, 1)'
-                },
-                tooltips: {
-                    callbacks: {
-                        label: function(tooltipItem, data) {
-                            return 'Jumlah : ' + tooltipItem.yLabel.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-                        },
+            options: configOptions
+        });
+
+        var myChart = new Chart(ctx3, {
+            type: 'bar',
+            data: {
+                datasets: [{
+                    data: [
+                        <?php
+                        $year = date('Y');
+                        foreach ($bulan as $b) {
+                            $data_count = Yii::$app->db->createCommand("SELECT COUNT(id_penjualan) as penjualan FROM akt_penjualan WHERE MONTH(tanggal_penjualan) = '$b' AND YEAR(tanggal_penjualan) = '$year' AND status >= 3")->query();
+                            foreach ($data_count as $g) {
+                                echo '"' . $g['penjualan'] . '",';
+                            }
+                        } ?>, '0'
+                    ],
+                    backgroundColor: 'green',
+                    borderColor: 'green',
+                    fill: false,
+                    lineTension: 0.5,
+                    label: 'Penjualan'
+                }, {
+                    data: [
+                        <?php
+                        $year = date('Y') - 1;
+                        foreach ($bulan as $b) {
+                            $data_count = Yii::$app->db->createCommand("SELECT COUNT(id_penjualan) as penjualan FROM akt_penjualan WHERE MONTH(tanggal_penjualan) = '$b' AND YEAR(tanggal_penjualan) = '$year' AND status >= 3")->query();
+                            foreach ($data_count as $g) {
+                                echo '"' . $g['penjualan'] . '",';
+                            }
+                        } ?>, '0'
+                    ],
+                    backgroundColor: 'red',
+                    borderColor: 'red',
+                    fill: false,
+                    lineTension: 0.5,
+                    label: 'Penjualan Tahun Sebelumnya'
+                }],
+                labels: ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember']
+            },
+            options: configOptions
+        });
+
+        var myChart = new Chart(ctx4, {
+            type: 'pie',
+            data: {
+                datasets: [{
+                    data: [<?= $penjualan_tahun_ini ?>, <?= $penjualan_tahun_sebelumnya ?>],
+                    backgroundColor: ['#34BE4A', '#D72828'],
+                    borderColor: ['#34BE4A', '#D72828'],
+                    fill: false,
+                    lineTension: 0.5,
+                    label: 'Penjualan'
+                }],
+                labels: ['Penjualan Tahun Ini ', 'Penjualan Tahun Sebelumnya']
+            },
+            options: configOptions
+        });
+
+        var configOptions = {
+            segmentShowStroke: true,
+            segmentStrokeColor: '#fff',
+            segmentStrokeWidth: 1,
+            percentageInnerCutout: 0,
+            animationSteps: 100,
+            animationEasing: 'easeOutBounce',
+            animateRotate: true,
+            animateScale: false,
+            responsive: true,
+            maintainAspectRatio: false,
+            legendTemplate: '<ul class="<%=name.toLowerCase()%>-legend"><% for (var i=0; i<segments.length; i++){%><li><span style="background-color:<%=segments[i].fillColor%>"></span><%if(segments[i].label){%><%=segments[i].label%><%}%></li><%}%></ul>',
+            legend: {
+                display: true,
+                position: 'bottom',
+                fontSize: 10,
+                boxWidth: 20
+            },
+            title: {
+                display: false,
+            },
+            chartArea: {
+                backgroundColor: 'rgba(255, 255, 255, 1)'
+            },
+            tooltips: {
+                callbacks: {
+                    label: function(tooltipItem, data) {
+                        return 'Jumlah : ' + tooltipItem.yLabel.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
                     },
                 },
-                scales: {
-                    xAxes: [{
-                        ticks: {
-                            fontSize: 10
-                        }
-                    }]
-                }
+            },
+            scales: {
+                xAxes: [{
+                    ticks: {
+                        fontSize: 10
+                    }
+                }]
             }
-        });
+
+        }
     </script>

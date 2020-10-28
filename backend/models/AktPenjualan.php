@@ -218,4 +218,31 @@ class AktPenjualan extends \yii\db\ActiveRecord
 
         return $data_kas_bank;
     }
+
+    public static function getBulan()
+    {
+        $bulan = array(
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12
+        );
+
+        return $bulan;
+    }
+
+    public static function getPenjualanTahun($year)
+    {
+        $query = Yii::$app->db->createCommand("SELECT COUNT(*) FROM akt_penjualan WHERE YEAR(tanggal_penjualan) = '$year' AND status >= 3")->queryScalar();
+
+        return $query;
+    }
 }
