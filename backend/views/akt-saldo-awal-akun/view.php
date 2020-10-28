@@ -164,9 +164,13 @@ $script = <<< JS
                 let dataJson = $.parseJSON(data);
                 if(dataJson.saldo_normal === 1) {
                     debet.style.display = 'block';
+                    $("#aktsaldoawalakundetail-debet").attr("required", "true");
+                    $("#aktsaldoawalakundetail-kredit").removeAttr("required");
                     kredit.style.display = 'none';
                 } else if (dataJson.saldo_normal === 2 ) {
                     kredit.style.display = 'block';
+                    $("#aktsaldoawalakundetail-kredit").attr("required", "true");
+                    $("#aktsaldoawalakundetail-debet").removeAttr("required");
                     debet.style.display = 'none';
                 }
             }
