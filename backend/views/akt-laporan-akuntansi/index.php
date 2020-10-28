@@ -45,6 +45,9 @@ $this->title = 'Daftar Laporan Akuntansi';
                                 <td><?= Html::a('<span class="fa fa-file-text"></span> Laporan Neraca Lajur', ['laporan-neraca-lajur']) ?></td>
                             </tr>
                             <tr>
+                                <td><?= Html::a('<span class="fa fa-file-text"></span> Laporan Laba Rugi', ['akt-laporan-akuntansi/laporan-laba-rugi/']) ?></td>
+                            </tr>
+                            <tr>
                                 <td><?= Html::a('<span class="fa fa-file-text"></span> Laporan Perubahan Ekuitas + Posisi Keuangan', ['akt-laba-rugi/']) ?></td>
                             </tr>
                             <!-- <tr>
