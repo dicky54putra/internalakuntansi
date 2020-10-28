@@ -207,7 +207,7 @@ $this->title = 'Home';
                     data: [
                         <?php
                         foreach ($tanggal2 as $t) {
-                            $data_count = Yii::$app->db->createCommand("SELECT COUNT(id_pembelian) as pembelian FROM akt_pembelian WHERE tanggal_order_pembelian = '$t[tanggal_order_pembelian]' AND status >= 3")->query();
+                            $data_count = Yii::$app->db->createCommand("SELECT COUNT(id_pembelian) as pembelian FROM akt_pembelian WHERE tanggal_pembelian = '$t[tanggal_pembelian]' AND status >= 3")->query();
                             foreach ($data_count as $g) {
                                 echo '"' . $g['pembelian'] . '",';
                             }
