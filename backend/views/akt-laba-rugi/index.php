@@ -7,14 +7,15 @@ use yii\widgets\ActiveForm;
 /* @var $searchModel backend\models\AktLabaRugiSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = 'Laporan Laba Rugi + Perubahan Ekuitas + Posisi Keuangan';
+$this->title = 'Laporan Perubahan Ekuitas + Posisi Keuangan';
 ?>
 <div class="akt-laba-rugi-index">
 
     <h1><?= Html::encode($this->title) ?></h1>
-    <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
+    <?php // echo $this->render('_search', ['model' => $searchModel]); 
+    ?>
 
-    
+
     <ul class="breadcrumb">
         <li><a href="/">Home</a></li>
         <li class="active"><?= $this->title ?></li>
@@ -41,11 +42,11 @@ $this->title = 'Laporan Laba Rugi + Perubahan Ekuitas + Posisi Keuangan';
                                 </div>
                             </div>
                             <div class="col-md-4">
-                                <?= $form->field($model, 'periode')->dropDownList(array(1 => 'Bulanan', 2 => 'Triwulan 1', 3 => 'Triwulan 2', 4 => 'Triwulan 3',  4 => 'Triwulan 5',6 => 'Tahunan')) ?>
+                                <?= $form->field($model, 'periode')->dropDownList(array(1 => 'Bulanan', 2 => 'Triwulan 1', 3 => 'Triwulan 2', 4 => 'Triwulan 3',  5 => 'Triwulan 4', 6 => 'Tahunan')) ?>
                             </div>
                         </div>
                         <div class="form-group" style="text-align:center; margin-top:10px;">
-                            <?= Html::submitButton('<span class="glyphicon glyphicon-eye-open"></span> Preview', ['class' => 'btn btn-primary', 'name' => 'post_preview', 'formtarget'=>'_blank']) ?>
+                            <?= Html::submitButton('<span class="glyphicon glyphicon-eye-open"></span> Preview', ['class' => 'btn btn-primary', 'name' => 'post_preview', 'formtarget' => '_blank']) ?>
                             <?= Html::submitButton('<span class="glyphicon glyphicon-floppy-disk"></span> Simpan', ['class' => 'btn btn-success', 'name' => 'post_simpan']) ?>
                         </div>
 
@@ -58,7 +59,7 @@ $this->title = 'Laporan Laba Rugi + Perubahan Ekuitas + Posisi Keuangan';
 </div>
 
 <div class="">
-<?= GridView::widget([
+    <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
         'columns' => [
@@ -167,7 +168,7 @@ $this->title = 'Laporan Laba Rugi + Perubahan Ekuitas + Posisi Keuangan';
         //'showPageSummary' => $pageSummary,
         'panel' => [
             'type' => GridView::TYPE_PRIMARY,
-            'heading' => '<span class="fa fa-file-text"></span> ' .$this->title,
+            'heading' => '<span class="fa fa-file-text"></span> ' . $this->title,
         ],
         'persistResize' => false,
         'toggleDataOptions' => ['minCount' => 100],
