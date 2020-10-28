@@ -61,7 +61,10 @@ $this->title = 'Daftar Order Pembelian';
                 ]),
                 'value'     => function ($model) {
                     // return Yii::$app->formatter->asDate($model->tanggal_order_pembelian, 'php:d-m-Y');
-                    return tanggal_indo($model->tanggal_order_pembelian);
+                    if ($model->tanggal_order_pembelian != null) {
+                        # code...
+                        return tanggal_indo($model->tanggal_order_pembelian);
+                    }
                 }
             ],
             [
@@ -94,7 +97,7 @@ $this->title = 'Daftar Order Pembelian';
                     } elseif ($model->status == 2) {
                         # code...
                         $nama_approver = Login::find()->where(['id_login' => $model->id_login])->one();
-                        return "<span class='label label-warning'>Pembelian, Disetujui pada " . tanggal_indo2(date('D, d F Y H:i', strtotime($model->tanggal_approve))) . " oleh " . $nama_approver->nama . "</span>";
+                        return "<span class='label label-warning'>Pembelian, Disetujui pada " . tanggal_indo2(date('D, d F Y H:i', strtotime($model->tanggal_approve))) . " oleh " . $nama_approver['nama'] . "</span>";
                     } elseif ($model->status == 3) {
                         # code...
                         return "<span class='label label-primary'>Penerimaan</span>";
@@ -107,7 +110,7 @@ $this->title = 'Daftar Order Pembelian';
                     } elseif ($model->status == 6) {
                         # code...
                         $nama_approver = Login::find()->where(['id_login' => $model->id_login])->one();
-                        return "<span class='label label-danger'>Ditolak pada " . tanggal_indo2(date('D, d F Y H:i', strtotime($model->tanggal_approve))) . " oleh " . $nama_approver->nama . "</span>";
+                        return "<span class='label label-danger'>Ditolak pada " . tanggal_indo2(date('D, d F Y H:i', strtotime($model->tanggal_approve))) . " oleh " . $nama_approver['nama'] . "</span>";
                     }
                 }
             ],

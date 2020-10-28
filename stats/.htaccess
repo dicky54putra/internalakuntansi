@@ -1,6 +1,12 @@
+<<<<<<< HEAD
+AuthName "akuntansi.klikgss.com statistics"
+AuthType Basic
+AuthUserFile /home/klikgss/domains/akuntansi.klikgss.com/.stats-htpasswd
+=======
 AuthName "internalakuntansi.klikgss.com statistics"
 AuthType Basic
 AuthUserFile /home/klikgss/domains/internalakuntansi.klikgss.com/.stats-htpasswd
+>>>>>>> origin/main
 require valid-user
 <Files .stats-htpasswd>
 deny from all
