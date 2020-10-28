@@ -69,6 +69,7 @@ class AktKasBankController extends Controller
     {
         $model = new AktKasBank();
         $model->id_mata_uang = 1;
+        $model->saldo = 0;
         // $uang = AktKasBank::find()
         //     ->andWhere(['id_kas_bank' => $model->id_kas_bank])
         //     ->count();
