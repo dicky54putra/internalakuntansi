@@ -21,45 +21,45 @@ use backend\models\AktAkun;
                     <?php $form = ActiveForm::begin(); ?>
                     <div class="row">
                         <div class="col-lg-6">
-                        <?= $form->field($model, 'kode_kas_bank')->textInput(['value' => $nomor, 'readonly' => true]) ?>
+                            <?= $form->field($model, 'kode_kas_bank')->textInput(['value' => $nomor, 'readonly' => true]) ?>
 
-<?= $form->field($model, 'keterangan')->textarea(['rows' => 4]) ?>
+                            <?= $form->field($model, 'keterangan')->textarea(['rows' => 4]) ?>
 
-<?= $form->field($model, 'jenis')->dropDownList(array(1 => 'CASH', 2 => 'BANK'))->label('Jenis') ?>
-<?= $form->field($model, 'id_mata_uang')->dropDownList(
-                        ArrayHelper::map(
-                            AktMataUang::find()->all(),
-                            'id_mata_uang',
-                            function ($model) {
-                                return $model['kode_mata_uang'] . ' - ' . $model['mata_uang'];
-                            }
-                        ),
-                        [
-                            'prompt' => 'Pilih Mata Uang ',
-                        ]
-                    )->label('Mata Uang'); ?>
+                            <?= $form->field($model, 'jenis')->dropDownList(array(1 => 'CASH', 2 => 'BANK'))->label('Jenis') ?>
+                            <?= $form->field($model, 'id_mata_uang')->dropDownList(
+                                ArrayHelper::map(
+                                    AktMataUang::find()->all(),
+                                    'id_mata_uang',
+                                    function ($model) {
+                                        return $model['kode_mata_uang'] . ' - ' . $model['mata_uang'];
+                                    }
+                                ),
+                                [
+                                    'prompt' => 'Pilih Mata Uang ',
+                                ]
+                            )->label('Mata Uang'); ?>
                         </div>
                         <div class="col-lg-6">
-                        
 
-                    <?= $form->field($model, 'saldo')->textInput(['readonly' => true, 'value' => 0]) ?>
 
-                    <?= $form->field($model, 'total_giro_keluar')->textInput(['readonly' => true, 'value' => 0]) ?>
+                            <?= $form->field($model, 'saldo')->textInput(['readonly' => true]) ?>
 
-                    <?= $form->field($model, 'id_akun')->dropDownList(
-                        ArrayHelper::map(
-                            AktAkun::find()->where("klasifikasi IN (1,2)")->all(),
-                            'id_akun',
-                            function ($model) {
-                                return $model['kode_akun'] . ' - ' . $model['nama_akun'];
-                            }
-                        ),
-                        [
-                            'prompt' => 'Pilih Akun',
-                        ]
-                    )->label('Akun'); ?>
+                            <?= $form->field($model, 'total_giro_keluar')->textInput(['readonly' => true, 'value' => 0]) ?>
 
-                    <?= $form->field($model, 'status_aktif')->dropDownList(array(1 => 'Aktif', 2 => 'Tidak Aktif'))->label('Status') ?>
+                            <?= $form->field($model, 'id_akun')->dropDownList(
+                                ArrayHelper::map(
+                                    AktAkun::find()->where("klasifikasi IN (1,2)")->all(),
+                                    'id_akun',
+                                    function ($model) {
+                                        return $model['kode_akun'] . ' - ' . $model['nama_akun'];
+                                    }
+                                ),
+                                [
+                                    'prompt' => 'Pilih Akun',
+                                ]
+                            )->label('Akun'); ?>
+
+                            <?= $form->field($model, 'status_aktif')->dropDownList(array(1 => 'Aktif', 2 => 'Tidak Aktif'))->label('Status') ?>
                         </div>
                     </div>
                     <div class="form-group">

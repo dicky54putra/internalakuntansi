@@ -68,6 +68,7 @@ class AktAkunController extends Controller
 
         // $total = AKtAkun::find()->count();
         // $nomor = 'AK' . str_pad($total + 1, 3, "0", STR_PAD_LEFT);
+        $model->saldo_akun = 0;
         $id_akun_max = AktAkun::find()->select(['max(id_akun) as id_akun'])->one();
         $nomor_sebelumnya = AktAkun::find()->select(['kode_akun'])->where(['id_akun' => $id_akun_max])->one();
         if (!empty($nomor_sebelumnya->kode_akun)) {
