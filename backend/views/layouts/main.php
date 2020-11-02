@@ -59,6 +59,15 @@ if (Yii::$app->user->isGuest) {
                 ['content' => $content, 'directoryAsset' => $directoryAsset]
             ) ?>
 
+            <!-- /.content-wrapper -->
+            <footer class="main-footer">
+                <div class="pull-right hidden-xs">
+                    <b>Version</b> 1.0.0
+                </div>
+                <strong>Copyright &copy; 2020 <a href="http://gss-accounting.com">GSS Accounting</a>.</strong> All rights
+                reserved.
+            </footer>
+
             <?php
             yii\bootstrap\Modal::begin([
                 'headerOptions' => ['id' => 'modalHeader'],
