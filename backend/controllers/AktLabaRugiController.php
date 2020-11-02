@@ -13,6 +13,7 @@ use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use Mpdf\Mpdf;
+
 /**
  * AktLabaRugiController implements the CRUD actions for AktLabaRugi model.
  */
@@ -74,64 +75,65 @@ class AktLabaRugiController extends Controller
         ]);
     }
 
-   
+
     public function actionCreate()
     {
-       
+
         $model = new AktLabaRugi();
-        if ($model->load(Yii::$app->request->post()) ) {
+        if ($model->load(Yii::$app->request->post())) {
             $post_preview =  Yii::$app->request->post('post_preview');
             $post_simpan =  Yii::$app->request->post('post_simpan');
             $post_setor = Yii::$app->request->post('setor_tambahan');
             $post_periode = Yii::$app->request->post('AktLabaRugi')['periode'];
-                $month = date('m');
-                $year = date('y');
-                if($post_periode == 1) {
-                    $query_jurnal = 'WHERE MONTH(tanggal) = '.$month;
-                } else if ($post_periode == 2 ) {
-                    $query_jurnal = 'WHERE MONTH(tanggal) = 1 OR MONTH(tanggal) = 2 OR MONTH(tanggal) = 3 AND YEAR(tanggal) = '.$year;
-                } else if ($post_periode == 3 ) {
-                    $query_jurnal = 'WHERE MONTH(tanggal) = 4 OR MONTH(tanggal) = 5 OR MONTH(tanggal) = 6 AND YEAR(tanggal) = '.$year;
-                } else if ($post_periode == 4 ) {
-                    $query_jurnal = 'WHERE MONTH(tanggal) = 7 OR MONTH(tanggal) = 8 OR MONTH(tanggal) = 9 AND YEAR(tanggal) = '.$year;
-                } else if ($post_periode == 5 ) {
-                    $query_jurnal = 'WHERE MONTH(tanggal) = 10 OR MONTH(tanggal) = 11 OR MONTH(tanggal) = 12 AND YEAR(tanggal) = '.$year;
-                } else if ($post_periode == 6 ) {
-                    $query_jurnal = 'WHERE YEAR(tanggal) = '. $year;
-                } 
+            $month = date('m');
+            $year = date('y');
+            if ($post_periode == 1) {
+                $query_jurnal = 'WHERE MONTH(tanggal) = ' . $month;
+            } else if ($post_periode == 2) {
+                $query_jurnal = 'WHERE MONTH(tanggal) = 1 OR MONTH(tanggal) = 2 OR MONTH(tanggal) = 3 AND YEAR(tanggal) = ' . $year;
+            } else if ($post_periode == 3) {
+                $query_jurnal = 'WHERE MONTH(tanggal) = 4 OR MONTH(tanggal) = 5 OR MONTH(tanggal) = 6 AND YEAR(tanggal) = ' . $year;
+            } else if ($post_periode == 4) {
+                $query_jurnal = 'WHERE MONTH(tanggal) = 7 OR MONTH(tanggal) = 8 OR MONTH(tanggal) = 9 AND YEAR(tanggal) = ' . $year;
+            } else if ($post_periode == 5) {
+                $query_jurnal = 'WHERE MONTH(tanggal) = 10 OR MONTH(tanggal) = 11 OR MONTH(tanggal) = 12 AND YEAR(tanggal) = ' . $year;
+            } else if ($post_periode == 6) {
+                $query_jurnal = 'WHERE YEAR(tanggal) = ' . $year;
+            }
 
-                $jurnal = Yii::$app->db->createCommand("SELECT SUM(debit) FROM akt_jurnal_umum_detail LEFT JOIN akt_jurnal_umum ON akt_jurnal_umum.id_jurnal_umum = akt_jurnal_umum_detail.id_jurnal_umum $query_jurnal AND id_akun = 77")->queryScalar();
-                $modal = Yii::$app->db->createCommand("SELECT kredit FROM akt_saldo_awal_akun_detail ORDER BY id_saldo_awal_akun_detail DESC LIMIT 1")->queryScalar();
+            $jurnal = Yii::$app->db->createCommand("SELECT SUM(debit) FROM akt_jurnal_umum_detail LEFT JOIN akt_jurnal_umum ON akt_jurnal_umum.id_jurnal_umum = akt_jurnal_umum_detail.id_jurnal_umum $query_jurnal AND id_akun = 77")->queryScalar();
+            $modal = Yii::$app->db->createCommand("SELECT kredit FROM akt_saldo_awal_akun_detail ORDER BY id_saldo_awal_akun_detail DESC LIMIT 1")->queryScalar();
 
-                if($jurnal == null ) {
-                    $jurnal = 0;
-                }
-            if(isset($post_preview)) {
-                if($post_setor == null ) {
+            if ($jurnal == null) {
+                $jurnal = 0;
+            }
+            if (isset($post_preview)) {
+                if ($post_setor == null) {
                     $post_setor = 0;
                 }
                 $akun_pendapatan = AktAkun::find()->where(['jenis' => 4])->all();
                 $akun_beban = AktAkun::find()->where(['jenis' => 8])->all();
-                if($modal == null) {
+                if ($modal == null) {
                     $modal = 0;
                 }
 
                 $jenis = Yii::$app->db->createCommand("SELECT jenis from akt_akun WHERE jenis = 1 OR jenis = 2 OR jenis = 5 OR jenis = 6 OR jenis = 7 GROUP BY jenis")->query();
                 // echo $jurnal; die;
-                $print =  $this->renderPartial('preview',[
+                $print =  $this->renderPartial('preview', [
+                    'post_periode' => $post_periode,
                     'akun_pendapatan' => $akun_pendapatan,
                     'akun_beban' => $akun_beban,
                     'setor' => $post_setor,
                     'modal' => $modal,
                     'jenis' => $jenis,
                     'jurnal' => $jurnal
-                ]); 
+                ]);
                 $mPDF = new mPDF(['orientation' => 'L']);
                 $mPDF->showImageErrors = true;
                 $mPDF->writeHTML($print);
                 $mPDF->Output();
                 exit();
-            } else if(isset($post_simpan)) {
+            } else if (isset($post_simpan)) {
                 // Save laba rugi
                 $id_login =  Yii::$app->user->identity->id_login;
                 $model->status = 1;
@@ -143,8 +145,8 @@ class AktLabaRugiController extends Controller
 
                 // Save laba rugi detail
                 $count = Yii::$app->db->createCommand("SELECT COUNT(id_akun) FROM akt_akun WHERE jenis = 4 or jenis = 8")->queryScalar();
-                $akt_akun = AktAkun::find()->where(['jenis'=> 4 ])->orWhere(['jenis' => 8])->asArray()->all();
-                for($x = 0 ; $x < $count ; $x++){
+                $akt_akun = AktAkun::find()->where(['jenis' => 4])->orWhere(['jenis' => 8])->asArray()->all();
+                for ($x = 0; $x < $count; $x++) {
                     $akt_laba_rugi_detail = new AktLabaRugiDetail();
                     $akt_laba_rugi_detail->id_laba_rugi = $model->id_laba_rugi;
                     $akt_laba_rugi_detail->id_akun = $akt_akun[$x]['id_akun'];
@@ -172,8 +174,8 @@ class AktLabaRugiController extends Controller
                 // save laporan posisi keuangan
 
                 $count_posisi = Yii::$app->db->createCommand("SELECT COUNT(id_akun) FROM akt_akun WHERE jenis = 1 OR jenis = 2 OR jenis = 5 OR jenis = 6 OR jenis = 7")->queryScalar();
-                $akt_akun_posisi = AktAkun::find()->where(['jenis'=> 1 ])->orWhere(['jenis' => 2])->orWhere(['jenis' => 5])->orWhere(['jenis' => 6])->orWhere(['jenis' => 7])->asArray()->all();
-                for($i = 0 ; $i < $count_posisi ; $i++){
+                $akt_akun_posisi = AktAkun::find()->where(['jenis' => 1])->orWhere(['jenis' => 2])->orWhere(['jenis' => 5])->orWhere(['jenis' => 6])->orWhere(['jenis' => 7])->asArray()->all();
+                for ($i = 0; $i < $count_posisi; $i++) {
                     $akt_posisi_keuangan = new AktLaporanPosisiKeuangan();
                     $akt_posisi_keuangan->id_laba_rugi = $model->id_laba_rugi;
                     $akt_posisi_keuangan->id_akun = $akt_akun_posisi[$i]['id_akun'];
@@ -190,7 +192,6 @@ class AktLabaRugiController extends Controller
         return $this->render('create', [
             'model' => $model,
         ]);
-        
     }
 
     /**
@@ -227,11 +228,11 @@ class AktLabaRugiController extends Controller
         $posisi = AktLaporanPosisiKeuangan::find()->where(['id_laba_rugi' => $id])->all();
         $ekuitas = AKtLaporanEkuitas::find()->where(['id_laba_rugi' => $id])->one();
         $ekuitas->delete();
-        foreach($laba_detail as $data) {
+        foreach ($laba_detail as $data) {
             $data->delete();
         }
 
-        foreach($posisi as $p) {
+        foreach ($posisi as $p) {
             $p->delete();
         }
         $model->delete();
@@ -263,13 +264,13 @@ class AktLabaRugiController extends Controller
         $jenis = Yii::$app->db->createCommand("SELECT jenis from akt_akun WHERE jenis = 1 OR jenis = 2 OR jenis = 5 OR jenis = 6 OR jenis = 7 GROUP BY jenis")->query();
 
 
-        $print =  $this->renderPartial('_cetak',[
+        $print =  $this->renderPartial('_cetak', [
             'akun_pendapatan' => $akun_pendapatan,
             'akun_beban' => $akun_beban,
             'ekuitas' => $lap_ekuitas,
             'jenis' => $jenis,
             'model' => $this->findModel($id)
-        ]); 
+        ]);
         $mPDF = new mPDF(['orientation' => 'L']);
         $mPDF->showImageErrors = true;
         $mPDF->writeHTML($print);

@@ -25,7 +25,7 @@ use kartik\select2\Select2;
 
                             <?= $form->field($model, 'nama_akun')->textInput(['maxlength' => true]) ?>
 
-                            <?= $form->field($model, 'saldo_akun')->textInput(['value' => 0, 'readonly' => true]) ?>
+                            <?= $form->field($model, 'saldo_akun')->textInput(['value' => $model->nama_akun == 'kas' ? $sum_kas_bank : $model->saldo_akun, 'readonly' => true]) ?>
 
                             <?= $form->field($model, 'header')->checkbox()
                             ?>

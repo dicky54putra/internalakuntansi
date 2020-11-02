@@ -43,7 +43,7 @@ class AktAkunSearch extends AktAkun
         // $query = AktAkun::find()->where(['!=', 'id_akun', 1]);
         $query = AktAkun::find();
         $query->joinWith("akt_klasifikasi");
-        $query->orderBy("kode_akun ASC");
+        $query->orderBy("jenis ASC");
 
         // add conditions that should always apply here
 

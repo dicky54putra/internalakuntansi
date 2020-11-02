@@ -273,6 +273,22 @@ class AktLaporanAkuntansiController extends Controller
         ]);
     }
 
+    public function actionLaporanLabaRugiCetak($tanggal_awal, $tanggal_akhir)
+    {
+        return $this->renderPartial('laporan_laba_rugi_cetak', [
+            'tanggal_awal' => $tanggal_awal,
+            'tanggal_akhir' => $tanggal_akhir,
+        ]);
+    }
+
+    public function actionLaporanLabaRugiExcel($tanggal_awal, $tanggal_akhir)
+    {
+        return $this->renderPartial('laporan_laba_rugi_excel', [
+            'tanggal_awal' => $tanggal_awal,
+            'tanggal_akhir' => $tanggal_akhir,
+        ]);
+    }
+
     public function actionLaporanPerubahanEkuitas()
     {
         $tanggal_awal = Yii::$app->request->post('tanggal_awal');

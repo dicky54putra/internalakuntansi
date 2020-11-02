@@ -2,6 +2,21 @@
 
 use yii\helpers\Html;
 use backend\models\AktAkun;
+
+if ($post_periode == 1) {
+    $type = 'Bulanan';
+} else if ($post_periode == 2) {
+    $type = 'Triwulan 1';
+} else if ($post_periode == 3) {
+    $type = 'Triwulan 2';
+} else if ($post_periode == 4) {
+    $type = 'Triwulan 3';
+} else if ($post_periode == 5) {
+    $type = 'Triwulan 4';
+} else if ($post_periode == 6) {
+    $type = 'Tahunan';
+}
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -35,8 +50,8 @@ use backend\models\AktAkun;
 </head>
 
 <body>
-    <h1 align="center" style="margin-bottom:20px;">Laporan Laba Rugi</h1>
-        <hr>
+    <h1 align="center" style="margin-bottom:20px;">Laporan Laba Rugi <?= $type ?></h1>
+    <hr>
     <h3>Pendapatan</h3>
     <table class="table-border">
         <thead>
@@ -65,7 +80,7 @@ use backend\models\AktAkun;
             </tr>
         </tbody>
     </table>
-    <h3 style="margin-top:30px;">Beban</h3>
+    <h3 style="margin-top:30px;">Beban </h3>
     <table class="table-border">
         <thead>
             <tr>
@@ -107,14 +122,14 @@ use backend\models\AktAkun;
         </tbody>
     </table>
 
-    <h1 align="center" style="margin-top:50px;">Laporan Ekuitas</h1>
+    <h1 align="center" style="margin-top:50px;">Laporan Ekuitas <?= $type ?></h1>
     <hr>
     <table class="table-ekuitas">
         <tr>
             <td width="30%">Modal</td>
             <td width="5%">:</td>
             <td>
-                <?php if($modal == null) { ?>
+                <?php if ($modal == null) { ?>
                     Data tidak ada
                 <?php } else {
                     echo ribuan($modal);
@@ -125,7 +140,7 @@ use backend\models\AktAkun;
             <td>Setoran modal tambahan</td>
             <td>:</td>
             <td>
-                <?php if($setor == null) { ?>
+                <?php if ($setor == null) { ?>
                     0
                 <?php } else {
                     echo ribuan($setor);
@@ -154,9 +169,9 @@ use backend\models\AktAkun;
             </td>
         </tr>
     </table>
-    <h1 align="center" style="margin-top:50px;">Laporan Posisi Keuangan</h1>
+    <h1 align="center" style="margin-top:50px;">Laporan Posisi Keuangan <?= $type ?></h1>
     <table class="table-border">
-        <?php foreach($jenis as $j) { 
+        <?php foreach ($jenis as $j) {
             if ($j['jenis'] == 1) {
                 $nama_jenis = 'Aset Lancar';
             } elseif ($j['jenis'] == 2) {
@@ -173,27 +188,27 @@ use backend\models\AktAkun;
                 $nama_jenis = 'Ekuitas';
             } elseif ($j['jenis'] == 8) {
                 $nama_jenis = 'Beban';
-            }    
+            }
 
             $akun = AktAkun::find()->where(['jenis' => $j['jenis']])->all();
         ?>
-        <tr> 
-            <td style="font-weight: bold;" colspan="2"><?= $nama_jenis ?></td>
-        </tr>
-        <?php
+            <tr>
+                <td style="font-weight: bold;" colspan="2"><?= $nama_jenis ?></td>
+            </tr>
+            <?php
             $total_saldo = 0;
             foreach ($akun as $a) {
-                if($a->id_akun == 6 || $a->id_akun == 7 || $a->id_akun == 8 ) {
-                    $total_saldo = $total_saldo - $a->saldo_akun; 
+                if ($a->id_akun == 6 || $a->id_akun == 7 || $a->id_akun == 8) {
+                    $total_saldo = $total_saldo - $a->saldo_akun;
                 } else {
-                    $total_saldo += $a->saldo_akun; 
+                    $total_saldo += $a->saldo_akun;
                 }
-        ?>
-            <tr>
-                <td><?= $a->nama_akun ?></td>
-                <td align="right"><?= ribuan($a->saldo_akun)?></td>
-            </tr>
-            
+            ?>
+                <tr>
+                    <td><?= $a->nama_akun ?></td>
+                    <td align="right"><?= ribuan($a->saldo_akun) ?></td>
+                </tr>
+
             <?php } ?>
             <tr>
                 <td style="font-weight: bold; text-align:right;">Total</td>

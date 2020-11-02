@@ -11,6 +11,7 @@ use backend\models\Log;
 
 use backend\models\AktAkun;
 use backend\models\AktKasBank;
+use backend\models\AktPenjualan;
 use yii\helpers\ArrayHelper;
 
 /**
@@ -94,35 +95,42 @@ class SiteController extends Controller
         $saldo_kas = AktAkun::find()->where(['id_akun' => 1])->one();
         $saldo_piutang = Yii::$app->db->createCommand("SELECT SUM(saldo_akun) as saldo FROM `akt_akun` WHERE nama_akun LIKE '%piutang%'")->queryScalar();
         $saldo_hutang = Yii::$app->db->createCommand("SELECT SUM(saldo_akun) as saldo FROM `akt_akun` WHERE nama_akun LIKE '%hutang%'")->queryScalar();
+
         $month = date('m');
         $year = date('Y');
-        $tanggal = Yii::$app->db->createCommand("SELECT tanggal_order_penjualan FROM akt_penjualan WHERE status >= 3 AND MONTH(tanggal_order_penjualan) = '$month' AND YEAR(tanggal_order_penjualan) = '$year' GROUP BY tanggal_order_penjualan")->query();
-        $tanggal2 = Yii::$app->db->createCommand("SELECT tanggal_order_pembelian FROM akt_pembelian WHERE status >= 3 AND MONTH(tanggal_order_pembelian) = '$month' AND YEAR(tanggal_order_pembelian) = '$year' GROUP BY tanggal_order_pembelian")->query();
 
-        $tanggal_labels = Yii::$app->db->createCommand("SELECT tanggal_order_penjualan FROM akt_penjualan WHERE status >= 3 AND MONTH(tanggal_order_penjualan) = '$month' AND YEAR(tanggal_order_penjualan) = '$year' GROUP BY tanggal_order_penjualan")->query();
-        $tanggal_labels2 = Yii::$app->db->createCommand("SELECT tanggal_order_pembelian FROM akt_pembelian WHERE status >= 3 AND MONTH(tanggal_order_pembelian) = '$month' AND YEAR(tanggal_order_pembelian) = '$year' GROUP BY tanggal_order_pembelian")->query();
 
-        $penjualan = Yii::$app->db->createCommand("SELECT SUM(akt_penjualan_detail.qty) AS penjualan, akt_item.nama_item FROM `akt_penjualan_detail` LEFT JOIN akt_penjualan ON akt_penjualan.id_penjualan = akt_penjualan_detail.id_penjualan LEFT JOIN akt_item_stok ON akt_item_stok.id_item_stok = akt_penjualan_detail.id_item_stok LEFT JOIN akt_item ON akt_item.id_item = akt_item_stok.id_item WHERE MONTH(tanggal_order_penjualan) = '$month' AND YEAR(tanggal_order_penjualan) = '$year'  GROUP BY akt_item.id_item ORDER BY penjualan DESC LIMIT 5")->query();
+        $tanggal_labels = Yii::$app->db->createCommand("SELECT tanggal_penjualan FROM akt_penjualan WHERE status >= 3 AND MONTH(tanggal_penjualan) = '$month' AND YEAR(tanggal_penjualan) = '$year' GROUP BY tanggal_penjualan")->query();
 
-        $sum_penjualan = Yii::$app->db->createCommand("SELECT SUM(akt_penjualan_detail.qty) AS penjualan FROM `akt_penjualan_detail` LEFT JOIN akt_penjualan ON akt_penjualan.id_penjualan = akt_penjualan_detail.id_penjualan WHERE MONTH(tanggal_order_penjualan) = '$month' AND YEAR(tanggal_order_penjualan) = '$year' ")->queryScalar();
+        $tanggal_labels2 = Yii::$app->db->createCommand("SELECT tanggal_pembelian FROM akt_pembelian WHERE status >= 3 AND MONTH(tanggal_pembelian) = '$month' AND YEAR(tanggal_pembelian) = '$year' GROUP BY tanggal_pembelian")->query();
+
+        $penjualan = Yii::$app->db->createCommand("SELECT SUM(akt_penjualan_detail.qty) AS penjualan, akt_item.nama_item FROM `akt_penjualan_detail` LEFT JOIN akt_penjualan ON akt_penjualan.id_penjualan = akt_penjualan_detail.id_penjualan LEFT JOIN akt_item_stok ON akt_item_stok.id_item_stok = akt_penjualan_detail.id_item_stok LEFT JOIN akt_item ON akt_item.id_item = akt_item_stok.id_item WHERE MONTH(tanggal_penjualan) = '$month' AND YEAR(tanggal_penjualan) = '$year'  GROUP BY akt_item.id_item ORDER BY penjualan DESC LIMIT 5")->query();
+
+        $sum_penjualan = Yii::$app->db->createCommand("SELECT SUM(akt_penjualan_detail.qty) AS penjualan FROM `akt_penjualan_detail` LEFT JOIN akt_penjualan ON akt_penjualan.id_penjualan = akt_penjualan_detail.id_penjualan WHERE MONTH(tanggal_penjualan) = '$month' AND YEAR(tanggal_order_penjualan) = '$year' ")->queryScalar();
+
+        // Penjualan per bulan
+        $penjualan_tahun_ini = AktPenjualan::getPenjualanTahun($year);
+        $penjualan_tahun_sebelumnya = AktPenjualan::getPenjualanTahun($year - 1);
 
         $akt_kas_bank = AktKasBank::find()
             ->select(['akt_kas_bank.*', 'akt_mata_uang.mata_uang'])
             ->leftJoin('akt_mata_uang', '`akt_mata_uang`.`id_mata_uang` = `akt_kas_bank`.`id_mata_uang`')
             ->asArray()
             ->all();
+
+
         return $this->render('index', [
             'akt_kas_bank' => $akt_kas_bank,
             'sum_penjualan' => $sum_penjualan,
             'penjualan' => $penjualan,
             'tanggal_label' => $tanggal_labels,
             'tanggal_label2' => $tanggal_labels2,
-            'tanggal' => $tanggal,
-            'tanggal2' => $tanggal2,
             'sum_omzet' => $sum_omzet,
             'saldo_kas' => $saldo_kas,
             'saldo_piutang' => $saldo_piutang,
             'saldo_hutang' => $saldo_hutang,
+            'penjualan_tahun_ini' => $penjualan_tahun_ini,
+            'penjualan_tahun_sebelumnya' => $penjualan_tahun_sebelumnya
         ]);
     }
 
