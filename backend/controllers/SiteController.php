@@ -100,10 +100,6 @@ class SiteController extends Controller
         $year = date('Y');
 
 
-        $tanggal = Yii::$app->db->createCommand("SELECT tanggal_penjualan FROM akt_penjualan WHERE status >= 3 AND MONTH(tanggal_penjualan) = '$month' AND YEAR(tanggal_penjualan) = '$year' GROUP BY tanggal_penjualan")->query();
-
-        $tanggal2 = Yii::$app->db->createCommand("SELECT tanggal_pembelian FROM akt_pembelian WHERE status >= 3 AND MONTH(tanggal_pembelian) = '$month' AND YEAR(tanggal_pembelian) = '$year' GROUP BY tanggal_pembelian")->query();
-
         $tanggal_labels = Yii::$app->db->createCommand("SELECT tanggal_penjualan FROM akt_penjualan WHERE status >= 3 AND MONTH(tanggal_penjualan) = '$month' AND YEAR(tanggal_penjualan) = '$year' GROUP BY tanggal_penjualan")->query();
 
         $tanggal_labels2 = Yii::$app->db->createCommand("SELECT tanggal_pembelian FROM akt_pembelian WHERE status >= 3 AND MONTH(tanggal_pembelian) = '$month' AND YEAR(tanggal_pembelian) = '$year' GROUP BY tanggal_pembelian")->query();
@@ -113,8 +109,6 @@ class SiteController extends Controller
         $sum_penjualan = Yii::$app->db->createCommand("SELECT SUM(akt_penjualan_detail.qty) AS penjualan FROM `akt_penjualan_detail` LEFT JOIN akt_penjualan ON akt_penjualan.id_penjualan = akt_penjualan_detail.id_penjualan WHERE MONTH(tanggal_penjualan) = '$month' AND YEAR(tanggal_order_penjualan) = '$year' ")->queryScalar();
 
         // Penjualan per bulan
-
-        $bulan = AktPenjualan::getBulan();
         $penjualan_tahun_ini = AktPenjualan::getPenjualanTahun($year);
         $penjualan_tahun_sebelumnya = AktPenjualan::getPenjualanTahun($year - 1);
 
@@ -131,13 +125,10 @@ class SiteController extends Controller
             'penjualan' => $penjualan,
             'tanggal_label' => $tanggal_labels,
             'tanggal_label2' => $tanggal_labels2,
-            'tanggal' => $tanggal,
-            'tanggal2' => $tanggal2,
             'sum_omzet' => $sum_omzet,
             'saldo_kas' => $saldo_kas,
             'saldo_piutang' => $saldo_piutang,
             'saldo_hutang' => $saldo_hutang,
-            'bulan' => $bulan,
             'penjualan_tahun_ini' => $penjualan_tahun_ini,
             'penjualan_tahun_sebelumnya' => $penjualan_tahun_sebelumnya
         ]);

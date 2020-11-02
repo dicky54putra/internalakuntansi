@@ -11,6 +11,8 @@ use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use yii\helpers\Arrayhelper;
+use backend\models\AktPenjualan;
+use yii\helpers\Json;
 
 /**
  * SettingController implements the CRUD actions for Setting model.
@@ -136,5 +138,65 @@ class SettingController extends Controller
         }
 
         throw new NotFoundHttpException('The requested page does not exist.');
+    }
+
+    public function actionGetDataPerHari($select, $tabel)
+    {
+
+        $tanggal = Setting::getTanggal($select, $tabel);
+        $data = array();
+
+        foreach ($tanggal as $t) {
+
+            $data_count = Yii::$app->db->createCommand("SELECT COUNT($select) as penjualan FROM $tabel WHERE $select = '$t[$select]' AND status >= 3")->query();
+
+            foreach ($data_count as $g) {
+                array_push($data, $g['penjualan']);
+            }
+        }
+
+        echo Json::encode($data);
+    }
+
+    public function actionGetDataPerBulan($select, $tabel, $type)
+    {
+        if ($type == 1) { // Tahun Ini 
+            $year = date('Y');
+        } else if ($type == 0) { // Tahun Sebelumnya
+            $year = date('Y') - 1;
+        }
+
+        $bulan = AktPenjualan::getBulan();
+        $data = array();
+        foreach ($bulan as $b) {
+
+            $data_count = Yii::$app->db->createCommand("SELECT COUNT($select) as penjualan FROM $tabel WHERE MONTH($select) = '$b' AND YEAR($select) = '$year' AND status >= 3")->query();
+            foreach ($data_count as $g) {
+                array_push($data, $g['penjualan']);
+            }
+        }
+
+        echo Json::encode($data);
+    }
+
+    public function actionGetDataPerBulanRupiah($select, $tabel, $type)
+    {
+        if ($type == 1) { // Tahun Ini 
+            $year = date('Y');
+        } else if ($type == 0) { // Tahun Sebelumnya
+            $year = date('Y') - 1;
+        }
+
+        $bulan = AktPenjualan::getBulan();
+        $data = array();
+        foreach ($bulan as $b) {
+            $data_count = Yii::$app->db->createCommand("SELECT SUM(total) as penjualan FROM $tabel WHERE MONTH($select) = '$b' AND YEAR($select) = '$year' AND status >= 3")->query();
+
+            foreach ($data_count as $g) {
+                array_push($data, $g['penjualan']);
+            }
+        }
+
+        echo Json::encode($data);
     }
 }

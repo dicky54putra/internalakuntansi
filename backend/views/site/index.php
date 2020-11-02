@@ -13,6 +13,12 @@ $this->title = 'Home';
 ?>
 <div class="site-index">
 
+    <style>
+        .chart-area-penjualan-rupiah {
+            display: none;
+        }
+    </style>
+
     <h1><?= Html::encode($this->title) ?></h1>
     <ul class="breadcrumb">
         <li><a href="/">Home</a></li>
@@ -79,6 +85,7 @@ $this->title = 'Home';
             <div class="panel panel-primary">
                 <div class="panel-heading panel-primary">
                     <h4 style="font-weight: bold;"> Data Penjualan Dan Pembelian per Hari </h4>
+
                 </div>
                 <div class="panel-body">
                     <div class="col-md-6">
@@ -87,19 +94,30 @@ $this->title = 'Home';
                     <div class="col-md-6">
                         <canvas id="chart-area2" style="height:350px;"></canvas>
                     </div>
-                    <!-- <canvas id="chart-area" style="height:500px;"></canvas> -->
                 </div>
             </div>
             <div class="panel panel-primary">
                 <div class="panel-heading panel-primary">
                     <h4 style="font-weight: bold;"> Data Penjualan per Bulan </h4>
+
                 </div>
                 <div class="panel-body">
-                    <div class="col-md-6">
-                        <canvas id="chart-area-penjualan" style="height:350px;"></canvas>
+                    <div class="row">
+                        <div class="form-group col-md-6">
+                            <select class="form-control" name="format-grafik" id="format-grafik">
+                                <option value="1">Dalam Jumlah</option>
+                                <option value="2">Dalam Rupiah</option>
+                            </select>
+                        </div>
                     </div>
-                    <div class="col-md-6">
-                        <canvas id="chart-area-pie" style="height:350px;"></canvas>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <canvas id="chart-area-penjualan-count" class="chart-area-penjualan-count" style="height:350px;"></canvas>
+                            <canvas id="chart-area-penjualan-rupiah" class="chart-area-penjualan-rupiah" style="height:350px;"></canvas>
+                        </div>
+                        <div class="col-md-6">
+                            <canvas id="chart-area-pie" style="height:350px;"></canvas>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -110,7 +128,7 @@ $this->title = 'Home';
         <div class="col-md-6">
             <div class="panel panel-primary">
                 <div class="panel-heading">
-                    <h4 style="font-weight: bold;"> Penjualan Terbanyak Bulan <?php // bulan(date('m')) 
+                    <h4 style="font-weight: bold;"> Penjualan Terbanyak Bulan <?= bulan(date('m'))
                                                                                 ?> </h4>
                 </div>
                 <div class="panel-body">
@@ -168,127 +186,28 @@ $this->title = 'Home';
     <script>
         const ctx = document.getElementById("chart-area").getContext('2d');
         const ctx2 = document.getElementById("chart-area2").getContext('2d');
-        const ctx3 = document.getElementById("chart-area-penjualan").getContext('2d');
+
+        const ctx3count = document.querySelector(".chart-area-penjualan-count");
+        const ctxcount = ctx3count.getContext('2d');
+
+        const ctx3rupiah = document.querySelector(".chart-area-penjualan-rupiah");
+        const ctxrupiah = ctx3rupiah.getContext('2d');
+
         const ctx4 = document.getElementById("chart-area-pie").getContext('2d');
-        var myChart = new Chart(ctx, {
-            type: 'bar',
-            data: {
-                datasets: [{
-                    data: [
-                        <?php
-                        foreach ($tanggal as $t) {
-                            $data_count = Yii::$app->db->createCommand("SELECT COUNT(id_penjualan) as penjualan FROM akt_penjualan WHERE tanggal_penjualan = '$t[tanggal_penjualan]' AND status >= 3")->query();
-                            foreach ($data_count as $g) {
-                                echo '"' . $g['penjualan'] . '",';
-                            }
-                        }
-                        ?>, '0'
-                    ],
-                    backgroundColor: 'green',
-                    borderColor: 'green',
-                    fill: false,
-                    lineTension: 0.5,
-                    label: 'Penjualan'
-                }],
-                labels: [
-                    <?php
-                    foreach ($tanggal_label as $tgl) {
-                        echo '"' . tanggal_indo($tgl['tanggal_penjualan']) . '",';
-                    }
-                    ?>
-                ]
-            },
-            options: configOptions,
-        });
-        var myChart = new Chart(ctx2, {
-            type: 'bar',
-            data: {
-                datasets: [{
-                    data: [
-                        <?php
-                        foreach ($tanggal2 as $t) {
-                            $data_count = Yii::$app->db->createCommand("SELECT COUNT(id_pembelian) as pembelian FROM akt_pembelian WHERE tanggal_pembelian = '$t[tanggal_pembelian]' AND status >= 3")->query();
-                            foreach ($data_count as $g) {
-                                echo '"' . $g['pembelian'] . '",';
-                            }
-                        }
-                        ?>, '0'
-                    ],
-                    backgroundColor: 'blue',
-                    borderColor: 'blue',
-                    fill: false,
-                    lineTension: 0.5,
-                    label: 'Pembelian'
-                }],
-                labels: [
-                    <?php
-                    foreach ($tanggal_label2 as $tgl) {
-                        echo '"' . tanggal_indo($tgl['tanggal_pembelian']) . '",';
-                    }
-                    ?>
-                ]
-            },
-            options: configOptions
-        });
 
-        var myChart = new Chart(ctx3, {
-            type: 'bar',
-            data: {
-                datasets: [{
-                    data: [
-                        <?php
-                        $year = date('Y');
-                        foreach ($bulan as $b) {
-                            $data_count = Yii::$app->db->createCommand("SELECT COUNT(id_penjualan) as penjualan FROM akt_penjualan WHERE MONTH(tanggal_penjualan) = '$b' AND YEAR(tanggal_penjualan) = '$year' AND status >= 3")->query();
-                            foreach ($data_count as $g) {
-                                echo '"' . $g['penjualan'] . '",';
-                            }
-                        } ?>, '0'
-                    ],
-                    backgroundColor: 'green',
-                    borderColor: 'green',
-                    fill: false,
-                    lineTension: 0.5,
-                    label: 'Penjualan'
-                }, {
-                    data: [
-                        <?php
-                        $year = date('Y') - 1;
-                        foreach ($bulan as $b) {
-                            $data_count = Yii::$app->db->createCommand("SELECT COUNT(id_penjualan) as penjualan FROM akt_penjualan WHERE MONTH(tanggal_penjualan) = '$b' AND YEAR(tanggal_penjualan) = '$year' AND status >= 3")->query();
-                            foreach ($data_count as $g) {
-                                echo '"' . $g['penjualan'] . '",';
-                            }
-                        } ?>, '0'
-                    ],
-                    backgroundColor: 'red',
-                    borderColor: 'red',
-                    fill: false,
-                    lineTension: 0.5,
-                    label: 'Penjualan Tahun Sebelumnya'
-                }],
-                labels: ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember']
-            },
-            options: configOptions
-        });
+        function addCommas(nStr) {
+            nStr += '';
+            x = nStr.split('.');
+            x1 = x[0];
+            x2 = x.length > 1 ? '.' + x[1] : '';
+            var rgx = /(\d+)(\d{3})/;
+            while (rgx.test(x1)) {
+                x1 = x1.replace(rgx, '$1' + '.' + '$2');
+            }
+            return x1 + x2;
+        }
 
-        var myChart = new Chart(ctx4, {
-            type: 'pie',
-            data: {
-                datasets: [{
-                    data: [<?= $penjualan_tahun_ini ?>, <?= $penjualan_tahun_sebelumnya ?>],
-                    backgroundColor: ['#34BE4A', '#D72828'],
-                    borderColor: ['#34BE4A', '#D72828'],
-                    fill: false,
-                    lineTension: 0.5,
-                    label: 'Penjualan'
-                }],
-                labels: ['Penjualan Tahun Ini ', 'Penjualan Tahun Sebelumnya']
-            },
-            options: configOptions
-        });
-
-        var configOptions = {
+        const configOptions = {
             segmentShowStroke: true,
             segmentStrokeColor: '#fff',
             segmentStrokeWidth: 1,
@@ -314,8 +233,12 @@ $this->title = 'Home';
             },
             tooltips: {
                 callbacks: {
+                    title: function(tooltipItems, data) {
+                        return false;
+                    },
+
                     label: function(tooltipItem, data) {
-                        return 'Jumlah : ' + tooltipItem.yLabel.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                        return `${data.datasets[tooltipItem.datasetIndex].label} ` + tooltipItem.yLabel.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
                     },
                 },
             },
@@ -324,8 +247,151 @@ $this->title = 'Home';
                     ticks: {
                         fontSize: 10
                     }
+                }],
+                yAxes: [{
+                    ticks: {
+                        callback: function(value, index, values) {
+                            return addCommas(value);
+                        }
+                    }
                 }]
             }
 
+        }
+        setup();
+
+        async function setup() {
+            const formatGrafik = document.getElementById('format-grafik');
+
+            chartPenjualanPerBulan(configOptions, 'get-data-per-bulan', ctx3count)
+
+            const grafik = await formatGrafik.addEventListener('change', function() {
+                if (this.value == 1) {
+                    ctx3rupiah.style.display = "none";
+                    ctx3count.style.display = "block";
+                    chartPenjualanPerBulan(configOptions, 'get-data-per-bulan', ctx3count)
+                } else {
+                    ctx3count.style.display = "none";
+                    ctx3rupiah.style.display = "block";
+                    chartPenjualanPerBulan(configOptions, 'get-data-per-bulan-rupiah', ctx3rupiah)
+                }
+            });
+        }
+
+
+
+        chartPenjualanPerHari(configOptions);
+        chartPembelianPerHari(configOptions);
+        chartPiePenjualanPerBulan(configOptions)
+
+
+
+        async function chartPiePenjualanPerBulan(option) {
+            var myChart = new Chart(ctx4, {
+                type: 'pie',
+                data: {
+                    datasets: [{
+                        data: [<?= $penjualan_tahun_ini ?>, <?= $penjualan_tahun_sebelumnya ?>],
+                        backgroundColor: ['#34BE4A', '#D72828'],
+                        borderColor: ['#34BE4A', '#D72828'],
+                        fill: false,
+                        lineTension: 0.5,
+                        label: 'Penjualan'
+                    }],
+                    labels: ['Penjualan Tahun Ini ', 'Penjualan Tahun Sebelumnya']
+                },
+                options: option
+            });
+        }
+
+        async function chartPenjualanPerHari(option) {
+            const dataPenjualan = await dataGrafik(`get-data-per-hari&select=tanggal_penjualan&tabel=akt_penjualan`)
+            var myChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    datasets: [{
+                        data: dataPenjualan,
+                        backgroundColor: 'green',
+                        borderColor: 'green',
+                        fill: false,
+                        lineTension: 0.5,
+                        label: 'Penjualan'
+                    }],
+                    labels: [
+                        <?php
+                        foreach ($tanggal_label as $tgl) {
+                            echo '"' . tanggal_indo($tgl['tanggal_penjualan']) . '",';
+                        }
+                        ?>
+                    ]
+                },
+                options: option,
+            });
+        }
+
+        async function chartPembelianPerHari(option) {
+            const dataPembelian = await dataGrafik(`get-data-per-hari&select=tanggal_pembelian&tabel=akt_pembelian`)
+            var myChart = new Chart(ctx2, {
+                type: 'bar',
+                data: {
+                    datasets: [{
+                        data: dataPembelian,
+                        backgroundColor: 'green',
+                        borderColor: 'green',
+                        fill: false,
+                        lineTension: 0.5,
+                        label: 'Pembelian'
+                    }],
+                    labels: [
+                        <?php
+                        foreach ($tanggal_label2 as $tgl) {
+                            echo '"' . tanggal_indo($tgl['tanggal_pembelian']) . '",';
+                        }
+                        ?>
+                    ]
+                },
+                options: option,
+            });
+        }
+
+        async function chartPenjualanPerBulan(option, link, chart) {
+
+            const dataTahunIni = await dataGrafik(`${link}&select=tanggal_penjualan&tabel=akt_penjualan&type=1`);
+            const dataTahunSebelumnya = await dataGrafik(`${link}&select=tanggal_penjualan&tabel=akt_penjualan&type=0`);
+            var myChart = new Chart(chart, {
+                type: 'bar',
+                data: {
+                    datasets: [{
+                        data: dataTahunIni,
+                        backgroundColor: 'green',
+                        borderColor: 'green',
+                        fill: false,
+                        lineTension: 0.5,
+                        label: 'Penjualan Tahun Ini'
+                    }, {
+                        data: dataTahunSebelumnya,
+                        backgroundColor: 'red',
+                        borderColor: 'red',
+                        fill: false,
+                        lineTension: 0.5,
+                        label: 'Penjualan Tahun Sebelumnya'
+                    }],
+                    labels: ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember']
+                },
+                options: option
+            });
+
+        }
+
+        async function dataGrafik(type) {
+            let penjualan;
+
+            let data = await fetch(`index.php?r=setting/${type}`)
+                .then(res => res.json())
+                .then(res =>
+                    penjualan = res
+                ).catch(err => err);
+
+            return penjualan;
         }
     </script>

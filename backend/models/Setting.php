@@ -81,4 +81,14 @@ class Setting extends \yii\db\ActiveRecord
             return true;
         }
     }
+
+    public static function getTanggal($select, $tabel)
+    {
+        $month = date('m');
+        $year = date('Y');
+
+        $tanggal = Yii::$app->db->createCommand("SELECT $select FROM $tabel WHERE status >= 3 AND MONTH($select) = $month AND YEAR($select) = $year GROUP BY $select")->query();
+
+        return $tanggal;
+    }
 }

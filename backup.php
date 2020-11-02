@@ -13,7 +13,7 @@ define("DB_USER", 'klikgss');
 define("DB_PASSWORD", 'qwe-123-123');
 define("DB_NAME", 'internalakuntansi');
 define("DB_HOST", 'localhost');
-define("BACKUP_DIR", 'mysql-backup-files'); // Comment this line to use same script's directory ('.')
+define("BACKUP_DIR", '/mysql-backup-files'); // Comment this line to use same script's directory ('.')
 define("TABLES", '*'); // Full backup
 //define("TABLES", 'table1, table2, table3'); // Partial backup
 define("CHARSET", 'utf8');
@@ -97,7 +97,7 @@ class Backup_Database {
         $this->charset                 = $charset;
         $this->conn                    = $this->initializeDatabase();
         $this->backupDir               = BACKUP_DIR ? BACKUP_DIR : '.';
-        $this->backupFile              = 'myphp-backup-'.$this->dbName.'-'.date("Ymd_His", time()).'.sql';
+        $this->backupFile              = 'backup-'.$this->dbName.'-'.date("Ymd", time()).'.sql';
         $this->gzipBackupFile          = defined('GZIP_BACKUP_FILE') ? GZIP_BACKUP_FILE : true;
         $this->disableForeignKeyChecks = defined('DISABLE_FOREIGN_KEY_CHECKS') ? DISABLE_FOREIGN_KEY_CHECKS : true;
         $this->batchSize               = defined('BATCH_SIZE') ? BATCH_SIZE : 1000; // default 1000 rows
