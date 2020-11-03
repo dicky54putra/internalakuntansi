@@ -239,9 +239,13 @@ class AktPenjualan extends \yii\db\ActiveRecord
         return $bulan;
     }
 
-    public static function getPenjualanTahun($year)
+    public static function getPenjualanTahun($year, $type)
     {
-        $query = Yii::$app->db->createCommand("SELECT COUNT(*) FROM akt_penjualan WHERE YEAR(tanggal_penjualan) = '$year' AND status >= 3")->queryScalar();
+        if ($type == 'sum') {
+            $query = Yii::$app->db->createCommand("SELECT SUM(total) FROM akt_penjualan WHERE YEAR(tanggal_penjualan) = '$year' AND status >= 3")->queryScalar();
+        } else if ($type = 'count') {
+            $query = Yii::$app->db->createCommand("SELECT COUNT(*) FROM akt_penjualan WHERE YEAR(tanggal_penjualan) = '$year' AND status >= 3")->queryScalar();
+        }
 
         return $query;
     }
