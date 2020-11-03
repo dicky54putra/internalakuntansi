@@ -195,7 +195,7 @@ $fieldOptions2 = [
                             <p>About Developer</p>
                             <a href="https://www.facebook.com/garudasaranasejahtera"><i class="fa fa-facebook"></i></a> &nbsp;
                             <a href="https://www.instagram.com/gss_software/"><i class="fa fa-instagram"></i></a> &nbsp;
-                            <a href="http://klikgss.com"><i class="fa fa-globe"></i></a> &nbsp;
+                            <a href="http://gss-accounting.com"><i class="fa fa-globe"></i></a> &nbsp;
                             <a href="mailto:informasi@klikgss.com"><i class="fa fa-envelope"></i></a> &nbsp;
                             <a href="https://api.whatsapp.com/send?phone=6289668303824"><i class="fa fa-whatsapp"></i></a>
                         </div>
