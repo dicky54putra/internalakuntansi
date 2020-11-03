@@ -80,12 +80,8 @@ class SiteController extends Controller
      */
     public function actionIndex()
     {
-
-        // $sum_pendapatan = Yii::$app->db->createCommand("SELECT SUM(saldo_akun) FROM akt_akun where jenis = 4")->queryScalar();
-        // $sum_beban = Yii::$app->db->createCommand("SELECT SUM(saldo_akun) FROM akt_akun where jenis = 8")->queryScalar();
         $sum_pendapatan = Yii::$app->db->createCommand("SELECT SUM(nominal) FROM akt_penerimaan_pembayaran")->queryScalar();
 
-        // $sum_omzet = $sum_pendapatan - $sum_beban;
         if (!empty($sum_pendapatan)) {
             $sum_omzet = $sum_pendapatan;
         } else {
@@ -108,9 +104,6 @@ class SiteController extends Controller
 
         $sum_penjualan = Yii::$app->db->createCommand("SELECT SUM(akt_penjualan_detail.qty) AS penjualan FROM `akt_penjualan_detail` LEFT JOIN akt_penjualan ON akt_penjualan.id_penjualan = akt_penjualan_detail.id_penjualan WHERE MONTH(tanggal_penjualan) = '$month' AND YEAR(tanggal_order_penjualan) = '$year' ")->queryScalar();
 
-        // Penjualan per bulan
-        $penjualan_tahun_ini = AktPenjualan::getPenjualanTahun($year);
-        $penjualan_tahun_sebelumnya = AktPenjualan::getPenjualanTahun($year - 1);
 
         $akt_kas_bank = AktKasBank::find()
             ->select(['akt_kas_bank.*', 'akt_mata_uang.mata_uang'])
@@ -129,8 +122,6 @@ class SiteController extends Controller
             'saldo_kas' => $saldo_kas,
             'saldo_piutang' => $saldo_piutang,
             'saldo_hutang' => $saldo_hutang,
-            'penjualan_tahun_ini' => $penjualan_tahun_ini,
-            'penjualan_tahun_sebelumnya' => $penjualan_tahun_sebelumnya
         ]);
     }
 

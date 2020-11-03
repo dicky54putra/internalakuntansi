@@ -37,6 +37,24 @@ if (Yii::$app->user->isGuest) {
         <!-- <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.css"> -->
         <link rel="stylesheet" type="text/css" href="https://adminlte.io/themes/AdminLTE/bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css">
         <?php $this->head() ?>
+        <!-- Smartsupp Live Chat script -->
+        <script type="text/javascript">
+            var _smartsupp = _smartsupp || {};
+            _smartsupp.key = 'b4aa6006bdaf3367b40638d21cdd8ae2281acfab';
+            window.smartsupp || (function(d) {
+                var s, c, o = smartsupp = function() {
+                    o._.push(arguments)
+                };
+                o._ = [];
+                s = d.getElementsByTagName('script')[0];
+                c = d.createElement('script');
+                c.type = 'text/javascript';
+                c.charset = 'utf-8';
+                c.async = true;
+                c.src = 'https://www.smartsuppchat.com/loader.js?';
+                s.parentNode.insertBefore(c, s);
+            })(document);
+        </script>
     </head>
 
     <body class="hold-transition skin-yellow sidebar-mini fixed">

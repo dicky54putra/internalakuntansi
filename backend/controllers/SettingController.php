@@ -199,4 +199,12 @@ class SettingController extends Controller
 
         echo Json::encode($data);
     }
+
+
+    public function actionGetDataGrafikPie($year, $type)
+    {
+        $penjualan = AktPenjualan::getPenjualanTahun($year, $type);
+
+        echo Json::encode($penjualan);
+    }
 }
