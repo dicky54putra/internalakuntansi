@@ -71,10 +71,10 @@ $this->title = 'Daftar Laporan Akuntansi';
                                 <td><?= Html::a('<span class="fa fa-file-text"></span> Laporan Rekonsiliasi PPN ', ['laporan-rekonsiliasi-ppn'])
                                     ?></td>
                             </tr>
-                            <tr>
+                            <!-- <tr>
                                 <td><?= Html::a('<span class="fa fa-file-text"></span> Laporan Pajak PPH', ['laporan-pajak-pph'])
                                     ?></td>
-                            </tr>
+                            </tr> -->
                             <!-- <tr>
                                 <td><?= Html::a('<span class="fa fa-file-text"></span> Laporan Rekonsiliasi Pajak PPN (rumah V)', ['laporan-rekonsiliasi-pajak-ppn'])
                                     ?></td>
