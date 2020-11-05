@@ -107,7 +107,7 @@ $this->title = 'Daftar Akun';
                 'class' => 'yii\grid\ActionColumn',
                 'header' => 'Aksi',
                 'headerOptions' => ['style' => 'color:#337ab7'],
-                'template' => "{view} {update}",
+                'template' => $permission_button,
                 'buttons' => [
                     'view' => function ($url, $model) {
                         return Html::a('<button class = "btn btn-info"><span class="glyphicon glyphicon-eye-open"></span> Detail </button>', $url, [
