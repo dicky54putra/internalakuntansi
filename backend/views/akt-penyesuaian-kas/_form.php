@@ -22,66 +22,67 @@ use kartik\datetime\DateTimePicker;
                 <div class="box-body">
                     <?php $form = ActiveForm::begin(); ?>
 
-                    <?= $form->field($model, 'no_transaksi')->textInput(['maxlength' => true, 'readonly' => true, 'value' => $nomor]) ?>
+                    <div class="row">
+                        <div class="col-md-6">
 
-                    <?= $form->field($model, 'tanggal')->widget(\yii\jui\DatePicker::classname(), [
-                        'clientOptions' => [
-                            'changeMonth' => true,
-                            'changeYear' => true,
-                        ],
-                        'dateFormat' => 'yyyy-MM-dd',
-                        'options' => ['class' => 'form-control']
-                    ]) ?>
+                            <?= $form->field($model, 'no_transaksi')->textInput(['maxlength' => true, 'readonly' => true,]) ?>
 
-                    <?=
-                        $form->field($model, 'id_akun')->widget(Select2::classname(), [
-                            'data' =>  $data_akun,
-                            'language' => 'en',
-                            'options' => ['placeholder' => 'Pilih Akun'],
-                            'pluginOptions' => [
-                                'allowClear' => true
-                            ],
-                        ])->label('Pilih Akun');
-                    ?>
+                            <?= $form->field($model, 'tanggal')->widget(\yii\jui\DatePicker::classname(), [
+                                'clientOptions' => [
+                                    'changeMonth' => true,
+                                    'changeYear' => true,
+                                ],
+                                'dateFormat' => 'yyyy-MM-dd',
+                                'options' => ['class' => 'form-control']
+                            ]) ?>
 
-                    <?=
-                        $form->field($model, 'id_mitra_bisnis')->widget(Select2::classname(), [
-                            'data' => ArrayHelper::map(AktMitraBisnis::find()->all(), 'id_mitra_bisnis', 'nama_mitra_bisnis'),
-                            'language' => 'en',
-                            'options' => ['placeholder' => 'Pilih Mitra Bisnis'],
-                            'pluginOptions' => [
-                                'allowClear' => true
-                            ],
-                        ])->label('Pilih Mitra Bisnis');
-                    ?>
+                            <?php
+                            $model->id_akun = 134;
+                            echo $form->field($model, 'id_akun')->widget(Select2::classname(), [
+                                'data' =>  $data_akun,
+                                'language' => 'en',
+                                'options' => ['placeholder' => 'Pilih Akun'],
+                                'pluginOptions' => [
+                                    'allowClear' => true
+                                ],
+                            ])->label('Pilih Akun');
+                            ?>
 
-                    <?= $form->field($model, 'no_referensi')->textInput(['maxlength' => true]) ?>
+                            <?= $form->field($model, 'tipe')->dropDownList(array(1 => "Penambahan Kas", 2 => "Pengurangan Kas")) ?>
 
-                    <?=
-                        $form->field($model, 'id_kas_bank')->widget(Select2::classname(), [
-                            'data' => ArrayHelper::map(AktKasBank::find()->all(), 'id_kas_bank', 'kode_kas_bank'),
-                            'language' => 'en',
-                            'options' => ['placeholder' => 'Pilih Kas/Bank'],
-                            'pluginOptions' => [
-                                'allowClear' => true
-                            ],
-                        ])->label('Pilih Kas/Bank');
-                    ?>
-                    <?=
-                        $form->field($model, 'id_mata_uang')->widget(Select2::classname(), [
-                            'data' => ArrayHelper::map(AktMataUang::find()->all(), 'id_mata_uang', 'mata_uang'),
-                            'language' => 'en',
-                            'options' => ['placeholder' => 'Pilih Mata Uang'],
-                            'pluginOptions' => [
-                                'allowClear' => true
-                            ],
-                        ])->label('Pilih Mata Uang');
-                    ?>
+                            <?= $form->field($model, 'no_referensi')->textInput(['maxlength' => true]) ?>
 
-                    <?= $form->field($model, 'jumlah')->textInput() ?>
+                        </div>
+                        <div class="col-md-6">
 
-                    <?= $form->field($model, 'keterangan')->textarea(['rows' => 6]) ?>
+                            <?=
+                                $form->field($model, 'id_kas_bank')->widget(Select2::classname(), [
+                                    'data' => ArrayHelper::map(AktKasBank::find()->all(), 'id_kas_bank', function ($model) {
+                                        return $model['kode_kas_bank'] . ' - ' . $model['keterangan'];
+                                    }),
+                                    'language' => 'en',
+                                    'options' => ['placeholder' => 'Pilih Kas/Bank'],
+                                    'pluginOptions' => [
+                                        'allowClear' => true
+                                    ],
+                                ])->label('Pilih Kas/Bank');
+                            ?>
+                            <?=
+                                $form->field($model, 'id_mata_uang')->widget(Select2::classname(), [
+                                    'data' => ArrayHelper::map(AktMataUang::find()->all(), 'id_mata_uang', 'mata_uang'),
+                                    'language' => 'en',
+                                    'options' => ['placeholder' => 'Pilih Mata Uang'],
+                                    'pluginOptions' => [
+                                        'allowClear' => true
+                                    ],
+                                ])->label('Pilih Mata Uang');
+                            ?>
 
+                            <?= $form->field($model, 'jumlah')->widget(\yii\widgets\MaskedInput::className(), ['clientOptions' => ['alias' => 'decimal', 'groupSeparator' => '.', 'autoGroup' => true, 'removeMaskOnSubmit' => true, 'rightAlign' => false, 'min' => 0]]); ?>
+
+                            <?= $form->field($model, 'keterangan')->textarea(['rows' => 4]) ?>
+                        </div>
+                    </div>
                     <div class="form-group">
                         <?= Html::a('<span class="glyphicon glyphicon-circle-arrow-left"></span> Kembali', ['index'], ['class' => 'btn btn-warning']) ?>
                         <?= Html::submitButton('<span class="glyphicon glyphicon-floppy-disk"></span> Simpan', ['class' => 'btn btn-success']) ?>

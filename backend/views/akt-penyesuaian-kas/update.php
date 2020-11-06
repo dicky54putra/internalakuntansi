@@ -17,7 +17,6 @@ $this->title = 'Ubah Daftar Penyesuaian Kas: ' . $model->no_transaksi;
     </ul>
     <?= $this->render('_form', [
         'model' => $model,
-        'nomor' => $nomor,
         'data_akun' => $data_akun
     ]) ?>
 

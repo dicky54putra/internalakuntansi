@@ -48,6 +48,8 @@ $this->title = 'Daftar Jurnal Umum';
                 'value' => function ($model) {
                     if ($model->tipe == 1) {
                         return 'Jurnal Umum';
+                    } else if ($model->tipe == 2) {
+                        return 'Jurnal Penyesuaian';
                     }
                 }
             ],

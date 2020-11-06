@@ -6,7 +6,7 @@ use yii\widgets\DetailView;
 /* @var $this yii\web\View */
 /* @var $model backend\models\AktPenyesuaianKas */
 
-$this->title = 'Detail Daftar Penyesuaian Kas : '. $model->no_transaksi;
+$this->title = 'Detail Daftar Penyesuaian Kas : ' . $model->no_transaksi;
 \yii\web\YiiAsset::register($this);
 ?>
 <div class="akt-penyesuaian-kas-view">
@@ -38,49 +38,54 @@ $this->title = 'Detail Daftar Penyesuaian Kas : '. $model->no_transaksi;
                 <div class="col-md-12" style="padding: 0;">
                     <div class="box-body">
 
-    <?= DetailView::widget([
-        'model' => $model,
-        'attributes' => [
-            'no_transaksi',
-            [
-                'attribute' => 'tanggal',
-                'value' => function($model){
-                    return tanggal_indo($model->tanggal,true);
-                }
-            ], 
-            [
-                'attribute' => 'id_akun',
-                'value' => function($model){
-                    return $model->akun->nama_akun;
-                }
-            ], 
-            [
-                'attribute' => 'id_mitra_bisnis',
-                'value' => function($model){
-                    return $model->mitra_bisnis->nama_mitra_bisnis;
-                }
-            ], 
-            'no_referensi',
-            [
-                'attribute' => 'id_kas_bank',
-                'value' => function($model){
-                    return $model->kas_bank->kode_kas_bank;
-                }
-            ], 
-            [
-                'attribute' => 'id_mata_uang',
-                'value' => function($model){
-                    return $model->mata_uang->mata_uang;
-                }
-            ], 
-            [
-                'attribute' => 'jumlah',
-                'value' => function($model){
-                    return ribuan($model->jumlah,true);
-                }
-            ], 
-            'keterangan:ntext',
-        ],
-    ]) ?>
+                        <?= DetailView::widget([
+                            'model' => $model,
+                            'attributes' => [
+                                'no_transaksi',
+                                [
+                                    'attribute' => 'tanggal',
+                                    'value' => function ($model) {
+                                        return tanggal_indo($model->tanggal, true);
+                                    }
+                                ],
+                                [
+                                    'attribute' => 'id_akun',
+                                    'value' => function ($model) {
+                                        return $model->akun->nama_akun;
+                                    }
+                                ],
 
-</div>
+                                [
+                                    'attribute' => 'tipe',
+                                    'value' => function ($model) {
+                                        if ($model->tipe == 1) {
+                                            return 'Penambahan Kas';
+                                        } else if ($model->tipe == 2) {
+                                            return 'Pengurangan Kas';
+                                        }
+                                    }
+                                ],
+                                'no_referensi',
+                                [
+                                    'attribute' => 'id_kas_bank',
+                                    'value' => function ($model) {
+                                        return $model->kas_bank->kode_kas_bank;
+                                    }
+                                ],
+                                [
+                                    'attribute' => 'id_mata_uang',
+                                    'value' => function ($model) {
+                                        return $model->mata_uang->mata_uang;
+                                    }
+                                ],
+                                [
+                                    'attribute' => 'jumlah',
+                                    'value' => function ($model) {
+                                        return ribuan($model->jumlah, true);
+                                    }
+                                ],
+                                'keterangan:ntext',
+                            ],
+                        ]) ?>
+
+                    </div>
