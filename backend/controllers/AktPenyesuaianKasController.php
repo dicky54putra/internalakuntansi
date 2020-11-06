@@ -9,7 +9,12 @@ use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use backend\models\AktAkun;
+use backend\models\AktJurnalUmum;
+use backend\models\AktJurnalUmumDetail;
+use backend\models\AktKasBank;
+use backend\models\AktHistoryTransaksi;
 use yii\helpers\ArrayHelper;
+use yii\helpers\Utils;
 
 /**
  * AktPenyesuaianKasController implements the CRUD actions for AktPenyesuaianKas model.
@@ -67,21 +72,30 @@ class AktPenyesuaianKasController extends Controller
     public function actionCreate()
     {
         $model = new AktPenyesuaianKas();
-        $total = AktPenyesuaianKas::find()->count();
-        $nomor = 'PK' . str_pad($total + 1, 3, "0", STR_PAD_LEFT);
+
+        $no_transaksi = Utils::getNomorTransaksi($model, 'PK', 'no_transaksi', 'id_penyesuaian_kas');
+
+        $model->no_transaksi = $no_transaksi;
+
+        $model->tanggal = date('Y-m-d');
+        $model->id_mata_uang = 1;
+
         $model_akun = new AktAkun();
-        $data_akun = ArrayHelper::map(AktAkun::find()->all(), 'id_akun', function ($model_akun) {
+
+        $data_akun = ArrayHelper::map(AktAkun::find()->where(['id_akun'  => 134])->all(), 'id_akun', function ($model_akun) {
             return $model_akun->kode_akun . ' - ' . $model_akun->nama_akun;
         });
 
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+        if ($model->load(Yii::$app->request->post())) {
+
+            $model->save(false);
+            AktPenyesuaianKas::createJurnalUmum($model, $no_transaksi);
             return $this->redirect(['view', 'id' => $model->id_penyesuaian_kas]);
         }
 
         return $this->render('create', [
             'model' => $model,
-            'nomor' => $nomor,
             'data_akun' => $data_akun
         ]);
     }
@@ -95,14 +109,23 @@ class AktPenyesuaianKasController extends Controller
      */
     public function actionUpdate($id)
     {
+        $model_sebelumnya = $this->findModel($id);
         $model = $this->findModel($id);
         $nomor = $model->no_transaksi;
         $model_akun = new AktAkun();
-        $data_akun = ArrayHelper::map(AktAkun::find()->all(), 'id_akun', function ($model_akun) {
+
+        $data_akun = ArrayHelper::map(AktAkun::find()->where(['id_akun'  => 134])->all(), 'id_akun', function ($model_akun) {
             return $model_akun->kode_akun . ' - ' . $model_akun->nama_akun;
         });
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+        if ($model->load(Yii::$app->request->post())) {
+
+            AktPenyesuaianKas::deleteJurnalUmum($model_sebelumnya, $id);
+
+            $model->save(false);
+            AktPenyesuaianKas::createJurnalUmum($model, $model->no_transaksi);
+
+
             return $this->redirect(['view', 'id' => $model->id_penyesuaian_kas]);
         }
 
@@ -122,7 +145,9 @@ class AktPenyesuaianKasController extends Controller
      */
     public function actionDelete($id)
     {
-        $this->findModel($id)->delete();
+        $model =  $this->findModel($id);
+        AktPenyesuaianKas::deleteJurnalUmum($model, $id);
+        $model->delete();
 
         return $this->redirect(['index']);
     }

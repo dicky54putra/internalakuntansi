@@ -17,7 +17,6 @@ $this->title = 'Tambah Daftar Penyesuaian Kas';
     </ul>
     <?= $this->render('_form', [
         'model' => $model,
-        'nomor' => $nomor,
         'data_akun' => $data_akun
     ]) ?>
 

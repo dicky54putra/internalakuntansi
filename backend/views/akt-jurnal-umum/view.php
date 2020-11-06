@@ -65,6 +65,8 @@ $this->title = 'Detail Data Jurnal Umum : ' . $model->no_jurnal_umum;
                                     'value' => function ($model) {
                                         if ($model->tipe == 1) {
                                             return 'Jurnal Umum';
+                                        } else if ($model->tipe == 2) {
+                                            return 'Jurnal Penyesuaian';
                                         }
                                     }
                                 ],

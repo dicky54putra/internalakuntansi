@@ -47,4 +47,35 @@ class AktJurnalUmum extends \yii\db\ActiveRecord
             'keterangan' => 'Keterangan',
         ];
     }
+
+    public static function getKodeJurnalUmum()
+    {
+        $akt_jurnal_umum = AktJurnalUmum::find()
+            ->select(["no_jurnal_umum"])
+            ->orderBy("id_jurnal_umum DESC")
+            ->limit(1)
+            ->one();
+
+        $no_jurnal_umum = '';
+
+        if (!empty($akt_jurnal_umum->no_jurnal_umum)) {
+            # code...
+            $no_bulan = substr($akt_jurnal_umum->no_jurnal_umum, 2, 4);
+            if ($no_bulan == date('ym')) {
+                # code...
+                $noUrut = substr($akt_jurnal_umum->no_jurnal_umum, -3);
+                $noUrut++;
+                $noUrut_2 = sprintf("%03s", $noUrut);
+                $no_jurnal_umum = 'JU' . date('ym') . $noUrut_2;
+            } else {
+                # code...
+                $no_jurnal_umum = 'JU' . date('ym') . '001';
+            }
+        } else {
+            # code...
+            $no_jurnal_umum = 'JU' . date('ym') . '001';
+        }
+
+        return $no_jurnal_umum;
+    }
 }
