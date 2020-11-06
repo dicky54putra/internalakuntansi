@@ -114,88 +114,86 @@ class AktSaldoAwalKasController extends Controller
 
             $model->save();
 
-            // Auto create, dont delete this
+            $jurnal_umum = new AktJurnalUmum();
+            $akt_jurnal_umum = AktJurnalUmum::find()->select(["no_jurnal_umum"])->orderBy("id_jurnal_umum DESC")->limit(1)->one();
+            if (!empty($akt_jurnal_umum->no_jurnal_umum)) {
+                # code...
+                $no_bulan = substr($akt_jurnal_umum->no_jurnal_umum, 2, 4);
+                if ($no_bulan == date('ym')) {
+                    # code...
+                    $noUrut = substr($akt_jurnal_umum->no_jurnal_umum, -3);
+                    $noUrut++;
+                    $noUrut_2 = sprintf("%03s", $noUrut);
+                    $no_jurnal_umum = 'JU' . date('ym') . $noUrut_2;
+                } else {
+                    # code...
+                    $no_jurnal_umum = 'JU' . date('ym') . '001';
+                }
+            } else {
+                # code...
+                $no_jurnal_umum = 'JU' . date('ym') . '001';
+            }
 
-            // $jurnal_umum = new AktJurnalUmum();
-            // $akt_jurnal_umum = AktJurnalUmum::find()->select(["no_jurnal_umum"])->orderBy("id_jurnal_umum DESC")->limit(1)->one();
-            // if (!empty($akt_jurnal_umum->no_jurnal_umum)) {
-            //     # code...
-            //     $no_bulan = substr($akt_jurnal_umum->no_jurnal_umum, 2, 4);
-            //     if ($no_bulan == date('ym')) {
-            //         # code...
-            //         $noUrut = substr($akt_jurnal_umum->no_jurnal_umum, -3);
-            //         $noUrut++;
-            //         $noUrut_2 = sprintf("%03s", $noUrut);
-            //         $no_jurnal_umum = 'JU' . date('ym') . $noUrut_2;
-            //     } else {
-            //         # code...
-            //         $no_jurnal_umum = 'JU' . date('ym') . '001';
-            //     }
-            // } else {
-            //     # code...
-            //     $no_jurnal_umum = 'JU' . date('ym') . '001';
-            // }
+            $jurnal_umum->no_jurnal_umum = $no_jurnal_umum;
+            $jurnal_umum->tanggal = date('Y-m-d');
+            $jurnal_umum->keterangan = 'Set saldo awal kas : ' . $no_transaksi;
+            $jurnal_umum->tipe = 1;
 
-            // $jurnal_umum->no_jurnal_umum = $no_jurnal_umum;
-            // $jurnal_umum->tanggal = date('Y-m-d');
-            // $jurnal_umum->keterangan = 'Set saldo awal kas : ' . $no_transaksi;
-            // $jurnal_umum->tipe = 1;
+            $jurnal_umum->save(false);
 
-            // $jurnal_umum->save(false);
+            // Create Jurnal Umum detail
+            $jurnal_transaksi = JurnalTransaksi::find()->where(['nama_transaksi' => 'Set Saldo Awal Kas'])->one();
+            $jurnal_transaksi_detail = JurnalTransaksiDetail::find()->where(['id_jurnal_transaksi' => $jurnal_transaksi['id_jurnal_transaksi']])->all();
+            // var_dump($jurnal_transaksi);
 
-            // // Create Jurnal Umum detail
-            // $jurnal_transaksi = JurnalTransaksi::find()->where(['nama_transaksi' => 'Set Saldo Awal Kas'])->one();
-            // $jurnal_transaksi_detail = JurnalTransaksiDetail::find()->where(['id_jurnal_transaksi' => $jurnal_transaksi['id_jurnal_transaksi']])->all();
-            // // var_dump($jurnal_transaksi);
-
-            // foreach ($jurnal_transaksi_detail as $k) {
-            //     $jurnal_umum_detail = new AktJurnalUmumDetail();
-            //     $akun = AktAkun::findOne($k->id_akun);
-            //     $jurnal_umum_detail->id_jurnal_umum = $jurnal_umum->id_jurnal_umum;
-            //     $jurnal_umum_detail->id_akun = $k->id_akun;
-            //     $akt_kas_bank = AktKasBank::findOne($model->id_kas_bank);
-            //     if ($akun['nama_akun'] == 'kas') {
-            //         $jurnal_umum_detail->debit =  $model->jumlah;
-            //         if ($k->tipe == 'D') {
-            //             $akt_kas_bank->saldo = $akt_kas_bank->saldo + $model->jumlah;
-            //         } else {
-            //             $akt_kas_bank->saldo = $akt_kas_bank->saldo - $model->jumlah;
-            //         }
-            //         $akt_kas_bank->save(false);
-            //     } else {
-            //         if ($akun->saldo_normal == 1 && $k->tipe == 'D') {
-            //             $jurnal_umum_detail->debit =  $model->jumlah;
-            //             $akun->saldo_akun = $akun->saldo_akun + $model->jumlah;
-            //         } elseif ($akun->saldo_normal == 1 && $k->tipe == 'K') {
-            //             $jurnal_umum_detail->debit =  $model->jumlah;
-            //             $akun->saldo_akun = $akun->saldo_akun + $model->jumlah;
-            //         } elseif ($akun->saldo_normal == 2 && $k->tipe == 'K') {
-            //             $jurnal_umum_detail->kredit =  $model->jumlah;
-            //             $akun->saldo_akun = $akun->saldo_akun + $model->jumlah;
-            //         } elseif ($akun->saldo_normal == 1 && $k->tipe == 'D') {
-            //             $jurnal_umum_detail->kredit =  $model->jumlah;
-            //             $akun->saldo_akun = $akun->saldo_akun - $model->jumlah;
-            //         }
-            //     }
+            foreach ($jurnal_transaksi_detail as $k) {
+                $jurnal_umum_detail = new AktJurnalUmumDetail();
+                $akun = AktAkun::findOne($k->id_akun);
+                $jurnal_umum_detail->id_jurnal_umum = $jurnal_umum->id_jurnal_umum;
+                $jurnal_umum_detail->id_akun = $k->id_akun;
+                $akt_kas_bank = AktKasBank::findOne($model->id_kas_bank);
+                if ($akun['nama_akun'] == 'kas') {
+                    $jurnal_umum_detail->debit =  $model->jumlah;
+                    if ($k->tipe == 'D') {
+                        $akt_kas_bank->saldo = $akt_kas_bank->saldo + $model->jumlah;
+                    } else {
+                        $akt_kas_bank->saldo = $akt_kas_bank->saldo - $model->jumlah;
+                    }
+                    $akt_kas_bank->save(false);
+                } else {
+                    if ($akun->saldo_normal == 1 && $k->tipe == 'D') {
+                        $jurnal_umum_detail->debit =  $model->jumlah;
+                        $akun->saldo_akun = $akun->saldo_akun + $model->jumlah;
+                    } elseif ($akun->saldo_normal == 1 && $k->tipe == 'K') {
+                        $jurnal_umum_detail->debit =  $model->jumlah;
+                        $akun->saldo_akun = $akun->saldo_akun + $model->jumlah;
+                    } elseif ($akun->saldo_normal == 2 && $k->tipe == 'K') {
+                        $jurnal_umum_detail->kredit =  $model->jumlah;
+                        $akun->saldo_akun = $akun->saldo_akun + $model->jumlah;
+                    } elseif ($akun->saldo_normal == 1 && $k->tipe == 'D') {
+                        $jurnal_umum_detail->kredit =  $model->jumlah;
+                        $akun->saldo_akun = $akun->saldo_akun - $model->jumlah;
+                    }
+                }
 
 
-            //     $akun->save(false);
-            //     $jurnal_umum_detail->save(false);
+                $akun->save(false);
+                $jurnal_umum_detail->save(false);
 
-            //     if ($akun->nama_akun == 'kas') {
-            //         $history_transaksi_kas = new AktHistoryTransaksi();
-            //         $history_transaksi_kas->nama_tabel = 'akt_kas_bank';
-            //         $history_transaksi_kas->id_tabel = $model->id_kas_bank;
-            //         $history_transaksi_kas->id_jurnal_umum = $jurnal_umum_detail->id_jurnal_umum_detail;
-            //         $history_transaksi_kas->save(false);
-            //     }
-            // }
+                if ($akun->nama_akun == 'kas') {
+                    $history_transaksi_kas = new AktHistoryTransaksi();
+                    $history_transaksi_kas->nama_tabel = 'akt_kas_bank';
+                    $history_transaksi_kas->id_tabel = $model->id_kas_bank;
+                    $history_transaksi_kas->id_jurnal_umum = $jurnal_umum_detail->id_jurnal_umum_detail;
+                    $history_transaksi_kas->save(false);
+                }
+            }
 
-            // $history_transaksi = new AktHistoryTransaksi();
-            // $history_transaksi->nama_tabel = 'akt_saldo_awal_kas';
-            // $history_transaksi->id_tabel = $model->id_saldo_awal_kas;
-            // $history_transaksi->id_jurnal_umum = $jurnal_umum->id_jurnal_umum;
-            // $history_transaksi->save(false);
+            $history_transaksi = new AktHistoryTransaksi();
+            $history_transaksi->nama_tabel = 'akt_saldo_awal_kas';
+            $history_transaksi->id_tabel = $model->id_saldo_awal_kas;
+            $history_transaksi->id_jurnal_umum = $jurnal_umum->id_jurnal_umum;
+            $history_transaksi->save(false);
 
             return $this->redirect(['view', 'id' => $model->id_saldo_awal_kas]);
         }
