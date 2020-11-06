@@ -12,7 +12,8 @@ $this->title = 'Daftar Penyesuaian Kas';
 <div class="akt-penyesuaian-kas-index">
 
     <h1><?= Html::encode($this->title) ?></h1>
-    <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
+    <?php // echo $this->render('_search', ['model' => $searchModel]); 
+    ?>
     <ul class="breadcrumb">
         <li><a href="/">Home</a></li>
         <li class="active"><?= $this->title ?></li>
@@ -31,22 +32,29 @@ $this->title = 'Daftar Penyesuaian Kas';
             'no_transaksi',
             [
                 'attribute' => 'tanggal',
-                'value' => function($model){
-                    return tanggal_indo($model->tanggal,true);
+                'value' => function ($model) {
+                    return tanggal_indo($model->tanggal, true);
                 }
-            ], 
+            ],
             [
                 'attribute' => 'id_akun',
                 'value' => 'akun.nama_akun'
-            ], 
+            ],
+
             [
-                'attribute' => 'id_mitra_bisnis',
-                'value' => 'mitra_bisnis.nama_mitra_bisnis'
-            ],          //'no_referensi',
-            //'id_kas_bank',
-            //'id_mata_uang',
-            //'jumlah',
-            //'keterangan:ntext',
+                'attribute' => 'tipe',
+                'filter' => array(
+                    1 => 'Penambahan Kas',
+                    2 => 'Pengurangan Kas',
+                ),
+                'value' => function ($model) {
+                    if ($model->tipe == 1) {
+                        return 'Penambahan Kas';
+                    } else if ($model->tipe == 2) {
+                        return 'Pengurangan Kas';
+                    }
+                }
+            ],
 
             [
                 'class' => 'yii\grid\ActionColumn',

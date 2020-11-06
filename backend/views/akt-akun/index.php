@@ -57,6 +57,9 @@ $this->title = 'Daftar Akun';
                     7 => 'Ekuitas',
                     // 5 => 'Pendapatan Lain',
                     8 => 'Beban',
+                    9 => 'Pengeluaran Lain',
+                    10 => 'Pendapatan Lain',
+
                 ),
                 'value' => function ($model) {
                     $j = $model->jenis;
@@ -76,6 +79,10 @@ $this->title = 'Daftar Akun';
                         return 'Ekuitas';
                     } elseif ($j == 8) {
                         return 'Beban';
+                    } elseif ($j == 9) {
+                        return 'Pengeluaran Lain';
+                    } elseif ($j == 10) {
+                        return 'Pendapatan Lain';
                     }
                 }
             ],

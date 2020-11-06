@@ -40,7 +40,7 @@ class AktJurnalUmumSearch extends AktJurnalUmum
      */
     public function search($params)
     {
-        $query = AktJurnalUmum::find()->where(['tipe' => 1])->orderBy('id_jurnal_umum DESC');
+        $query = AktJurnalUmum::find()->orderBy('id_jurnal_umum DESC');
 
         // add conditions that should always apply here
 

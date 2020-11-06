@@ -64,6 +64,8 @@ use kartik\select2\Select2;
                                     7 => 'Ekuitas',
                                     // 5 => 'Pendapatan Lain',
                                     8 => 'Beban',
+                                    9 => 'Pengeluaran Lain',
+                                    10 => 'Pendapatan Lain',
                                 ),
                                 'language' => 'en',
                                 'options' => ['placeholder' => 'Pilih Jenis'],

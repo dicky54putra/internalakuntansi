@@ -17,7 +17,7 @@ class AktPenyesuaianKasSearch extends AktPenyesuaianKas
     public function rules()
     {
         return [
-            [['id_penyesuaian_kas', 'id_akun', 'id_mitra_bisnis', 'id_kas_bank', 'id_mata_uang'], 'integer'],
+            [['id_penyesuaian_kas', 'id_akun', 'tipe', 'id_kas_bank', 'id_mata_uang'], 'integer'],
             [['no_transaksi', 'tanggal', 'no_referensi', 'keterangan'], 'safe'],
             [['jumlah'], 'number'],
         ];
@@ -42,7 +42,6 @@ class AktPenyesuaianKasSearch extends AktPenyesuaianKas
     public function search($params)
     {
         $query = AktPenyesuaianKas::find();
-        $query->joinWith(['mitra_bisnis']);
         $query->joinWith(['akun']);
         $query->joinWith(['mata_uang']);
         $query->joinWith(['kas_bank']);
@@ -73,7 +72,7 @@ class AktPenyesuaianKasSearch extends AktPenyesuaianKas
 
         $query->andFilterWhere(['like', 'no_transaksi', $this->no_transaksi])
             ->andFilterWhere(['like', 'akt_akun.nama_akun', $this->id_akun])
-            ->andFilterWhere(['like', 'mitra_bisnis.nama_mitra_bisnis', $this->id_mitra_bisnis])
+            ->andFilterWhere(['like', 'tipe', $this->tipe])
             ->andFilterWhere(['like', 'no_referensi', $this->no_referensi])
             ->andFilterWhere(['like', 'keterangan', $this->keterangan]);
 

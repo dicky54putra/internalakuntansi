@@ -85,80 +85,80 @@ class AktSaldoAwalAkunDetailController extends Controller
                     Yii::$app->session->setFlash('danger', [['Perhatian!', 'Akun ini sudah ada']]);
                 } else {
                     // membuat jurnal umum
-                    $jurnal_umum = new AktJurnalUmum();
-                    $akt_jurnal_umum = AktJurnalUmum::find()->select(["no_jurnal_umum"])->orderBy("id_jurnal_umum DESC")->limit(1)->one();
-                    if (!empty($akt_jurnal_umum->no_jurnal_umum)) {
-                        # code...
-                        $no_bulan = substr($akt_jurnal_umum->no_jurnal_umum, 2, 4);
-                        if ($no_bulan == date('ym')) {
-                            # code...
-                            $noUrut = substr($akt_jurnal_umum->no_jurnal_umum, -3);
-                            $noUrut++;
-                            $noUrut_2 = sprintf("%03s", $noUrut);
-                            $no_jurnal_umum = 'JU' . date('ym') . $noUrut_2;
-                        } else {
-                            # code...
-                            $no_jurnal_umum = 'JU' . date('ym') . '001';
-                        }
-                    } else {
-                        # code...
-                        $no_jurnal_umum = 'JU' . date('ym') . '001';
-                    }
+                    // $jurnal_umum = new AktJurnalUmum();
+                    // $akt_jurnal_umum = AktJurnalUmum::find()->select(["no_jurnal_umum"])->orderBy("id_jurnal_umum DESC")->limit(1)->one();
+                    // if (!empty($akt_jurnal_umum->no_jurnal_umum)) {
+                    //     # code...
+                    //     $no_bulan = substr($akt_jurnal_umum->no_jurnal_umum, 2, 4);
+                    //     if ($no_bulan == date('ym')) {
+                    //         # code...
+                    //         $noUrut = substr($akt_jurnal_umum->no_jurnal_umum, -3);
+                    //         $noUrut++;
+                    //         $noUrut_2 = sprintf("%03s", $noUrut);
+                    //         $no_jurnal_umum = 'JU' . date('ym') . $noUrut_2;
+                    //     } else {
+                    //         # code...
+                    //         $no_jurnal_umum = 'JU' . date('ym') . '001';
+                    //     }
+                    // } else {
+                    //     # code...
+                    //     $no_jurnal_umum = 'JU' . date('ym') . '001';
+                    // }
 
-                    $jurnal_umum->no_jurnal_umum = $no_jurnal_umum;
-                    $jurnal_umum->tanggal = date('Y-m-d');
-                    $jurnal_umum->tipe = 1;
+                    // $jurnal_umum->no_jurnal_umum = $no_jurnal_umum;
+                    // $jurnal_umum->tanggal = date('Y-m-d');
+                    // $jurnal_umum->tipe = 1;
 
-                    $jurnal_umum->save(false);
+                    // $jurnal_umum->save(false);
 
-                    // Create Jurnal Umum detail
-                    $jurnal_transaksi = JurnalTransaksiDetail::find()->innerJoin('jurnal_transaksi', 'jurnal_transaksi_detail.id_jurnal_transaksi = jurnal_transaksi.id_jurnal_transaksi')
-                        ->where(['nama_transaksi' => 'Set Saldo Awal Kas'])->all();
-                    // var_dump($jurnal_transaksi);
+                    // // Create Jurnal Umum detail
+                    // $jurnal_transaksi = JurnalTransaksiDetail::find()->innerJoin('jurnal_transaksi', 'jurnal_transaksi_detail.id_jurnal_transaksi = jurnal_transaksi.id_jurnal_transaksi')
+                    //     ->where(['nama_transaksi' => 'Set Saldo Awal Kas'])->all();
+                    // // var_dump($jurnal_transaksi);
 
-                    foreach ($jurnal_transaksi as $k) {
-                        $jurnal_umum_detail = new AktJurnalUmumDetail();
-                        $akun = AktAkun::findOne($k->id_akun);
-                        $jurnal_umum_detail->id_jurnal_umum = $jurnal_umum->id_jurnal_umum;
-                        $jurnal_umum_detail->id_akun = $k->id_akun;
+                    // foreach ($jurnal_transaksi as $k) {
+                    //     $jurnal_umum_detail = new AktJurnalUmumDetail();
+                    //     $akun = AktAkun::findOne($k->id_akun);
+                    //     $jurnal_umum_detail->id_jurnal_umum = $jurnal_umum->id_jurnal_umum;
+                    //     $jurnal_umum_detail->id_akun = $k->id_akun;
 
-                        if ($model->kredit > 0) {
-                            $isian = $model->kredit;
-                        } elseif ($model->debet > 0) {
-                            $isian = $model->debet;
-                        }
+                    //     if ($model->kredit > 0) {
+                    //         $isian = $model->kredit;
+                    //     } elseif ($model->debet > 0) {
+                    //         $isian = $model->debet;
+                    //     }
 
 
-                        if ($k->tipe == 'K') {
-                            if ($akun->saldo_normal == 1) {
-                                $jurnal_umum_detail->kredit = $isian;
-                                $jurnal_umum_detail->debit =  0;
-                            } else if ($akun->saldo_normal == 2) {
-                                $jurnal_umum_detail->kredit = $isian;
-                                $jurnal_umum_detail->debit =  0;
-                            }
-                            // var_dump($k->tipe);
-                            // var_dump($k->id_akun);
-                            // var_dump($model->debet);
-                        } else if ($k->tipe == 'D') {
-                            if ($akun->saldo_normal == 1) {
-                                $jurnal_umum_detail->debit =  $isian;
-                                $jurnal_umum_detail->kredit =  0;
-                            } else if ($akun->saldo_normal == 2) {
-                                $jurnal_umum_detail->debit = $isian;
-                                $jurnal_umum_detail->kredit =  0;
-                            }
-                        }
-                        $jurnal_umum_detail->save(false);
-                    }
+                    //     if ($k->tipe == 'K') {
+                    //         if ($akun->saldo_normal == 1) {
+                    //             $jurnal_umum_detail->kredit = $isian;
+                    //             $jurnal_umum_detail->debit =  0;
+                    //         } else if ($akun->saldo_normal == 2) {
+                    //             $jurnal_umum_detail->kredit = $isian;
+                    //             $jurnal_umum_detail->debit =  0;
+                    //         }
+                    //         // var_dump($k->tipe);
+                    //         // var_dump($k->id_akun);
+                    //         // var_dump($model->debet);
+                    //     } else if ($k->tipe == 'D') {
+                    //         if ($akun->saldo_normal == 1) {
+                    //             $jurnal_umum_detail->debit =  $isian;
+                    //             $jurnal_umum_detail->kredit =  0;
+                    //         } else if ($akun->saldo_normal == 2) {
+                    //             $jurnal_umum_detail->debit = $isian;
+                    //             $jurnal_umum_detail->kredit =  0;
+                    //         }
+                    //     }
+                    //     $jurnal_umum_detail->save(false);
+                    // }
 
-                    $model_akun = AktAkun::findOne($id_akun);
-                    if ($debet != null) {
-                        $model_akun->saldo_akun = $debet;
-                    } else if ($kredit != null) {
-                        $model_akun->saldo_akun = $kredit;
-                    }
-                    $model_akun->save(false);
+                    // $model_akun = AktAkun::findOne($id_akun);
+                    // if ($debet != null) {
+                    //     $model_akun->saldo_akun = $debet;
+                    // } else if ($kredit != null) {
+                    //     $model_akun->saldo_akun = $kredit;
+                    // }
+                    // $model_akun->save(false);
                     $model->save();
                 }
             }

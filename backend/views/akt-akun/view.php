@@ -86,6 +86,10 @@ $this->title = 'Detail Akun : ' . $model->nama_akun;
                                             return 'Ekuitas';
                                         } elseif ($j == 8) {
                                             return 'Beban';
+                                        } elseif ($j == 9) {
+                                            return 'Pengeluaran Lain';
+                                        } elseif ($j == 10) {
+                                            return 'Pendapatan Lain';
                                         }
                                     }
                                 ],
