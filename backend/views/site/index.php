@@ -265,33 +265,38 @@ $this->title = 'Home';
 
             chartPenjualanPerBulan(configOptions, 'get-data-per-bulan', ctx3count)
 
+            chartPiePenjualanPerBulan('count');
+
             const grafik = await formatGrafik.addEventListener('change', function() {
                 if (this.value == 1) {
                     ctx3rupiah.style.display = "none";
                     ctx3count.style.display = "block";
+                    chartPiePenjualanPerBulan('count');
                     chartPenjualanPerBulan(configOptions, 'get-data-per-bulan', ctx3count)
                 } else {
                     ctx3count.style.display = "none";
                     ctx3rupiah.style.display = "block";
+                    chartPiePenjualanPerBulan('sum');
                     chartPenjualanPerBulan(configOptions, 'get-data-per-bulan-rupiah', ctx3rupiah)
                 }
             });
         }
 
 
-
         chartPenjualanPerHari(configOptions);
         chartPembelianPerHari(configOptions);
-        chartPiePenjualanPerBulan(configOptions)
 
+        async function chartPiePenjualanPerBulan(type) {
+            let year = new Date().getFullYear();
+            let old_year = year - 1;
 
-
-        async function chartPiePenjualanPerBulan(option) {
+            const dataPenjualanTahunIni = await dataGrafik(`get-data-grafik-pie&year=${year}&type=${type}`);
+            const dataPenjualanTahunSebelumnya = await dataGrafik(`get-data-grafik-pie&year=${old_year}&type=${type}`);
             var myChart = new Chart(ctx4, {
                 type: 'pie',
                 data: {
                     datasets: [{
-                        data: [<?= $penjualan_tahun_ini ?>, <?= $penjualan_tahun_sebelumnya ?>],
+                        data: [dataPenjualanTahunIni, 3],
                         backgroundColor: ['#34BE4A', '#D72828'],
                         borderColor: ['#34BE4A', '#D72828'],
                         fill: false,
@@ -300,7 +305,46 @@ $this->title = 'Home';
                     }],
                     labels: ['Penjualan Tahun Ini ', 'Penjualan Tahun Sebelumnya']
                 },
-                options: option
+                options: {
+                    segmentShowStroke: true,
+                    segmentStrokeColor: '#fff',
+                    segmentStrokeWidth: 1,
+                    percentageInnerCutout: 0,
+                    animationSteps: 100,
+                    animationEasing: 'easeOutBounce',
+                    animateRotate: true,
+                    animateScale: false,
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    legendTemplate: '<ul class="<%=name.toLowerCase()%>-legend"><% for (var i=0; i<segments.length; i++){%><li><span style="background-color:<%=segments[i].fillColor%>"></span><%if(segments[i].label){%><%=segments[i].label%><%}%></li><%}%></ul>',
+                    legend: {
+                        display: true,
+                        position: 'bottom',
+                        fontSize: 10,
+                        boxWidth: 20
+                    },
+                    title: {
+                        display: false,
+                    },
+                    chartArea: {
+                        backgroundColor: 'rgba(255, 255, 255, 1)'
+                    },
+                    scales: {
+                        xAxes: [{
+                            ticks: {
+                                fontSize: 10
+                            }
+                        }],
+                        yAxes: [{
+                            ticks: {
+                                callback: function(value, index, values) {
+                                    return addCommas(value);
+                                }
+                            }
+                        }]
+                    }
+
+                }
             });
         }
 

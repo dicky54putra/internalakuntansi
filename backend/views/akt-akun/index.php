@@ -8,6 +8,8 @@ use kartik\grid\GridView;
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
 $this->title = 'Daftar Akun';
+
+
 ?>
 <div class="akt-akun-index">
 
