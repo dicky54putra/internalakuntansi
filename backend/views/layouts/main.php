@@ -1,5 +1,6 @@
 <?php
 
+use backend\models\Login;
 use yii\helpers\Html;
 
 /* @var $this \yii\web\View */
@@ -75,14 +76,15 @@ if (Yii::$app->user->isGuest) {
             <?= $this->render(
                 'content.php',
                 ['content' => $content, 'directoryAsset' => $directoryAsset]
-            ) ?>
+            )
+            ?>
 
             <!-- /.content-wrapper -->
             <footer class="main-footer">
                 <div class="pull-right hidden-xs">
                     <b>Version</b> 1.0.0
                 </div>
-                <strong>Copyright &copy; 2020 <a href="http://gss-accounting.com">GSS Accounting</a>.</strong> All rights
+                <strong><?= Yii::$app->controller->id ?> Copyright &copy; 2020 <a href="http://gss-accounting.com">GSS Accounting</a>.</strong> All rights
                 reserved.
             </footer>
 

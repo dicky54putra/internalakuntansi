@@ -44,7 +44,8 @@
     "kartik-v/yii2-mpdf": "dev-master",
     "kartik-v/yii2-widget-activeform": "dev-master",
     "tomlutzenberger/yii2-smartsupp-chat": "*",
-    "2amigos/yii2-chartjs-widget": "~2.0"
+    "2amigos/yii2-chartjs-widget": "~2.0",
+    "mdmsoft/yii2-admin": "~2.0"
   },
   "require-dev": {
     "yiisoft/yii2-debug": "~2.0.0",
