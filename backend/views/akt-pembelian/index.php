@@ -47,23 +47,30 @@ $this->title = 'Daftar Order Pembelian';
             [
                 'attribute' => 'tanggal_order_pembelian',
                 'headerOptions' => ['style' => 'color:#337ab7'],
-                // 'format'    => 'date', 
                 'filter' => DatePicker::widget([
+
                     'model' => $searchModel,
+
                     'attribute' => 'tanggal_order_pembelian',
+
                     'convertFormat' => true,
+
                     'pluginOptions' => [
+
                         'locale' => [
+
                             'format' => 'd-m-Y'
+
                         ],
                         'todayHighlight' => true
+
                     ],
+
                 ]),
                 'value'     => function ($model) {
-                    // return Yii::$app->formatter->asDate($model->tanggal_order_pembelian, 'php:d-m-Y');
                     if ($model->tanggal_order_pembelian != null) {
                         # code...
-                        return tanggal_indo($model->tanggal_order_pembelian);
+                        return tanggal_indo($model->tanggal_order_pembelian, true);
                     }
                 }
             ],
@@ -84,8 +91,7 @@ $this->title = 'Daftar Order Pembelian';
                 'format' => 'raw',
                 'filter' => array(
                     1 => 'Order pembelian',
-                    // 2 => 'Pembelian',
-                    // 3 => 'Pengiriman',
+                    2 => 'Pembelian',
                     4 => 'Selesai',
                     5 => 'Proses Penerimaan',
                     6 => 'Ditolak',

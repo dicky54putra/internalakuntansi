@@ -89,6 +89,15 @@ $this->params['breadcrumbs'][] = $this->title;
             'nomor_pengajuan_biaya',
             [
                 'attribute' => 'tanggal_pengajuan',
+                'headerOptions' => ['style' => 'color:#337ab7'],
+                'filterType' => GridView::FILTER_DATE,
+                'filterWidgetOptions' => [
+                    'pluginOptions' => [
+                        'format' => 'dd-mm-yyyy',
+                        'autoclose' => true,
+                        'todayHighlight' => true,
+                    ]
+                ],
                 'value' => function ($model) {
                     return tanggal_indo($model->tanggal_pengajuan, true);
                 }
@@ -217,6 +226,15 @@ $this->params['breadcrumbs'][] = $this->title;
             'alasan_reject:ntext',
             [
                 'attribute' => 'tanggal_jatuh_tempo',
+                'headerOptions' => ['style' => 'color:#337ab7'],
+                'filterType' => GridView::FILTER_DATE,
+                'filterWidgetOptions' => [
+                    'pluginOptions' => [
+                        'format' => 'dd-mm-yyyy',
+                        'autoclose' => true,
+                        'todayHighlight' => true,
+                    ]
+                ],
                 'value' => function ($model) {
                     if (!empty($model->tanggal_jatuh_tempo)) {
                         # code...

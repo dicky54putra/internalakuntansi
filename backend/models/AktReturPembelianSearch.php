@@ -17,8 +17,8 @@ class AktReturPembelianSearch extends AktReturPembelian
     public function rules()
     {
         return [
-            [['id_retur_pembelian', 'id_pembelian', 'status_retur'], 'integer'],
-            [['no_retur_pembelian', 'tanggal_retur_pembelian'], 'safe'],
+            [['id_retur_pembelian',  'status_retur'], 'integer'],
+            [['no_retur_pembelian', 'tanggal_retur_pembelian', 'id_pembelian'], 'safe'],
         ];
     }
 
@@ -40,7 +40,7 @@ class AktReturPembelianSearch extends AktReturPembelian
      */
     public function search($params)
     {
-        $query = AktReturPembelian::find();
+        $query = AktReturPembelian::find()->orderBy(['no_retur_pembelian' => SORT_DESC]);
 
         // add conditions that should always apply here
 
@@ -56,10 +56,14 @@ class AktReturPembelianSearch extends AktReturPembelian
             return $dataProvider;
         }
 
+        if (!empty($this->tanggal_retur_pembelian)) {
+            $query->andFilterWhere(["date_format(tanggal_retur_pembelian, '%d-%m-%Y')" => $this->tanggal_retur_pembelian]);
+        }
+
         // grid filtering conditions
         $query->andFilterWhere([
             'id_retur_pembelian' => $this->id_retur_pembelian,
-            'tanggal_retur_pembelian' => $this->tanggal_retur_pembelian,
+            // 'tanggal_retur_pembelian' => $this->tanggal_retur_pembelian,
             'id_pembelian' => $this->id_pembelian,
             'status_retur' => $this->status_retur,
         ]);

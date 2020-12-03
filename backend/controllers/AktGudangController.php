@@ -5,9 +5,11 @@ namespace backend\controllers;
 use Yii;
 use backend\models\AktGudang;
 use backend\models\AktGudangSearch;
+use Error;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\helpers\Json;
 
 /**
  * AktGudangController implements the CRUD actions for AktGudang model.
@@ -66,26 +68,12 @@ class AktGudangController extends Controller
     {
         $model = new AktGudang();
 
-        // $kode = AktGudang::find()->select(['max(kode_gudang)+1 as kode_gudang'])->one();
-        // $model->kode_gudang = ($kode->kode_gudang == "") ? 1 : $kode->kode_gudang ;
         $total = AktGudang::find()->count();
         $nomor = 'GD' . str_pad($total + 1, 3, "0", STR_PAD_LEFT);
 
         if ($model->load(Yii::$app->request->post())) {
-            $create_in_item =  Yii::$app->request->post('create-in-item');
-            $id =  Yii::$app->request->post('id');
-            $update_in_item =  Yii::$app->request->post('update-in-item');
-            $id_update =  Yii::$app->request->post('id_update');
-            if (isset($create_in_item)) {
-                $model->save();
-                return $this->redirect(['akt-item-stok/create', 'id' => $id]);
-            } else if (isset($update_in_item)) {
-                $model->save();
-                return $this->redirect(['akt-item-stok/update', 'id' => $id_update]);
-            } else {
-                $model->save();
-                return $this->redirect(['view', 'id' => $model->id_gudang]);
-            }
+            $model->save();
+            return $this->redirect(['view', 'id' => $model->id_gudang]);
         }
         return $this->render('create', [
             'model' => $model,
@@ -179,5 +167,37 @@ class AktGudangController extends Controller
         }
 
         throw new NotFoundHttpException('The requested page does not exist.');
+    }
+
+    public function actionGetGudang($sort)
+    {
+        $data = AktGudang::find()->orderBy([
+            'id_gudang' => $sort == 1 ? SORT_DESC : SORT_ASC
+        ])->all();
+        echo Json::encode($data);
+    }
+
+    public function actionGetKodeGudang()
+    {
+        $total_gudang = AktGudang::find()->count();
+        $nomor_gudang = 'GD' . str_pad($total_gudang + 1, 3, "0", STR_PAD_LEFT);
+
+        echo Json::encode($nomor_gudang);
+    }
+    public function actionCreateGudang()
+    {
+        $model = new AktGudang();
+        $params = Yii::$app->getRequest()->getBodyParams();
+
+        Yii::trace(print_r($params, true), __METHOD__);
+        $model->load($params, '');
+
+        if ($model->save()) {
+            Yii::$app->response->statusCode = 201;
+            echo Json::encode('Data Gudang Berhasil Ditambahkan');
+        } else {
+            Yii::error($model->getErrors(), __METHOD__);
+            throw new Error("Something wen't wrong");
+        }
     }
 }

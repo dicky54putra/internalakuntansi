@@ -52,10 +52,6 @@ $count_query_detail = AktPembelianDetail::find()->where(['id_pembelian' => $mode
         $cek_detail = AktPembelianDetail::find()
             ->where(['id_pembelian' => $model->id_pembelian])
             ->count();
-
-        // echo $model->jenis_bayar;
-        // die;
-
         ?>
 
 
@@ -69,7 +65,9 @@ $count_query_detail = AktPembelianDetail::find()->where(['id_pembelian' => $mode
                     'method' => 'post',
                 ],
             ]) ?>
+
             <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modal-default"><span class="glyphicon glyphicon-edit"></span> Ubah Order Pembelian</button>
+
         <?php } ?>
 
         <?php if ($cek_detail > 0 && $model->jenis_bayar != null) { ?>
@@ -134,6 +132,16 @@ $count_query_detail = AktPembelianDetail::find()->where(['id_pembelian' => $mode
                                             if (!empty($model->tanggal_order_pembelian)) {
                                                 # code...
                                                 return tanggal_indo($model->tanggal_order_pembelian, true);
+                                            }
+                                        }
+                                    ],
+                                    [
+                                        'attribute' => 'tanggal_estimasi',
+                                        'label' => 'Tanggal Estimasi',
+                                        'value' => function ($model) {
+                                            if (!empty($model->tanggal_estimasi)) {
+                                                # code...
+                                                return tanggal_indo($model->tanggal_estimasi, true);
                                             }
                                         }
                                     ],
@@ -347,7 +355,7 @@ $count_query_detail = AktPembelianDetail::find()->where(['id_pembelian' => $mode
                                                 </tbody>
                                                 <tfoot>
                                                     <tr>
-                                                        <th colspan="6" style="text-align: right;">Total</th>
+                                                        <th colspan="6" style="text-align: right;">Total Harga</th>
                                                         <th style="text-align: right;"><?= ribuan($totalan_total) ?></th>
                                                     </tr>
                                                     <tr>
@@ -378,6 +386,13 @@ $count_query_detail = AktPembelianDetail::find()->where(['id_pembelian' => $mode
                                                         <th colspan="6" style="text-align: right;">Materai</th>
                                                         <th style="text-align: right;"><?= ribuan($model->materai) ?></th>
                                                     </tr>
+                                                    <tr>
+                                                        <?php
+                                                        $grand_total =  $model->ongkir + $pajak + $totalan_total - $diskon + $model->materai;
+                                                        ?>
+                                                        <th colspan="6" style="text-align: right;">Grand Total</th>
+                                                        <th style="text-align: right;"><?= ribuan($grand_total) ?></th>
+                                                    </tr>
 
                                                     <tr>
                                                         <?php
@@ -387,14 +402,12 @@ $count_query_detail = AktPembelianDetail::find()->where(['id_pembelian' => $mode
                                                         <th colspan="6" style="text-align: right;">Uang Muka <?= $akt_kas_bank == false ? '' : ' | ' . $akt_kas_bank['keterangan'] ?> </th>
                                                         <th style="text-align: right;"><?= ribuan($model->uang_muka) ?> </th>
                                                     </tr>
-
                                                     <tr>
-                                                        <?php
-                                                        $grand_total = $model->materai + $model->ongkir + $pajak + $totalan_total - $diskon - $model->uang_muka;
-                                                        ?>
-                                                        <th colspan="6" style="text-align: right;">Grand Total</th>
-                                                        <th style="text-align: right;"><?= ribuan($grand_total) ?></th>
+                                                        <th colspan="6" style="text-align: right;">Sisa Dana yang Masih Harus Dibayarkan</th>
+                                                        <th style="text-align: right;"><?= ribuan($grand_total - $model->uang_muka) ?></th>
                                                     </tr>
+
+
                                                 </tfoot>
                                             </table>
                                         </div>
@@ -493,7 +506,7 @@ $count_query_detail = AktPembelianDetail::find()->where(['id_pembelian' => $mode
                     'action' => ['akt-pembelian/view', 'aksi' => 'ubah_data_pembelian',  'id' => $model->id_pembelian],
                 ]); ?>
                 <div class="modal-body">
-                    <label class="label label-primary col-xs-12" style="font-size: 15px;">Data Order Pembelian</label>
+                    <label class="label label-primary col-xs-12" style="font-size: 15px; padding:10px; margin:20px 0;">Data Order Pembelian</label>
                     <div class="row">
                         <div class="col-md-6">
                             <div class="form-grop">
@@ -520,6 +533,7 @@ $count_query_detail = AktPembelianDetail::find()->where(['id_pembelian' => $mode
                                         'clientOptions' => [
                                             'changeMonth' => true,
                                             'changeYear' => true,
+                                            'minDate' => $model->tanggal_order_pembelian,
                                         ],
                                         'dateFormat' => 'yyyy-MM-dd',
                                         'options' => ['class' => 'form-control', 'required' => 'on', 'autocomplete' => 'off']
@@ -565,84 +579,90 @@ $count_query_detail = AktPembelianDetail::find()->where(['id_pembelian' => $mode
                             </div>
                         </div>
                     </div>
-                    <label class="label label-primary col-xs-12" style="font-size: 15px;">Data Perhitungan Pembelian</label>
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <?= $form->field($model, 'ongkir')->widget(\yii\widgets\MaskedInput::className(), ['clientOptions' => ['alias' => 'decimal', 'groupSeparator' => '.', 'autoGroup' => true, 'removeMaskOnSubmit' => true, 'rightAlign' => false, 'min' => 0], 'options' => ['value' => $model->ongkir == '' ? 0 : $model->ongkir]]); ?>
-                            </div>
+                    <?php if ($count_query_detail > 0) { ?>
+                        <label class="label label-primary col-xs-12" style="font-size: 15px; padding:10px; margin:20px 0;">Data Perhitungan Pembelian</label>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <?= $form->field($model, 'ongkir')->textInput(['value' => $model->ongkir == '' ? 0 : $model->ongkir, 'autocomplete' => 'off', 'class' => 'ongkir_pembelian form-control', 'pattern' => '[+-]?([0-9]*[.])?[0-9]+'])->label('Ongkir') ?>
+                                </div>
 
-                            <div class="form-group">
-                                <?= $form->field($model, 'diskon')->textInput(['value' => $model->diskon == '' ? 0 : $model->diskon, 'autocomplete' => 'off', 'pattern' => '[+-]?([0-9]*[.])?[0-9]+', 'id' => 'diskon-floating'])->label('Diskon %') ?>
-                            </div>
+                                <div class="form-group">
+                                    <?= $form->field($model, 'diskon')->textInput(['value' => $model->diskon == '' ? 0 : $model->diskon, 'autocomplete' => 'off', 'pattern' => '[+-]?([0-9]*[.])?[0-9]+', 'id' => 'diskon-floating', 'class' => 'diskon-pembelian form-control'])->label('Diskon %') ?>
+                                </div>
 
-                            <div class="form-group">
-                                <div class="row">
-                                    <div class="col-md-12">
-                                        <?= $form->field($model, 'uang_muka')->textInput(['value' => $model->uang_muka == '' ? 0 : $model->uang_muka, 'autocomplete' => 'off'])->label('Uang Muka') ?>
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <?= $form->field($model, 'uang_muka')->textInput(['value' => $model->uang_muka == '' ? 0 : $model->uang_muka, 'autocomplete' => 'off'])->label('Uang Muka') ?>
+                                        </div>
+                                        <div class="col-md-12 kas-bank style-kas-bank">
+                                            <?= $form->field($model, 'id_kas_bank')->widget(Select2::classname(), [
+                                                'data' => $data_kas_bank,
+                                                'language' => 'en',
+                                                'options' => ['placeholder' => 'Pilih Kas Bank'],
+                                                'pluginOptions' => [
+                                                    'allowClear' => true,
+
+                                                ],
+                                            ])->label('Kas Bank')
+                                            ?>
+                                        </div>
                                     </div>
-                                    <div class="col-md-12 kas-bank style-kas-bank">
-                                        <?= $form->field($model, 'id_kas_bank')->widget(Select2::classname(), [
-                                            'data' => $data_kas_bank,
-                                            'language' => 'en',
-                                            'options' => ['placeholder' => 'Pilih Kas Bank'],
-                                            'pluginOptions' => [
-                                                'allowClear' => true,
 
-                                            ],
-                                        ])->label('Kas Bank')
-                                        ?>
-                                    </div>
+                                </div>
+
+
+                                <div class="form-group">
+                                    <table>
+                                        <tr>
+                                            <td style="height: 8px;"></td>
+                                        </tr>
+                                    </table>
+                                    <?= $form->field($model, 'pajak')->checkbox(['class' => 'pajak_pembelian']) ?>
                                 </div>
 
                             </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <?= $form->field($model, 'jenis_bayar')->dropDownList(
+                                        array(1 => "CASH", 2 => "CREDIT"),
+                                        [
+                                            'prompt' => 'Pilih Jenis Pembayaran',
+                                            'required' => $count_query_detail > 0 ? 'on' : 'off',
+                                        ]
+                                    ) ?>
+                                </div>
 
+                                <div class="form-group">
+                                    <?= $form->field($model, 'jatuh_tempo', ['options' => ['id' => 'jatuh_tempo', 'hidden' => 'yes']])->dropDownList(array(
+                                        15 => 15,
+                                        30 => 30,
+                                        45 => 45,
+                                        60 => 60,
+                                    ), ['prompt' => 'Pilih Jatuh Tempo']) ?>
+                                </div>
 
-                            <div class="form-group">
-                                <table>
-                                    <tr>
-                                        <td style="height: 8px;"></td>
-                                    </tr>
-                                </table>
-                                <?= $form->field($model, 'pajak')->checkbox() ?>
-                            </div>
+                                <div class="form-group">
+                                    <?= $form->field($model, 'tanggal_tempo', ['options' => ['id' => 'tanggal_tempo', 'hidden' => 'yes']])->textInput(['readonly' => true]) ?>
+                                    <?= $form->field($model, 'id_pembelian')->textInput(['type' => 'hidden', 'readonly' => true, 'required' => 'on', 'autocomplete' => 'off', 'id' => 'id_pembelian'])->label(FALSE) ?>
+                                </div>
 
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <?= $form->field($model, 'jenis_bayar')->dropDownList(
-                                    array(1 => "CASH", 2 => "CREDIT"),
-                                    [
-                                        'prompt' => 'Pilih Jenis Pembayaran',
-                                        'required' => true,
-                                    ]
-                                ) ?>
-                            </div>
+                                <div class="form-group">
+                                    <?= $form->field($model, 'materai')->textInput(['value' => $model->materai == '' ? 0 : $model->materai, 'autocomplete' => 'off', 'class' => 'materai-pembelian form-control', 'pattern' => '[+-]?([0-9]*[.])?[0-9]+'])->label('Materai') ?>
+                                </div>
 
-                            <div class="form-group">
-                                <?= $form->field($model, 'jatuh_tempo', ['options' => ['id' => 'jatuh_tempo', 'hidden' => 'yes']])->dropDownList(array(
-                                    15 => 15,
-                                    30 => 30,
-                                    45 => 45,
-                                    60 => 60,
-                                ), ['prompt' => 'Pilih Jatuh Tempo']) ?>
-                            </div>
-
-                            <div class="form-group">
-                                <?= $form->field($model, 'tanggal_tempo', ['options' => ['id' => 'tanggal_tempo', 'hidden' => 'yes']])->textInput(['readonly' => true]) ?>
-                                <?= $form->field($model, 'id_pembelian')->textInput(['type' => 'hidden', 'readonly' => true, 'required' => 'on', 'autocomplete' => 'off', 'id' => 'id_pembelian'])->label(FALSE) ?>
-                            </div>
-
-                            <div class="form-group">
-                                <?= $form->field($model, 'materai')->widget(\yii\widgets\MaskedInput::className(), ['clientOptions' => ['alias' => 'decimal', 'groupSeparator' => '.', 'autoGroup' => true, 'removeMaskOnSubmit' => true, 'rightAlign' => false, 'min' => 0], 'options' => ['value' => $model->materai == '' ? 0 : $model->materai]]); ?>
-                            </div>
-
-                            <div class="form-group">
-                                <label for="total_pembelian_detail">Total pembelian Barang</label>
-                                <?= Html::input("text", "total_pembelian_detail", ribuan($model_pembelian_detail), ['class' => 'form-control', 'readonly' => true, 'id' => 'total_pembelian_detail']) ?>
+                                <div class="form-group">
+                                    <label for="total_pembelian_detail">Total pembelian Barang</label>
+                                    <?= Html::input("text", "total_pembelian_detail", ribuan($model_pembelian_detail), ['class' => 'form-control', 'readonly' => true, 'id' => 'total_pembelian_detail']) ?>
+                                </div>
+                                <div class="form-group">
+                                    <label for="total_perhitungan">Kekurangan Pembayaran</label>
+                                    <input id="total_perhitungan" readonly class="form-control" name="kekurangan_pembayaran">
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    <?php } ?>
 
                 </div>
                 <div class="modal-footer">
@@ -706,6 +726,8 @@ $count_query_detail = AktPembelianDetail::find()->where(['id_pembelian' => $mode
 
 <?php
 $script = <<< JS
+
+
     $(document).ready(function(){ 
 
     if ($("#aktpembelian-jenis_bayar").val() == "1")
@@ -745,6 +767,10 @@ $script = <<< JS
     }
     
     });
+
+
+
+    
     });
     
 JS;
@@ -764,22 +790,13 @@ $this->registerJs($script);
             e.target.setCustomValidity("");
         };
     }
+
     const kasBank = document.querySelector('.kas-bank');
     const uangMuka = document.querySelector('#aktpembelian-uang_muka');
 
     if (uangMuka.value != 0) {
         kasBank.classList.remove('style-kas-bank')
     }
-
-    uangMuka.addEventListener("input", function(e) {
-        uangMuka.value = formatRupiah(this.value);
-        let val = e.target.value;
-        if (val == '' || val == 0) {
-            kasBank.classList.add('style-kas-bank')
-        } else(
-            kasBank.classList.remove('style-kas-bank')
-        )
-    });
 
     function formatRupiah(angka, prefix) {
         var number_string = angka.replace(/[^,\d]/g, '').toString(),
@@ -796,4 +813,83 @@ $this->registerJs($script);
         rupiah = split[1] != undefined ? rupiah + ',' + split[1] : rupiah;
         return prefix == undefined ? rupiah : (rupiah ? 'Rp. ' + rupiah : '');
     }
+
+
+
+    const total_pembelian_detail = document.querySelector('#total_pembelian_detail');
+
+    function setValueDataPerhitungan(
+        ongkir = 0,
+        diskon = 0,
+        uang_muka = 0,
+        pajak = false,
+        materai = 0
+    ) {
+
+        let total = total_pembelian_detail.value.split('.').join("");
+        let hilang_titik = uang_muka.split('.').join("")
+
+
+        if (ongkir == '' || ongkir == " " || ongkir == null ||
+            diskon == '' || diskon == " " || diskon == null ||
+            materai == '' || materai == " " || materai == null ||
+            uang_muka == '' || uang_muka == " " || uang_muka == null
+        ) {
+
+            ongkir = 0;
+            diskon = 0;
+            materai = 0;
+            uang_muka = 0;
+        }
+
+        let diskonRupiah;
+        if (pajak == true) {
+            diskonRupiah = diskon / 100 * total;
+            let totalPajak = total - diskonRupiah;
+            pajak = 10 / 100 * totalPajak;
+        } else {
+            pajak = 0;
+            diskonRupiah = diskon / 100 * total;
+        }
+
+        let perhitungan = document.querySelector("#total_perhitungan");
+
+        hitung = parseInt(total) + parseInt(ongkir) + pajak + parseInt(materai) - parseInt(diskonRupiah) - parseInt(hilang_titik);
+        let hitung2 = Math.floor(hitung);
+        perhitungan.value = formatRupiah(String(hitung2));
+    }
+
+    const materai = document.querySelector('.materai-pembelian');
+    const diskon = document.querySelector('.diskon-pembelian');
+    const ongkir = document.querySelector('.ongkir_pembelian');
+    const pajak = document.querySelector('.pajak_pembelian');
+
+    diskon.addEventListener("input", (e) => {
+        setValueDataPerhitungan(ongkir.value.split('.').join(""), diskon.value, uangMuka.value, pajak.checked, materai.value.split('.').join(""));
+    })
+
+    uangMuka.addEventListener("input", (e) => {
+        let val = e.target.value;
+        uangMuka.value = formatRupiah(val);
+        if (val == '' || val == 0) {
+            kasBank.classList.add('style-kas-bank')
+        } else(
+            kasBank.classList.remove('style-kas-bank')
+        )
+        setValueDataPerhitungan(ongkir.value.split('.').join(""), diskon.value, uangMuka.value, pajak.checked, materai.value.split('.').join(""));
+    })
+
+    materai.addEventListener("input", (e) => {
+        materai.value = formatRupiah(e.target.value);
+        setValueDataPerhitungan(ongkir.value.split('.').join(""), diskon.value, uangMuka.value, pajak.checked, materai.value.split('.').join(""));
+    })
+
+    ongkir.addEventListener("input", (e) => {
+        ongkir.value = formatRupiah(e.target.value);
+        setValueDataPerhitungan(ongkir.value.split('.').join(""), diskon.value, uangMuka.value, pajak.checked, materai.value.split('.').join(""));
+    })
+
+    pajak.addEventListener("change", (e) => {
+        setValueDataPerhitungan(ongkir.value.split('.').join(""), diskon.value, uangMuka.value, pajak.checked, materai.value.split('.').join(""));
+    })
 </script>

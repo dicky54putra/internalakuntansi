@@ -17,8 +17,8 @@ class AktJurnalUmumSearch extends AktJurnalUmum
     public function rules()
     {
         return [
-            [['id_jurnal_umum', 'no_jurnal_umum', 'tanggal', 'tipe'], 'integer'],
-            [['keterangan'], 'safe'],
+            [['id_jurnal_umum'], 'integer'],
+            [['keterangan', 'no_jurnal_umum', 'tanggal', 'tipe'], 'safe'],
         ];
     }
 
@@ -56,14 +56,18 @@ class AktJurnalUmumSearch extends AktJurnalUmum
             return $dataProvider;
         }
 
+        if (!empty($this->tanggal)) {
+            $query->andFilterWhere(["date_format(tanggal, '%d-%m-%Y')" => $this->tanggal]);
+        }
+
         // grid filtering conditions
         $query->andFilterWhere([
             'id_jurnal_umum' => $this->id_jurnal_umum,
-            'no_jurnal_umum' => $this->no_jurnal_umum,
-            'tanggal' => $this->tanggal,
-            'tipe' => $this->tipe,
-            'keterangan' => $this->keterangan,
         ]);
+
+        $query->andFilterWhere(['like', 'no_jurnal_umum', $this->no_jurnal_umum])
+            ->andFilterWhere(['like', 'keterangan', $this->keterangan])
+            ->andFilterWhere(['like', 'tipe', $this->tipe]);
 
         return $dataProvider;
     }
@@ -85,12 +89,13 @@ class AktJurnalUmumSearch extends AktJurnalUmum
             // $query->where('0=1');
             return $dataProvider;
         }
-
+        if (!empty($this->tanggal)) {
+            $query->andFilterWhere(["date_format(tanggal, '%d-%m-%Y')" => $this->tanggal]);
+        }
         // grid filtering conditions
         $query->andFilterWhere([
             'id_jurnal_umum' => $this->id_jurnal_umum,
             'no_jurnal_umum' => $this->no_jurnal_umum,
-            'tanggal' => $this->tanggal,
             'tipe' => $this->tipe,
             'keterangan' => $this->keterangan,
         ]);

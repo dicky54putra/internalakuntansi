@@ -75,12 +75,17 @@ class AktItemHargaJualController extends Controller
 
         $model->id_mata_uang = 1;
 
-        $data_mata_uang = ArrayHelper::map(AktMataUang::find()->all(), 'id_mata_uang', 'mata_uang');
-        $data_level_harga = ArrayHelper::map(AktLevelHarga::find()->all(), 'id_level_harga', 'keterangan');
-
         $model_level_harga = new AktLevelHarga();
-        $total_level_harga = AktLevelHarga::find()->count();
-        $nomor_level_harga = 'LH' . str_pad($total_level_harga + 1, 3, "0", STR_PAD_LEFT);
+        $model_mata_uang = new AktMataUang();
+
+
+        $data_mata_uang = ArrayHelper::map(AktMataUang::find()->all(), 'id_mata_uang', function ($model_mata_uang) {
+            return $model_mata_uang->kode_mata_uang . ' - ' . $model_mata_uang->mata_uang;
+        });
+        $data_level_harga = ArrayHelper::map(AktLevelHarga::find()->all(), 'id_level_harga', function ($model_level_harga) {
+            return $model_level_harga->kode_level_harga . ' - ' . $model_level_harga->keterangan;
+        });
+
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['akt-item/view', 'id' => $model->id_item, '#' => 'harga-jual']);
@@ -91,7 +96,6 @@ class AktItemHargaJualController extends Controller
             'id_item' => $id_item,
             'data_mata_uang' => $data_mata_uang,
             'data_level_harga' => $data_level_harga,
-            'nomor_level_harga' => $nomor_level_harga,
             'model_level_harga' => $model_level_harga
         ]);
     }
@@ -106,14 +110,16 @@ class AktItemHargaJualController extends Controller
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
-
-        $id_item = $model->id_item;
-        $data_mata_uang = ArrayHelper::map(AktMataUang::find()->all(), 'id_mata_uang', 'mata_uang');
-        $data_level_harga = ArrayHelper::map(AktLevelHarga::find()->all(), 'id_level_harga', 'keterangan');
-
         $model_level_harga = new AktLevelHarga();
-        $total_level_harga = AktLevelHarga::find()->count();
-        $nomor_level_harga = 'LH' . str_pad($total_level_harga + 1, 3, "0", STR_PAD_LEFT);
+        $id_item = $model->id_item;
+
+        $data_mata_uang = ArrayHelper::map(AktMataUang::find()->all(), 'id_mata_uang', function ($model_mata_uang) {
+            return $model_mata_uang->kode_mata_uang . ' - ' . $model_mata_uang->mata_uang;
+        });
+        $data_level_harga = ArrayHelper::map(AktLevelHarga::find()->all(), 'id_level_harga', function ($model_level_harga) {
+            return $model_level_harga->kode_level_harga . ' - ' . $model_level_harga->keterangan;
+        });
+
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['akt-item/view', 'id' => $model->id_item, '#' => 'harga-jual']);
@@ -123,7 +129,6 @@ class AktItemHargaJualController extends Controller
             'model' => $model,
             'data_mata_uang' => $data_mata_uang,
             'data_level_harga' => $data_level_harga,
-            'nomor_level_harga' => $nomor_level_harga,
             'model_level_harga' => $model_level_harga,
             'id_item' => $id_item,
         ]);

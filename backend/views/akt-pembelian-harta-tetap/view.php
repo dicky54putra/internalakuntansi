@@ -14,6 +14,7 @@ use backend\models\Login;
 use backend\models\AktLevelHarga;
 
 use backend\models\AktPembelianHartaTetap;
+use backend\models\AktPembelianHartaTetapDetail;
 use kartik\select2\Select2;
 use yii\jui\AutoComplete;
 use yii\web\JsExpression;
@@ -22,6 +23,10 @@ use yii\widgets\ActiveForm;
 
 /* @var $this yii\web\View */
 /* @var $model backend\models\AktPembelianHartaTetap */
+
+$cek_detail = AktPembelianHartaTetapDetail::find()
+    ->where(['id_pembelian_harta_tetap' => $model->id_pembelian_harta_tetap])
+    ->count();
 
 $this->title = "Detail Pembelian Harta Tetap : " . $model->no_pembelian_harta_tetap;
 ?>
@@ -231,7 +236,7 @@ $this->title = "Detail Pembelian Harta Tetap : " . $model->no_pembelian_harta_te
                                                         <td><?= ribuan($data['residu']) ?></td>
                                                         <td><?= $data['diskon'] ?></td>
                                                         <td><?= $data['keterangan'] ?></td>
-                                                        <td><?= ribuan($sub_total) ?> </td>
+                                                        <td align="right"><?= ribuan($sub_total) ?> </td>
                                                         <?php if ($model->status == 1 && $approve == 0) { ?>
                                                             <td>
                                                                 <?= Html::a('<span class="glyphicon glyphicon-trash"></span>', ['akt-pembelian-harta-tetap-detail/delete', 'id' => $data['id_pembelian_harta_tetap_detail']], [
@@ -249,14 +254,14 @@ $this->title = "Detail Pembelian Harta Tetap : " . $model->no_pembelian_harta_te
                                             <tfoot>
                                                 <tr>
 
-                                                    <th colspan="7" style="text-align: right;">Total</th>
+                                                    <th colspan="7" style="text-align: right;">Total Harga</th>
                                                     <th style="text-align: right;"><?= ribuan($total_pembelian) ?></th>
                                                 </tr>
                                                 <tr>
                                                     <th colspan="7" style="text-align: right;">Diskon <?= $model->diskon ?> %</th>
                                                     <th style="text-align: right;">
                                                         <?php
-                                                        $diskon = ($model->diskon * $total) / 100;
+                                                        $diskon = ($model->diskon * $total_pembelian) / 100;
                                                         echo ribuan($diskon);
                                                         ?>
                                                     </th>
@@ -265,8 +270,7 @@ $this->title = "Detail Pembelian Harta Tetap : " . $model->no_pembelian_harta_te
                                                     <th colspan="7" style="text-align: right;">Pajak 10 % (<?= ($model->pajak == NULL) ? '' : $retVal = ($model->pajak == 1) ? '<span class="glyphicon glyphicon-ok"></span>' : '<span class="glyphicon glyphicon-remove"></span>' ?>)</th>
                                                     <th style="text-align: right;">
                                                         <?php
-                                                        $diskon = ($model->diskon * $total) / 100;
-                                                        $pajak_ = (($total - $diskon) * 10) / 100;
+                                                        $pajak_ = (($total_pembelian - $diskon) * 10) / 100;
                                                         $pajak = ($model->pajak == 1) ? $pajak_ : 0;
                                                         echo ribuan($pajak);
                                                         ?>
@@ -281,6 +285,13 @@ $this->title = "Detail Pembelian Harta Tetap : " . $model->no_pembelian_harta_te
                                                     <th colspan="7" style="text-align: right;">Ongkir</th>
                                                     <th style="text-align: right;"><?= ribuan($model->ongkir) ?></th>
                                                 </tr>
+                                                <tr>
+                                                    <?php
+                                                    $grand_total = $model->materai  + $pajak + $total_pembelian - $diskon  + $model->ongkir;
+                                                    ?>
+                                                    <th colspan="7" style="text-align: right;">Grand Total</th>
+                                                    <th style="text-align: right;"><?= ribuan($grand_total) ?></th>
+                                                </tr>
 
                                                 <tr>
                                                     <?php
@@ -290,14 +301,12 @@ $this->title = "Detail Pembelian Harta Tetap : " . $model->no_pembelian_harta_te
                                                     <th colspan="7" style="text-align: right;">Uang Muka <?= $akt_kas_bank == false ? '' : ' | ' . $akt_kas_bank['keterangan'] ?> </th>
                                                     <th style="text-align: right;"><?= ribuan($model->uang_muka) ?> </th>
                                                 </tr>
-
                                                 <tr>
-                                                    <?php
-                                                    $grand_total = $model->materai  + $pajak + $total_pembelian - $diskon - $model->uang_muka + $model->ongkir;
-                                                    ?>
-                                                    <th colspan="7" style="text-align: right;">Grand Total</th>
-                                                    <th style="text-align: right;"><?= ribuan($grand_total) ?></th>
+                                                    <th colspan="7" style="text-align: right;">Sisa Dana yang Masih Harus Dibayarkan</th>
+                                                    <th style="text-align: right;"><?= ribuan($grand_total - $model->uang_muka) ?></th>
                                                 </tr>
+
+
                                             </tfoot>
                                         </table>
                                     </div>
@@ -333,7 +342,7 @@ $this->title = "Detail Pembelian Harta Tetap : " . $model->no_pembelian_harta_te
                     'action' => ['ubah-data-pembelian', 'id' => $model->id_pembelian_harta_tetap],
                     'method' => 'post',
                 ]); ?>
-                <label class="label label-primary col-xs-12" style="font-size: 15px;">Data Pembelian Harta Tetap</label>
+                <label class="label label-primary col-xs-12" style="font-size: 15px; padding:10px; margin:20px 0;">Data Pembelian Harta Tetap</label>
                 <div class="row">
                     <div class="col-md-6">
                         <div class="form-grop">
@@ -378,85 +387,90 @@ $this->title = "Detail Pembelian Harta Tetap : " . $model->no_pembelian_harta_te
 
                     </div>
                 </div>
-                <label class="label label-primary col-xs-12" style="font-size: 15px;">Data Perhitungan Pembelian</label>
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <?= $form->field($model, 'diskon')->textInput(['type' => 'number', 'value' => $model->diskon == '' ? 0 : $model->diskon, 'autocomplete' => 'off'])->label('Diskon %') ?>
-                        </div>
 
-                        <div class="form-group" style="margin-top: -13px;">
-                            <?= $form->field($model, 'ongkir')->widget(\yii\widgets\MaskedInput::className(), ['clientOptions' => ['alias' => 'decimal', 'groupSeparator' => '.', 'autoGroup' => true, 'removeMaskOnSubmit' => true, 'rightAlign' => false, 'min' => 0], 'options' => ['value' => $model->ongkir == '' ? 0 : $model->ongkir]]); ?>
-                        </div>
+                <?php if ($cek_detail > 0) { ?>
+                    <label class="label label-primary col-xs-12" style="font-size: 15px; padding:10px; margin:20px 0;">Data Perhitungan Pembelian Harta Tetap</label>
+                    <div class="row">
+                        <div class="col-md-6">
 
-                        <div class="form-group">
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <?= $form->field($model, 'uang_muka')->widget(\yii\widgets\MaskedInput::className(), ['clientOptions' => ['alias' => 'decimal', 'groupSeparator' => '.', 'autoGroup' => true, 'removeMaskOnSubmit' => true, 'rightAlign' => false, 'min' => 0], 'options' => ['value' => $model->uang_muka == '' ? 0 : $model->uang_muka]]); ?>
-                                </div>
-                                <div class="col-md-6">
-                                    <?= $form->field($model, 'id_kas_bank')->widget(Select2::classname(), [
-                                        'data' => $data_kas_bank,
-                                        'language' => 'en',
-                                        'options' => ['placeholder' => 'Pilih Kas Bank'],
-                                        'pluginOptions' => [
-                                            'allowClear' => true,
+                            <div class="form-group">
+                                <?= $form->field($model, 'diskon')->textInput(['value' => $model->diskon == '' ? 0 : $model->diskon, 'autocomplete' => 'off', 'pattern' => '[+-]?([0-9]*[.])?[0-9]+', 'id' => 'diskon-floating', 'class' => 'diskon-pembelian form-control'])->label('Diskon %') ?>
+                            </div>
 
-                                        ],
-                                    ])->label('Kas Bank')
-                                    ?>
+                            <div class="form-group">
+                                <?= $form->field($model, 'ongkir')->textInput(['value' => $model->ongkir == '' ? 0 : $model->ongkir, 'autocomplete' => 'off', 'class' => 'ongkir_pembelian form-control'])->label('Ongkir') ?>
+                            </div>
+
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <?= $form->field($model, 'uang_muka')->textInput(['value' => $model->uang_muka == '' ? 0 : $model->uang_muka, 'autocomplete' => 'off']); ?>
+
+                                    </div>
+                                    <div id="kas-bank" class="col-md-12 style-kas-bank">
+                                        <?= $form->field($model, 'id_kas_bank')->widget(Select2::classname(), [
+                                            'data' => $data_kas_bank,
+                                            'language' => 'en',
+                                            'options' => ['placeholder' => 'Pilih Kas Bank Uang Muka', 'id' => 'id_kas_bank'],
+                                            'pluginOptions' => [
+                                                'allowClear' => true,
+                                            ],
+                                        ])
+                                        ?>
+                                    </div>
                                 </div>
                             </div>
 
-                        </div>
+                            <div class="form-group">
+                                <table>
+                                    <tr>
+                                        <td style="height: 8px;"></td>
+                                    </tr>
+                                </table>
+                                <?= $form->field($model, 'pajak')->checkbox(['class' => 'pajak_pembelian']) ?>
+                            </div>
 
-                        <div class="form-group">
-                            <table>
-                                <tr>
-                                    <td style="height: 8px;"></td>
-                                </tr>
-                            </table>
-                            <?= $form->field($model, 'pajak')->checkbox() ?>
                         </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <?= $form->field($model, 'jenis_bayar')->dropDownList(
+                                    array(1 => "CASH", 2 => "CREDIT"),
+                                    [
+                                        'prompt' => 'Pilih Jenis Pembayaran',
+                                        'required' => $cek_detail > 0 ? 'on' : 'off',
+                                    ]
+                                ) ?>
+                            </div>
 
+                            <div class="form-group">
+                                <?= $form->field($model, 'jatuh_tempo', ['options' => ['id' => 'jatuh_tempo', 'hidden' => 'yes']])->dropDownList(array(
+                                    15 => 15,
+                                    30 => 30,
+                                    45 => 45,
+                                    60 => 60,
+                                ), ['prompt' => 'Pilih Jatuh Tempo']) ?>
+                            </div>
+
+                            <div class="form-group">
+                                <?= $form->field($model, 'tanggal_tempo', ['options' => ['id' => 'tanggal_tempo', 'hidden' => 'yes']])->textInput(['readonly' => true]) ?>
+                                <?= $form->field($model, 'id_pembelian_harta_tetap')->textInput(['type' => 'hidden', 'readonly' => true, 'required' => 'on', 'autocomplete' => 'off', 'id' => 'id_pembelian_harta_tetap'])->label(FALSE) ?>
+                            </div>
+
+                            <div class="form-group">
+                                <?= $form->field($model, 'materai')->textInput(['value' => $model->materai == '' ? 0 : $model->materai, 'autocomplete' => 'off', 'class' => 'materai-pembelian form-control', 'pattern' => '[+-]?([0-9]*[.])?[0-9]+'])->label('Materai') ?>
+                            </div>
+
+                            <div class="form-group">
+                                <?= $form->field($model, 'total')->textInput(['type' => 'text', 'value' => ribuan($total_pembelian), 'readonly' => true, 'id' => 'total_pembelian_detail'])->label('Total Pembelian Harta Tetap') ?>
+                            </div>
+
+                            <div class="form-group" style="margin-top:20px;">
+                                <label for="total_perhitungan">Kekurangan Pembayaran</label>
+                                <input id="total_perhitungan" readonly class="form-control">
+                            </div>
+                        </div>
                     </div>
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <?= $form->field($model, 'jenis_bayar')->dropDownList(
-                                array(1 => "CASH", 2 => "CREDIT"),
-                                [
-                                    'prompt' => 'Pilih Jenis Pembayaran',
-                                    'required' => 'on',
-                                ]
-                            ) ?>
-                        </div>
-
-                        <div class="form-group">
-                            <?= $form->field($model, 'jatuh_tempo', ['options' => ['id' => 'jatuh_tempo', 'hidden' => 'yes']])->dropDownList(array(
-                                15 => 15,
-                                30 => 30,
-                                45 => 45,
-                                60 => 60,
-                            ), ['prompt' => 'Pilih Jatuh Tempo']) ?>
-                        </div>
-
-                        <div class="form-group">
-                            <?= $form->field($model, 'tanggal_tempo', ['options' => ['id' => 'tanggal_tempo', 'hidden' => 'yes']])->textInput(['readonly' => true]) ?>
-                            <?= $form->field($model, 'id_pembelian_harta_tetap')->textInput(['type' => 'hidden', 'readonly' => true, 'required' => 'on', 'autocomplete' => 'off', 'id' => 'id_pembelian_harta_tetap'])->label(FALSE) ?>
-                        </div>
-
-                        <div class="form-group">
-                            <?= $form->field($model, 'materai')->widget(\yii\widgets\MaskedInput::className(), ['clientOptions' => ['alias' => 'decimal', 'groupSeparator' => '.', 'autoGroup' => true, 'removeMaskOnSubmit' => true, 'rightAlign' => false, 'min' => 0], 'options' => ['value' => $model->materai == '' ? 0 : $model->materai]]); ?>
-                        </div>
-
-
-
-
-                        <div class="form-group">
-                            <?= $form->field($model, 'total')->textInput(['type' => 'text', 'value' => ribuan($grand_total), 'readonly' => true])->label('Total Pembelian Harta Tetap') ?>
-                        </div>
-                    </div>
-                </div>
+                <?php } ?>
 
             </div>
             <div class="modal-footer">
@@ -561,3 +575,119 @@ $script = <<< JS
 JS;
 $this->registerJs($script);
 ?>
+
+<script>
+    const elements = document.querySelectorAll('#diskon-floating');
+    for (var i = 0; i < elements.length; i++) {
+        elements[i].oninvalid = function(e) {
+            e.target.setCustomValidity("");
+            if (!e.target.validity.valid) {
+                e.target.setCustomValidity("Diskon hanya menerima inputan angka dan titik");
+            }
+        };
+        elements[i].oninput = function(e) {
+            e.target.setCustomValidity("");
+        };
+    }
+    const kasBank = document.querySelector('#kas-bank');
+    const uangMuka = document.querySelector('#aktpembelianhartatetap-uang_muka');
+    const idKasBank = document.querySelector('#id_kas_bank');
+
+    if (uangMuka.value != 0) {
+        kasBank.classList.remove('style-kas-bank')
+    }
+
+    function formatRupiah(angka, prefix) {
+        var number_string = angka.replace(/[^,\d]/g, '').toString(),
+            split = number_string.split(','),
+            sisa = split[0].length % 3,
+            rupiah = split[0].substr(0, sisa),
+            ribuan = split[0].substr(sisa).match(/\d{3}/gi);
+
+        if (ribuan) {
+            separator = sisa ? '.' : '';
+            rupiah += separator + ribuan.join('.');
+        }
+
+        rupiah = split[1] != undefined ? rupiah + ',' + split[1] : rupiah;
+        return prefix == undefined ? rupiah : (rupiah ? 'Rp. ' + rupiah : '');
+    }
+
+
+    const total_pembelian_detail = document.querySelector('#total_pembelian_detail');
+
+    function setValueDataPerhitungan(
+        ongkir = 0,
+        diskon = 0,
+        uang_muka = 0,
+        pajak = false,
+        materai = 0
+    ) {
+
+        let total = total_pembelian_detail.value.split('.').join("");
+        let hilang_titik = uang_muka.split('.').join("")
+
+
+        if (ongkir == '' || ongkir == " " || ongkir == null ||
+            diskon == '' || diskon == " " || diskon == null ||
+            materai == '' || materai == " " || materai == null ||
+            uang_muka == '' || uang_muka == " " || uang_muka == null
+        ) {
+
+            ongkir = 0;
+            diskon = 0;
+            materai = 0;
+            uang_muka = 0;
+        }
+
+        let diskonRupiah;
+        if (pajak == true) {
+            diskonRupiah = diskon / 100 * total;
+            let totalPajak = total - diskonRupiah;
+            pajak = 10 / 100 * totalPajak;
+        } else {
+            pajak = 0;
+            diskonRupiah = diskon / 100 * total;
+        }
+
+        let perhitungan = document.querySelector("#total_perhitungan");
+
+        hitung = parseInt(total) + parseInt(ongkir) + pajak + parseInt(materai) - parseInt(diskonRupiah) - parseInt(hilang_titik);
+        let hitung2 = Math.floor(hitung);
+        perhitungan.value = formatRupiah(String(hitung2));
+    }
+
+    const materai = document.querySelector('.materai-pembelian');
+    const diskon = document.querySelector('.diskon-pembelian');
+    const ongkir = document.querySelector('.ongkir_pembelian');
+    const pajak = document.querySelector('.pajak_pembelian');
+
+    diskon.addEventListener("input", (e) => {
+        setValueDataPerhitungan(ongkir.value.split('.').join(""), diskon.value, uangMuka.value, pajak.checked, materai.value.split('.').join(""));
+    })
+
+    uangMuka.addEventListener("input", (e) => {
+        let val = e.target.value;
+        uangMuka.value = formatRupiah(val);
+        if (val == '' || val == 0) {
+            kasBank.classList.add('style-kas-bank')
+        } else(
+            kasBank.classList.remove('style-kas-bank')
+        )
+        setValueDataPerhitungan(ongkir.value.split('.').join(""), diskon.value, uangMuka.value, pajak.checked, materai.value.split('.').join(""));
+    })
+
+    materai.addEventListener("input", (e) => {
+        materai.value = formatRupiah(e.target.value);
+        setValueDataPerhitungan(ongkir.value.split('.').join(""), diskon.value, uangMuka.value, pajak.checked, materai.value.split('.').join(""));
+    })
+
+    ongkir.addEventListener("input", (e) => {
+        ongkir.value = formatRupiah(e.target.value);
+        setValueDataPerhitungan(ongkir.value.split('.').join(""), diskon.value, uangMuka.value, pajak.checked, materai.value.split('.').join(""));
+    })
+
+    pajak.addEventListener("change", (e) => {
+        setValueDataPerhitungan(ongkir.value.split('.').join(""), diskon.value, uangMuka.value, pajak.checked, materai.value.split('.').join(""));
+    })
+</script>

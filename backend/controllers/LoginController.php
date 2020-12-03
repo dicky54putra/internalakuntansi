@@ -36,7 +36,7 @@ class LoginController extends Controller
                 'rules' => [
                     [
                         'allow' => true,
-                        'actions' => ['index', 'create', 'view', 'update', 'delete', 'Profile', 'Hakases',],
+                        'actions' => ['index', 'create', 'view', 'update', 'delete', 'profile', 'hakakses'],
                         'roles' => ['Login'],
                     ],
                 ],

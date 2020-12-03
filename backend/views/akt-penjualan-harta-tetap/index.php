@@ -58,6 +58,15 @@ $this->params['breadcrumbs'][] = $this->title;
             'no_penjualan_harta_tetap',
             [
                 'attribute' => 'tanggal_penjualan_harta_tetap',
+                'headerOptions' => ['style' => 'color:#337ab7'],
+                'filterType' => GridView::FILTER_DATE,
+                'filterWidgetOptions' => [
+                    'pluginOptions' => [
+                        'format' => 'dd-mm-yyyy',
+                        'autoclose' => true,
+                        'todayHighlight' => true,
+                    ]
+                ],
                 'value' => function ($model) {
                     return tanggal_indo($model->tanggal_penjualan_harta_tetap, true);
                 }

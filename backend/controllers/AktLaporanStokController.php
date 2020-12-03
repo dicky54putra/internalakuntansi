@@ -127,20 +127,20 @@ class AktLaporanStokController extends Controller
     {
         $tanggal_awal = Yii::$app->request->post('tanggal_awal');
         $tanggal_akhir = Yii::$app->request->post('tanggal_akhir');
-        $metode = Yii::$app->request->post('metode');
+        $tipe_penyesuaian = Yii::$app->request->post('tipe_penyesuaian');
 
-        $where_metode = "";
-        if ($metode != "") {
+        $tipe_penyesuaian = "";
+        if ($tipe_penyesuaian != "") {
             # code...
-            $where_metode = " AND metode = " . $metode . " ";
+            $tipe_penyesuaian = " AND tipe_penyesuaian = " . $tipe_penyesuaian . " ";
         }
 
-        $count_penyesuaian_stok = AktPenyesuaianStok::find()->where("tanggal_penyesuaian BETWEEN '$tanggal_awal' AND '$tanggal_akhir' $where_metode")->count();
+        $count_penyesuaian_stok = AktPenyesuaianStok::find()->where("tanggal_penyesuaian BETWEEN '$tanggal_awal' AND '$tanggal_akhir' $tipe_penyesuaian")->count();
 
         return $this->render('laporan_penyesuaian_stok', [
             'tanggal_awal' => $tanggal_awal,
             'tanggal_akhir' => $tanggal_akhir,
-            'metode' => $metode,
+            'tipe_penyesuaian' => $tipe_penyesuaian,
             'count_penyesuaian_stok' => $count_penyesuaian_stok,
         ]);
     }
@@ -149,12 +149,12 @@ class AktLaporanStokController extends Controller
     {
         $tanggal_awal = Yii::$app->request->post('tanggal_awal');
         $tanggal_akhir = Yii::$app->request->post('tanggal_akhir');
-        $metode = Yii::$app->request->post('metode');
+        $tipe_penyesuaian = Yii::$app->request->post('tipe_penyesuaian');
 
         return $this->renderPartial('laporan_penyesuaian_stok_cetak', [
             'tanggal_awal' => $tanggal_awal,
             'tanggal_akhir' => $tanggal_akhir,
-            'metode' => $metode,
+            'tipe_penyesuaian' => $tipe_penyesuaian,
         ]);
     }
 
@@ -162,12 +162,12 @@ class AktLaporanStokController extends Controller
     {
         $tanggal_awal = Yii::$app->request->post('tanggal_awal');
         $tanggal_akhir = Yii::$app->request->post('tanggal_akhir');
-        $metode = Yii::$app->request->post('metode');
+        $tipe_penyesuaian = Yii::$app->request->post('tipe_penyesuaian');
 
-        return $this->renderPartial('laporan_penyesuaian_stok_export_excel', [
+        return $this->renderPartial('laporan_penyesuaian_stok_cetak', [
             'tanggal_awal' => $tanggal_awal,
             'tanggal_akhir' => $tanggal_akhir,
-            'metode' => $metode,
+            'tipe_penyesuaian' => $tipe_penyesuaian,
         ]);
     }
 

@@ -86,8 +86,14 @@ class Setting extends \yii\db\ActiveRecord
     {
         $month = date('m');
         $year = date('Y');
+        $jumlah_hari_dalam_bulan = cal_days_in_month(0, $month, $year);
 
-        $tanggal = Yii::$app->db->createCommand("SELECT $select FROM $tabel WHERE status >= 3 AND MONTH($select) = $month AND YEAR($select) = $year GROUP BY $select")->query();
+        $tanggal = array();
+
+        for ($i = 1; $i <= $jumlah_hari_dalam_bulan; $i++) {
+            array_push($tanggal, $year . '-' . $month . '-' . $i);
+        }
+        // $tanggal = Yii::$app->db->createCommand("SELECT $select FROM $tabel WHERE status >= 3 AND MONTH($select) = $month AND YEAR($select) = $year GROUP BY $select")->query();
 
         return $tanggal;
     }

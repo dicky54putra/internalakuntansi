@@ -17,8 +17,8 @@ class AktPembelianHartaTetapSearch extends AktPembelianHartaTetap
     public function rules()
     {
         return [
-            [['id_pembelian_harta_tetap', 'no_pembelian_harta_tetap', 'id_supplier', 'id_mata_uang', 'status'], 'integer'],
-            [['tanggal', 'tanggal_selesai', 'keterangan'], 'safe'],
+            [['id_pembelian_harta_tetap'], 'integer'],
+            [['tanggal', 'keterangan', 'no_pembelian_harta_tetap', 'id_supplier', 'id_mata_uang', 'status'], 'safe'],
         ];
     }
 
@@ -40,7 +40,9 @@ class AktPembelianHartaTetapSearch extends AktPembelianHartaTetap
      */
     public function search($params)
     {
-        $query = AktPembelianHartaTetap::find()->orderBy('id_pembelian_harta_tetap desc');
+        $query = AktPembelianHartaTetap::find();
+        $query->joinwith('akt_mitra_bisnis');
+        $query->orderBy('id_pembelian_harta_tetap desc');
 
         // add conditions that should always apply here
 
@@ -49,6 +51,10 @@ class AktPembelianHartaTetapSearch extends AktPembelianHartaTetap
         ]);
 
         $this->load($params);
+
+        if (!empty($this->tanggal)) {
+            $query->andFilterWhere(["date_format(tanggal, '%d-%m-%Y')" => $this->tanggal]);
+        }
 
         if (!$this->validate()) {
             // uncomment the following line if you do not want to return any records when validation fails
@@ -60,20 +66,18 @@ class AktPembelianHartaTetapSearch extends AktPembelianHartaTetap
         $query->andFilterWhere([
             'id_pembelian_harta_tetap' => $this->id_pembelian_harta_tetap,
             'no_pembelian_harta_tetap' => $this->no_pembelian_harta_tetap,
-            'tanggal' => $this->tanggal,
-            'id_supplier' => $this->id_supplier,
-            'pajak' => $this->pajak,
             'status' => $this->status,
         ]);
 
-        $query->andFilterWhere(['like', 'keterangan', $this->keterangan]);
+        $query->andFilterWhere(['like', 'keterangan', $this->keterangan])
+            ->andFilterWhere(['like', 'akt_mitra_bisnis.nama_mitra_bisnis', $this->id_supplier]);
 
         return $dataProvider;
     }
 
     public function searchPembayaranBiaya($params)
     {
-        $query = AktPembelianHartaTetap::find()->where(['status' => '2'])->orderBy('id_pembelian_harta_tetap desc');
+        $query = AktPembelianHartaTetap::find()->joinWith('akt_mitra_bisnis')->where(['status' => '2'])->orderBy('id_pembelian_harta_tetap desc');
 
         // add conditions that should always apply here
 
@@ -89,17 +93,18 @@ class AktPembelianHartaTetapSearch extends AktPembelianHartaTetap
             return $dataProvider;
         }
 
+        if (!empty($this->tanggal)) {
+            $query->andFilterWhere(["date_format(tanggal, '%d-%m-%Y')" => $this->tanggal]);
+        }
+
         // grid filtering conditions
         $query->andFilterWhere([
             'id_pembelian_harta_tetap' => $this->id_pembelian_harta_tetap,
             'no_pembelian_harta_tetap' => $this->no_pembelian_harta_tetap,
-            'tanggal' => $this->tanggal,
-            'id_supplier' => $this->id_supplier,
-            'pajak' => $this->pajak,
-            'status' => $this->status,
         ]);
 
-        $query->andFilterWhere(['like', 'keterangan', $this->keterangan]);
+        $query->andFilterWhere(['like', 'keterangan', $this->keterangan])
+            ->andFilterWhere(['like', 'akt_mitra_bisnis.nama_mitra_bisnis', $this->id_supplier]);
 
         return $dataProvider;
     }

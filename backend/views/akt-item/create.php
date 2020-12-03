@@ -18,12 +18,10 @@ $this->title = 'Tambah Barang';
     <?= $this->render('_form', [
         'model' => $model,
         'nomor' => $nomor,
-        'nomor_merk' => $nomor_merk,
         'model_merk' => $model_merk,
         'model_tipe' => $model_tipe,
         'model_satuan' => $model_satuan,
         'model_mitra_bisnis' => $model_mitra_bisnis,
-        'nomor_mitra_bisnis' => $nomor_mitra_bisnis
     ]) ?>
 
 </div>

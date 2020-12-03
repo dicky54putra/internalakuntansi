@@ -72,11 +72,9 @@ class AktItemStokController extends Controller
         $model->hpp = 0;
         $model->min = 0;
 
-        $data_gudang = ArrayHelper::map(AktGudang::find()->all(), 'id_gudang', 'nama_gudang');
 
         $model_gudang = new AktGudang();
-        $total_gudang = AktGudang::find()->count();
-        $nomor_gudang = 'GD' . str_pad($total_gudang + 1, 3, "0", STR_PAD_LEFT);
+        $data_gudang = AktItemStok::getKodeGudang($model_gudang);
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['akt-item/view', 'id' => $model->id_item]);
@@ -86,7 +84,6 @@ class AktItemStokController extends Controller
             'model' => $model,
             'data_gudang' => $data_gudang,
             'model_gudang' => $model_gudang,
-            'nomor_gudang' => $nomor_gudang
         ]);
     }
 
@@ -100,11 +97,9 @@ class AktItemStokController extends Controller
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
-        $data_gudang = ArrayHelper::map(AktGudang::find()->all(), 'id_gudang', 'nama_gudang');
 
         $model_gudang = new AktGudang();
-        $total_gudang = AktGudang::find()->count();
-        $nomor_gudang = 'GD' . str_pad($total_gudang + 1, 3, "0", STR_PAD_LEFT);
+        $data_gudang = AktItemStok::getKodeGudang($model_gudang);
 
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
@@ -115,7 +110,6 @@ class AktItemStokController extends Controller
             'model' => $model,
             'data_gudang' => $data_gudang,
             'model_gudang' => $model_gudang,
-            'nomor_gudang' => $nomor_gudang
         ]);
     }
 

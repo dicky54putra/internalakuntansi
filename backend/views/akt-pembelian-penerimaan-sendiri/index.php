@@ -31,12 +31,19 @@ $this->title = 'Data Penerimaan Pembelian';
             'no_pembelian',
             [
                 'attribute' => 'tanggal_pembelian',
-                'value' => function ($model) {
-                    if (!empty($model->tanggal_pembelian)) {
+                'headerOptions' => ['style' => 'color:#337ab7'],
+                'filterType' => GridView::FILTER_DATE,
+                'filterWidgetOptions' => [
+                    'pluginOptions' => [
+                        'format' => 'dd-mm-yyyy',
+                        'autoclose' => true,
+                        'todayHighlight' => true,
+                    ]
+                ],
+                'value'     => function ($model) {
+                    if ($model->tanggal_pembelian != null) {
                         # code...
-                        return tanggal_indo2(date('D, d F Y', strtotime($model->tanggal_pembelian)));
-                    } else {
-                        # code...
+                        return tanggal_indo($model->tanggal_pembelian, true);
                     }
                 }
             ],

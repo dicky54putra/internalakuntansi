@@ -57,16 +57,25 @@ $this->params['breadcrumbs'][] = $this->title;
             'no_retur_penjualan',
             [
                 'attribute' => 'tanggal_retur_penjualan',
+                'headerOptions' => ['style' => 'color:#337ab7'],
+                'filterType' => GridView::FILTER_DATE,
+                'filterWidgetOptions' => [
+                    'pluginOptions' => [
+                        'format' => 'dd-mm-yyyy',
+                        'autoclose' => true,
+                        'todayHighlight' => true,
+                    ]
+                ],
                 'value' => function ($model) {
                     return tanggal_indo($model->tanggal_retur_penjualan, true);
                 }
             ],
             [
-                'attribute' => 'id_penjualan_pengiriman',
+                'attribute' => 'id_penjualan',
                 'value' => function ($model) {
-                    if (!empty($model->penjualan_pengiriman->no_pengiriman)) {
+                    if (!empty($model->penjualan->no_penjualan)) {
                         # code...
-                        return $model->penjualan_pengiriman->no_pengiriman;
+                        return $model->penjualan->no_penjualan;
                     } else {
                         # code...
                     }

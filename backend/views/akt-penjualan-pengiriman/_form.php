@@ -32,8 +32,10 @@ use backend\models\AktKota;
                 'clientOptions' => [
                     'changeMonth' => true,
                     'changeYear' => true,
+                    'minDate' => $model_penjualan->tanggal_penjualan,
                 ],
                 'dateFormat' => 'yyyy-MM-dd',
+                // 'minDate' => $model_penjualan->tanggal_penjualan,
                 'options' => ['class' => 'form-control']
             ]) ?>
 

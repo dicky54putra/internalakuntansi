@@ -39,7 +39,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 'value' => function ($model) {
 
                     $akt_pembelian_harta_tetap = AktPembelianHartaTetapDetail::findOne($model->id_pembelian_harta_tetap_detail);
-                    return $akt_pembelian_harta_tetap->kode_pembelian . '  - ' . $akt_pembelian_harta_tetap->nama_barang;
+                    return (!empty($akt_pembelian_harta_tetap->kode_pembelian) && !empty($akt_pembelian_harta_tetap->nama_barang)) ? $akt_pembelian_harta_tetap->kode_pembelian . '  - ' . $akt_pembelian_harta_tetap->nama_barang : '';
                 }
             ],
             [

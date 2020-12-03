@@ -16,6 +16,7 @@ use backend\models\AktJurnalUmumDetail;
 use backend\models\JurnalTransaksi;
 use backend\models\JurnalTransaksiDetail;
 use yii\helpers\ArrayHelper;
+use yii\helpers\Utils;
 
 /**
  * AktSaldoAwalKasController implements the CRUD actions for AktSaldoAwalKas model.
@@ -74,26 +75,7 @@ class AktSaldoAwalKasController extends Controller
     {
         $model = new AktSaldoAwalKas();
         $model->tanggal_transaksi = date('Y-m-d');
-
-        $akt_saldo_awal_kas = AktSaldoAwalKas::find()->select(["no_transaksi"])->orderBy("id_saldo_awal_kas DESC")->limit(1)->one();
-        if (!empty($akt_saldo_awal_kas->no_transaksi)) {
-            # code...
-            $no_bulan = substr($akt_saldo_awal_kas->no_transaksi, 2, 4);
-            if ($no_bulan == date('ym')) {
-                # code...
-                $noUrut = substr($akt_saldo_awal_kas->no_transaksi, -3);
-                $noUrut++;
-                $noUrut_2 = sprintf("%03s", $noUrut);
-                $no_transaksi = 'SW' . date('ym') . $noUrut_2;
-            } else {
-                # code...
-                $no_transaksi = 'SW' . date('ym') . '001';
-            }
-        } else {
-            # code...
-            $no_transaksi = 'SW' . date('ym') . '001';
-        }
-
+$no_transaksi = Utils::getNomorTransaksi($model, 'SW', 'no_transaksi', 'no_transaksi');
         $model->no_transaksi = $no_transaksi;
 
         $data_kas_bank = ArrayHelper::map(
@@ -152,7 +134,7 @@ class AktSaldoAwalKasController extends Controller
                 $jurnal_umum_detail->id_jurnal_umum = $jurnal_umum->id_jurnal_umum;
                 $jurnal_umum_detail->id_akun = $k->id_akun;
                 $akt_kas_bank = AktKasBank::findOne($model->id_kas_bank);
-                if ($akun['nama_akun'] == 'kas') {
+                if (strtolower($akun['nama_akun'] == 'kas')) {
                     $jurnal_umum_detail->debit =  $model->jumlah;
                     if ($k->tipe == 'D') {
                         $akt_kas_bank->saldo = $akt_kas_bank->saldo + $model->jumlah;
@@ -180,7 +162,7 @@ class AktSaldoAwalKasController extends Controller
                 $akun->save(false);
                 $jurnal_umum_detail->save(false);
 
-                if ($akun->nama_akun == 'kas') {
+                if (strtolower($akun->nama_akun == 'kas')) {
                     $history_transaksi_kas = new AktHistoryTransaksi();
                     $history_transaksi_kas->nama_tabel = 'akt_kas_bank';
                     $history_transaksi_kas->id_tabel = $model->id_kas_bank;
@@ -299,42 +281,42 @@ class AktSaldoAwalKasController extends Controller
         $model = $this->findModel($id);
 
         // delete auto create jurnal umum, don't delete this
-        // $history_transaksi_count = AktHistoryTransaksi::find()->where(['id_tabel' => $id])->andWhere(['nama_tabel' => 'akt_saldo_awal_kas'])->count();
+        $history_transaksi_count = AktHistoryTransaksi::find()->where(['id_tabel' => $id])->andWhere(['nama_tabel' => 'akt_saldo_awal_kas'])->count();
 
-        // if ($history_transaksi_count > 0) {
+        if ($history_transaksi_count > 0) {
 
-        //     $history_transaksi = AktHistoryTransaksi::find()->where(['id_tabel' => $id])->andWhere(['nama_tabel' => 'akt_saldo_awal_kas'])->one();
-        //     $jurnal_umum = AktJurnalUmum::find()->where(['id_jurnal_umum' => $history_transaksi['id_jurnal_umum']])->one();
-        //     $jurnal_umum_detail = AktJurnalUmumDetail::find()->where(['id_jurnal_umum' => $jurnal_umum['id_jurnal_umum']])->all();
-        //     foreach ($jurnal_umum_detail as $ju) {
-        //         $akun = AktAkun::find()->where(['id_akun' => $ju->id_akun])->one();
-        //         if ($akun->nama_akun != 'kas') {
-        //             if ($akun->saldo_normal == 1 && $ju->debit > 0 || $ju->debit < 0) {
-        //                 $akun->saldo_akun = $akun->saldo_akun - $ju->debit;
-        //             } else if ($akun->saldo_normal == 1 && $ju->kredit > 0 || $ju->kredit < 0) {
-        //                 $akun->saldo_akun = $akun->saldo_akun + $ju->kredit;
-        //             } else if ($akun->saldo_normal == 2 && $ju->kredit > 0 || $ju->kredit < 0) {
-        //                 $akun->saldo_akun = $akun->saldo_akun - $ju->kredit;
-        //             } else if ($akun->saldo_normal == 2 && $ju->debit > 0 || $ju->debit < 0) {
-        //                 $akun->saldo_akun = $akun->saldo_akun + $ju->debit;
-        //             }
-        //         } else if ($akun->nama_akun == 'kas' && $model->id_kas_bank != null) {
-        //             $history_transaksi_kas = AktHistoryTransaksi::find()
-        //                 ->where(['id_tabel' => $model->id_kas_bank])
-        //                 ->andWhere(['nama_tabel' => 'akt_kas_bank'])
-        //                 ->andWhere(['id_jurnal_umum' => $ju->id_jurnal_umum_detail])->one();
-        //             $akt_kas_bank = AktKasBank::find()->where(['id_kas_bank' => $model->id_kas_bank])->one();
-        //             $akt_kas_bank->saldo = $akt_kas_bank->saldo - $ju->debit + $ju->kredit;
-        //             $akt_kas_bank->save(false);
-        //             $history_transaksi_kas->delete();
-        //         }
-        //         $akun->save(false);
-        //         $ju->delete();
-        //     }
+            $history_transaksi = AktHistoryTransaksi::find()->where(['id_tabel' => $id])->andWhere(['nama_tabel' => 'akt_saldo_awal_kas'])->one();
+            $jurnal_umum = AktJurnalUmum::find()->where(['id_jurnal_umum' => $history_transaksi['id_jurnal_umum']])->one();
+            $jurnal_umum_detail = AktJurnalUmumDetail::find()->where(['id_jurnal_umum' => $jurnal_umum['id_jurnal_umum']])->all();
+            foreach ($jurnal_umum_detail as $ju) {
+                $akun = AktAkun::find()->where(['id_akun' => $ju->id_akun])->one();
+                if (strtolower($akun->nama_akun) != 'kas') {
+                    if ($akun->saldo_normal == 1 && $ju->debit > 0 || $ju->debit < 0) {
+                        $akun->saldo_akun = $akun->saldo_akun - $ju->debit;
+                    } else if ($akun->saldo_normal == 1 && $ju->kredit > 0 || $ju->kredit < 0) {
+                        $akun->saldo_akun = $akun->saldo_akun + $ju->kredit;
+                    } else if ($akun->saldo_normal == 2 && $ju->kredit > 0 || $ju->kredit < 0) {
+                        $akun->saldo_akun = $akun->saldo_akun - $ju->kredit;
+                    } else if ($akun->saldo_normal == 2 && $ju->debit > 0 || $ju->debit < 0) {
+                        $akun->saldo_akun = $akun->saldo_akun + $ju->debit;
+                    }
+                } else if (strtolower($akun->nama_akun == 'kas') && $model->id_kas_bank != null) {
+                    $history_transaksi_kas = AktHistoryTransaksi::find()
+                        ->where(['id_tabel' => $model->id_kas_bank])
+                        ->andWhere(['nama_tabel' => 'akt_kas_bank'])
+                        ->andWhere(['id_jurnal_umum' => $ju->id_jurnal_umum_detail])->one();
+                    $akt_kas_bank = AktKasBank::find()->where(['id_kas_bank' => $model->id_kas_bank])->one();
+                    $akt_kas_bank->saldo = $akt_kas_bank->saldo - $ju->debit + $ju->kredit;
+                    $akt_kas_bank->save(false);
+                    $history_transaksi_kas->delete();
+                }
+                $akun->save(false);
+                $ju->delete();
+            }
 
-        //     $jurnal_umum->delete();
-        //     $history_transaksi->delete();
-        // }
+            $jurnal_umum->delete();
+            $history_transaksi->delete();
+        }
 
         $model->delete();
 

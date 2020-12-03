@@ -5,6 +5,7 @@ namespace backend\models;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use backend\models\AktPembelian;
+use DateTime;
 
 /**
  * AktPembelianSearch represents the model behind the search form of `backend\models\AktPembelian`.
@@ -17,8 +18,8 @@ class AktPembelianSearch extends AktPembelian
     public function rules()
     {
         return [
-            [['id_pembelian', 'id_customer', 'id_mata_uang', 'ongkir', 'diskon', 'pajak', 'total', 'jenis_bayar', 'jatuh_tempo', 'materai', 'id_penagih', 'status'], 'integer'],
-            [['no_order_pembelian', 'no_pembelian', 'tanggal_pembelian', 'no_faktur_pembelian', 'tanggal_faktur_pembelian', 'tanggal_tempo', 'tanggal_estimasi'], 'safe'],
+            [['id_pembelian',  'status'], 'integer'],
+            [['no_order_pembelian', 'no_pembelian', 'id_customer', 'tanggal_pembelian', "tanggal_order_pembelian", 'no_faktur_pembelian', 'tanggal_faktur_pembelian', 'tanggal_tempo', 'tanggal_estimasi', 'jatuh_tempo'], 'safe'],
         ];
     }
 
@@ -41,6 +42,7 @@ class AktPembelianSearch extends AktPembelian
     public function search($params)
     {
         $query = AktPembelian::find();
+        $query->joinWith('customer');
         $query->where(['IS NOT', 'no_order_pembelian', null]);
         $query->orderBy("id_pembelian desc");
 
@@ -62,29 +64,16 @@ class AktPembelianSearch extends AktPembelian
             $query->andFilterWhere(["date_format(tanggal_order_pembelian, '%d-%m-%Y')" => $this->tanggal_order_pembelian]);
         }
 
+
         // grid filtering conditions
         $query->andFilterWhere([
             'id_pembelian' => $this->id_pembelian,
-            'id_customer' => $this->id_customer,
-            'id_mata_uang' => $this->id_mata_uang,
-            'tanggal_pembelian' => $this->tanggal_pembelian,
-            'tanggal_estimasi' => $this->tanggal_estimasi,
-            'tanggal_faktur_pembelian' => $this->tanggal_faktur_pembelian,
-            'ongkir' => $this->ongkir,
-            'diskon' => $this->diskon,
-            'pajak' => $this->pajak,
-            'total' => $this->total,
-            'jenis_bayar' => $this->jenis_bayar,
-            'jatuh_tempo' => $this->jatuh_tempo,
-            'tanggal_tempo' => $this->tanggal_tempo,
-            'materai' => $this->materai,
-            'id_penagih' => $this->id_penagih,
             'status' => $this->status,
         ]);
 
         $query->andFilterWhere(['like', 'no_order_pembelian', $this->no_order_pembelian])
+            ->andFilterWhere(['like', 'akt_mitra_bisnis.nama_mitra_bisnis', $this->id_customer])
             ->andFilterWhere(['like', 'no_pembelian', $this->no_pembelian])
-            ->andFilterWhere(['like', 'tanggal_estimasi', $this->tanggal_estimasi])
             ->andFilterWhere(['like', 'no_faktur_pembelian', $this->no_faktur_pembelian]);
 
         return $dataProvider;
@@ -116,32 +105,23 @@ class AktPembelianSearch extends AktPembelian
             return $dataProvider;
         }
 
+        if (!empty($this->tanggal_pembelian)) {
+            $query->andFilterWhere(["date_format(tanggal_pembelian, '%d-%m-%Y')" => $this->tanggal_pembelian]);
+        }
+
+        if (!empty($this->tanggal_estimasi)) {
+            $query->andFilterWhere(["date_format(tanggal_estimasi, '%d-%m-%Y')" => $this->tanggal_estimasi]);
+        }
+
         // grid filtering conditions
         $query->andFilterWhere([
             'id_pembelian' => $this->id_pembelian,
-            'tanggal_order_pembelian' => $this->tanggal_order_pembelian,
-            // 'id_customer' => $this->id_customer,
-            // 'id_mata_uang' => $this->id_mata_uang,
-            'tanggal_pembelian' => $this->tanggal_pembelian,
-            'tanggal_faktur_pembelian' => $this->tanggal_faktur_pembelian,
-            'ongkir' => $this->ongkir,
-            'pajak' => $this->pajak,
-            'total' => $this->total,
-            'jenis_bayar' => $this->jenis_bayar,
-            'jatuh_tempo' => $this->jatuh_tempo,
-            'tanggal_tempo' => $this->tanggal_tempo,
-            'materai' => $this->materai,
-            // 'id_penagih' => $this->id_penagih,
             'status' => $this->status,
-            'diskon' => $this->diskon,
         ]);
 
         $query->andFilterWhere(['like', 'no_order_pembelian', $this->no_order_pembelian])
             ->andFilterWhere(['like', 'no_pembelian', $this->no_pembelian])
-            ->andFilterWhere(['like', 'no_faktur_pembelian', $this->no_faktur_pembelian])
-            ->andFilterWhere(['like', 'akt_mitra_bisnis.nama_mitra_bisnis', $this->id_customer])
-            ->andFilterWhere(['like', 'akt_mata_uang.mata_uang', $this->id_mata_uang])
-            ->andFilterWhere(['like', 'penagih.nama_mitra_bisnis', $this->id_penagih]);
+            ->andFilterWhere(['like', 'akt_mitra_bisnis.nama_mitra_bisnis', $this->id_customer]);
 
         return $dataProvider;
     }
@@ -168,48 +148,29 @@ class AktPembelianSearch extends AktPembelian
             // $query->where('0=1');
             return $dataProvider;
         }
+        if (!empty($this->tanggal_pembelian)) {
+            $query->andFilterWhere(["date_format(tanggal_pembelian, '%d-%m-%Y')" => $this->tanggal_pembelian]);
+        }
 
         // grid filtering conditions
         $query->andFilterWhere([
             'id_pembelian' => $this->id_pembelian,
-            'tanggal_order_pembelian' => $this->tanggal_order_pembelian,
-            // 'id_customer' => $this->id_customer,
-            // 'id_mata_uang' => $this->id_mata_uang,
-            'tanggal_pembelian' => $this->tanggal_pembelian,
-            'tanggal_faktur_pembelian' => $this->tanggal_faktur_pembelian,
-            'ongkir' => $this->ongkir,
-            'pajak' => $this->pajak,
-            'total' => $this->total,
-            'jenis_bayar' => $this->jenis_bayar,
-            'jatuh_tempo' => $this->jatuh_tempo,
-            'tanggal_tempo' => $this->tanggal_tempo,
-            'materai' => $this->materai,
-            // 'id_penagih' => $this->id_penagih,
-            'status' => $this->status,
-            'diskon' => $this->diskon,
-            // 'tanggal_penerimaan' => $this->tanggal_penerimaan,
-            'tanggal_penerimaan' => $this->tanggal_penerimaan,
         ]);
 
         $query->andFilterWhere(['like', 'no_order_pembelian', $this->no_order_pembelian])
-            ->andFilterWhere(['like', 'no_pembelian', $this->no_pembelian])
-            ->andFilterWhere(['like', 'no_faktur_pembelian', $this->no_faktur_pembelian])
-            // ->andFilterWhere(['like', 'akt_mitra_bisnis.nama_mitra_bisnis', $this->id_customer])
-            ->andFilterWhere(['like', 'akt_mata_uang.mata_uang', $this->id_mata_uang])
-            ->andFilterWhere(['like', 'penagih.nama_mitra_bisnis', $this->id_penagih])
-            ->andFilterWhere(['like', 'no_penerimaan', $this->no_penerimaan])
-            ->andFilterWhere(['like', 'pengantar', $this->pengantar])
-            ->andFilterWhere(['like', 'penerima', $this->penerima])
-            ->andFilterWhere(['like', 'keterangan_penerimaan', $this->keterangan_penerimaan])
-            // ->andFilterWhere(['like', 'akt_mitra_bisnis_alamat.keterangan_alamat', $this->id_mitra_bisnis_alamat])
-            ->andFilterWhere(['like', 'no_spb', $this->no_spb]);
+            // ->andFilterWhere(['like', 'tanggal_pembelian', $this->tanggal_pembelian])
+            ->andFilterWhere(['like', 'no_pembelian', $this->no_pembelian]);
 
         return $dataProvider;
     }
 
     public function searchHutang($params)
     {
-        $query = AktPembelian::find()->where(['jenis_bayar' => 2, 'status' => 4]);
+        $query = AktPembelian::find();
+        $query->joinWith("customer");
+        $query->where(['!=', 'akt_pembelian.status', '1']);
+        $query->andWhere(['!=', 'akt_pembelian.total', 0]);
+        $query->orderBy("id_pembelian desc");
 
         // add conditions that should always apply here
 
@@ -225,30 +186,22 @@ class AktPembelianSearch extends AktPembelian
             return $dataProvider;
         }
 
-        if (!empty($this->tanggal_order_pembelian)) {
-            $query->andFilterWhere(["date_format(tanggal_order_pembelian, '%d-%m-%Y')" => $this->tanggal_order_pembelian]);
+        if (!empty($this->tanggal_pembelian)) {
+            $query->andFilterWhere(["date_format(tanggal_pembelian, '%d-%m-%Y')" => $this->tanggal_pembelian]);
+        }
+
+        if (!empty($this->tanggal_tempo)) {
+            $query->andFilterWhere(["date_format(tanggal_tempo, '%d-%m-%Y')" => $this->tanggal_tempo]);
         }
 
         // grid filtering conditions
         $query->andFilterWhere([
             'id_pembelian' => $this->id_pembelian,
-            'id_customer' => $this->id_customer,
-            'id_mata_uang' => $this->id_mata_uang,
-            'tanggal_pembelian' => $this->tanggal_pembelian,
-            'tanggal_faktur_pembelian' => $this->tanggal_faktur_pembelian,
-            'ongkir' => $this->ongkir,
-            'diskon' => $this->diskon,
-            'pajak' => $this->pajak,
-            'total' => $this->total,
-            'jenis_bayar' => $this->jenis_bayar,
             'jatuh_tempo' => $this->jatuh_tempo,
-            'tanggal_tempo' => $this->tanggal_tempo,
-            'materai' => $this->materai,
-            'id_penagih' => $this->id_penagih,
-            'status' => $this->status,
         ]);
 
         $query->andFilterWhere(['like', 'no_order_pembelian', $this->no_order_pembelian])
+            ->andFilterWhere(['like', 'akt_mitra_bisnis.nama_mitra_bisnis', $this->id_customer])
             ->andFilterWhere(['like', 'no_pembelian', $this->no_pembelian])
             ->andFilterWhere(['like', 'no_faktur_pembelian', $this->no_faktur_pembelian]);
 
@@ -257,11 +210,12 @@ class AktPembelianSearch extends AktPembelian
 
     public function searchPembayaranBiaya($params)
     {
-        $query = AktPembelian::find()
-            ->where(['!=', 'akt_pembelian.status', '1']);
+        $query = AktPembelian::find();
         $query->joinWith("customer");
         $query->joinWith("mata_uang");
         $query->joinWith("penagih");
+        $query->where(['!=', 'akt_pembelian.status', '1']);
+        $query->andWhere(['!=', 'akt_pembelian.total', 0]);
         $query->orderBy("id_pembelian desc");
 
 
@@ -279,33 +233,31 @@ class AktPembelianSearch extends AktPembelian
             return $dataProvider;
         }
 
+        if (!empty($this->tanggal_faktur_pembelian)) {
+            $query->andFilterWhere(["date_format(tanggal_faktur_pembelian, '%d-%m-%Y')" => $this->tanggal_faktur_pembelian]);
+        }
+
+        if (!empty($this->tanggal_pembelian)) {
+            $query->andFilterWhere(["date_format(tanggal_pembelian, '%d-%m-%Y')" => $this->tanggal_pembelian]);
+        }
+
         // grid filtering conditions
         $query->andFilterWhere([
             'id_pembelian' => $this->id_pembelian,
-            'tanggal_order_pembelian' => $this->tanggal_order_pembelian,
-            // 'id_customer' => $this->id_customer,
-            // 'id_mata_uang' => $this->id_mata_uang,
-            'tanggal_pembelian' => $this->tanggal_pembelian,
-            'tanggal_faktur_pembelian' => $this->tanggal_faktur_pembelian,
-            'ongkir' => $this->ongkir,
-            'pajak' => $this->pajak,
-            'total' => $this->total,
-            'jenis_bayar' => $this->jenis_bayar,
-            'jatuh_tempo' => $this->jatuh_tempo,
-            'tanggal_tempo' => $this->tanggal_tempo,
-            'materai' => $this->materai,
-            // 'id_penagih' => $this->id_penagih,
             'status' => $this->status,
-            'diskon' => $this->diskon,
         ]);
 
         $query->andFilterWhere(['like', 'no_order_pembelian', $this->no_order_pembelian])
             ->andFilterWhere(['like', 'no_pembelian', $this->no_pembelian])
-            ->andFilterWhere(['like', 'no_faktur_pembelian', $this->no_faktur_pembelian])
-            ->andFilterWhere(['like', 'akt_mitra_bisnis.nama_mitra_bisnis', $this->id_customer])
-            ->andFilterWhere(['like', 'akt_mata_uang.mata_uang', $this->id_mata_uang])
-            ->andFilterWhere(['like', 'penagih.nama_mitra_bisnis', $this->id_penagih]);
+            ->andFilterWhere(['like', 'no_faktur_pembelian', $this->no_faktur_pembelian]);
 
         return $dataProvider;
+    }
+
+    protected function convertDateInput($date)
+    {
+        $date = new DateTime($date);
+        // echo $date->format('d.m.Y'); // 31.07.2012
+        return $date->format('Y-m-d'); // 31-07-2012
     }
 }

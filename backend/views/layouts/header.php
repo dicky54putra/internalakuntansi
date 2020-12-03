@@ -9,9 +9,9 @@ use yii\helpers\Html;
 <header class="main-header">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css" integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous">
 
-    <?= Html::a('<span class="logo-mini">GSS</span><span class="logo-lg">' . Yii::$app->name . '</span>', Yii::$app->homeUrl, ['class' => 'logo', 'style' => 'background-color: #1a2226;']) ?>
+    <?= Html::a('<span class="logo-mini">GSS</span><span class="logo-lg">' . Yii::$app->name . '</span>', Yii::$app->homeUrl, ['class' => 'logo',]) ?>
 
-    <nav class="navbar navbar-static-top" style="background-color: #1a2226;" role="navigation">
+    <nav class="navbar navbar-static-top" role="navigation">
 
         <a href="#" class="sidebar-toggle" data-toggle="push-menu" role="button">
             <span class="sr-only">Toggle navigation</span>

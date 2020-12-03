@@ -56,10 +56,13 @@ class AktSaldoAwalAkunSearch extends AktSaldoAwalAkun
             return $dataProvider;
         }
 
+        if (!empty($this->tanggal_order_pembelian)) {
+            $query->andFilterWhere(["date_format(tanggal_order_pembelian, '%d-%m-%Y')" => $this->tanggal_order_pembelian]);
+        }
+
         // grid filtering conditions
         $query->andFilterWhere([
             'id_saldo_awal_akun' => $this->id_saldo_awal_akun,
-            'tanggal' => $this->tanggal,
             'tipe' => $this->tipe,
         ]);
 

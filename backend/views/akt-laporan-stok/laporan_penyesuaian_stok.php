@@ -51,18 +51,17 @@ $this->title = 'Laporan Penyesuaian Stok';
                             </td>
                             <td width="5%"></td>
                             <td width="10%">
-                                <div class="form-group">Metode</div>
+                                <div class="form-group">Tipe Penyesuaian</div>
                             </td>
                             <td align="center" width="5%">
                                 <div class="form-group">:</div>
                             </td>
                             <td width="30%">
                                 <div class="form-group">
-                                    <select name="metode" class="form-control">
-                                        <option value="">Pilih Metode</option>
-                                        <option value="1">Akun</option>
-                                        <option value="2">Round Down</option>
-                                        <option value="3">Replace</option>
+                                    <select name="tipe_penyesuaian" class="form-control">
+                                        <option value="">Pilih Tipe Penyesuaian</option>
+                                        <option value="1">Penambahan Stok</option>
+                                        <option value="0">Pengurangan Stok</option>
                                     </select>
                                 </div>
                             </td>
@@ -129,23 +128,21 @@ $this->title = 'Laporan Penyesuaian Stok';
             if ($count_penyesuaian_stok != 0) {
                 # code...
             ?>
-                <?= Html::a('Cetak ' . $this->title, ['laporan-penyesuaian-stok-cetak', 'tanggal_awal' => $tanggal_awal, 'tanggal_akhir' => $tanggal_akhir, 'metode' => $metode], ['class' => 'btn btn-primary', 'target' => '_blank', 'method' => 'post']) ?>
-                <?= Html::a('Export ' . $this->title, ['laporan-penyesuaian-stok-export-excel', 'tanggal_awal' => $tanggal_awal, 'tanggal_akhir' => $tanggal_akhir, 'metode' => $metode], ['class' => 'btn btn-success', 'target' => '_blank', 'method' => 'post']) ?>
+                <?= Html::a('Cetak ' . $this->title, ['laporan-penyesuaian-stok-cetak', 'tanggal_awal' => $tanggal_awal, 'tanggal_akhir' => $tanggal_akhir, 'tipe_penyesuaian' => $tipe_penyesuaian], ['class' => 'btn btn-primary', 'target' => '_blank', 'method' => 'post']) ?>
+                <?= Html::a('Export ' . $this->title, ['laporan-penyesuaian-stok-export-excel', 'tanggal_awal' => $tanggal_awal, 'tanggal_akhir' => $tanggal_akhir, 'tipe_penyesuaian' => $tipe_penyesuaian], ['class' => 'btn btn-success', 'target' => '_blank', 'method' => 'post']) ?>
             <?php
             }
             ?>
         </p>
         <?php
-        $where_metode = "";
-        if ($metode != "") {
+        $where_tipe_penyesuaian = "";
+        if ($tipe_penyesuaian  != "") {
             # code...
-            $where_metode = " AND metode = " . $metode . " ";
+            $where_tipe_penyesuaian = " AND tipe_penyesuaian = " . $tipe_penyesuaian  . " ";
         }
 
-        $query_penyesuaian_stok = AktPenyesuaianStok::find()->where("tanggal_penyesuaian BETWEEN '$tanggal_awal' AND '$tanggal_akhir' $where_metode")->asArray()->all();
+        $query_penyesuaian_stok = AktPenyesuaianStok::find()->where("tanggal_penyesuaian BETWEEN '$tanggal_awal' AND '$tanggal_akhir' $where_tipe_penyesuaian")->asArray()->all();
         foreach ($query_penyesuaian_stok as $key => $data) {
-            # code...
-            $akun_persediaan = AktAkun::findOne($data['id_akun_persediaan']);
         ?>
             <div class="panel panel-primary">
                 <div class="panel-heading">
@@ -155,8 +152,6 @@ $this->title = 'Laporan Penyesuaian Stok';
                                 <th style="width: 15%;">Tanggal</th>
                                 <th style="width: 10%;">No Transaksi</th>
                                 <th style="width: 12%;">Tipe</th>
-                                <th style="width: 10%;">Metode</th>
-                                <td style="width: 10%;">Akun Persediaan</td>
                                 <td>Keterangan</td>
                             </tr>
                         </thead>
@@ -164,9 +159,7 @@ $this->title = 'Laporan Penyesuaian Stok';
                             <tr>
                                 <td><?= tanggal_indo($data['tanggal_penyesuaian'], true) ?></td>
                                 <td><?= $data['no_transaksi'] ?></td>
-                                <td><?= ($data['tipe_penyesuaian'] == 1) ? 'Penyesuaian Stok' : '' ?></td>
-                                <td><?= ($data['metode'] == 1) ? 'Akun' : $retVal = ($data['metode'] == 2) ? 'Round Down' : 'Replace'; ?></td>
-                                <td><?= (!empty($akun_persediaan->nama_akun)) ? $akun_persediaan->nama_akun : '' ?></td>
+                                <td><?= ($data['tipe_penyesuaian'] == 1) ? 'Penambahan Stok' : 'Pengurangan Stok' ?></td>
                                 <td><?= $data['keterangan_penyesuaian'] ?></td>
                             </tr>
                         </tbody>
@@ -202,7 +195,7 @@ $this->title = 'Laporan Penyesuaian Stok';
                                             <td><?= $dataa['qty'] ?></td>
                                             <td><?= $item->satuan->nama_satuan ?></td>
                                             <td><?= $gudang->nama_gudang ?></td>
-                                            <td><?= $dataa['hpp'] ?></td>
+                                            <td><?= $item_stok->hpp ?></td>
                                         </tr>
                                     <?php } ?>
                                 </tbody>

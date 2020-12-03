@@ -61,4 +61,9 @@ class AktTransferKas extends \yii\db\ActiveRecord
     {
         return $this->hasOne(AktKasBank::className(), ['id_kas_bank' => 'id_asal_kas']);
     }
+
+    public function getkas_bank2()
+    {
+        return $this->hasOne(AktKasBank::className(), ['id_kas_bank' => 'id_tujuan_kas']);
+    }
 }

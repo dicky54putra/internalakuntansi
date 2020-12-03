@@ -25,6 +25,7 @@ use backend\models\AktApprover;
 
 use yii\helpers\ArrayHelper;
 use yii\helpers\Json;
+use yii\helpers\Utils;
 use backend\models\Setting;
 use Mpdf\Mpdf;
 
@@ -114,7 +115,15 @@ class AktPembelianHartaTetapController extends Controller
                         ->andWhere(['nama_tabel' => 'akt_kas_bank'])
                         ->andWhere(['id_jurnal_umum' => $ju->id_jurnal_umum_detail])->one();
                     $akt_kas_bank = AktKasBank::find()->where(['id_kas_bank' => $model->id_kas_bank])->one();
-                    $akt_kas_bank->saldo = $akt_kas_bank->saldo - $ju->debit + $ju->kredit;
+                    if ($akun->saldo_normal == 1 && $ju->debit > 0 || $ju->debit < 0) {
+                        $akt_kas_bank->saldo = $akt_kas_bank->saldo - $ju->debit;
+                    } else if ($akun->saldo_normal == 1 && $ju->kredit > 0 || $ju->kredit < 0) {
+                        $akt_kas_bank->saldo = $akt_kas_bank->saldo + $ju->kredit;
+                    } else if ($akun->saldo_normal == 2 && $ju->kredit > 0 || $ju->kredit < 0) {
+                        $akt_kas_bank->saldo = $akt_kas_bank->saldo - $ju->kredit;
+                    } else if ($akun->saldo_normal == 2 && $ju->debit > 0 || $ju->debit < 0) {
+                        $akt_kas_bank->saldo = $akt_kas_bank->saldo + $ju->debit;
+                    }
                     $akt_kas_bank->save(false);
                     $history_transaksi_kas->delete();
                 }
@@ -141,25 +150,7 @@ class AktPembelianHartaTetapController extends Controller
 
         // Create Jurnal Umum
         $jurnal_umum = new AktJurnalUmum();
-        $akt_jurnal_umum = AktJurnalUmum::find()->select(["no_jurnal_umum"])->orderBy("id_jurnal_umum DESC")->limit(1)->one();
-        if (!empty($akt_jurnal_umum->no_jurnal_umum)) {
-            # code...
-            $no_bulan = substr($akt_jurnal_umum->no_jurnal_umum, 2, 4);
-            if ($no_bulan == date('ym')) {
-                # code...
-                $noUrut = substr($akt_jurnal_umum->no_jurnal_umum, -3);
-                $noUrut++;
-                $noUrut_2 = sprintf("%03s", $noUrut);
-                $no_jurnal_umum = 'JU' . date('ym') . $noUrut_2;
-            } else {
-                # code...
-                $no_jurnal_umum = 'JU' . date('ym') . '001';
-            }
-        } else {
-            # code...
-            $no_jurnal_umum = 'JU' . date('ym') . '001';
-        }
-
+        $no_jurnal_umum = AktJurnalUmum::getKodeJurnalUmum();
         $jurnal_umum->no_jurnal_umum = $no_jurnal_umum;
         $jurnal_umum->tipe = 1;
         $jurnal_umum->tanggal = date('Y-m-d');
@@ -183,262 +174,26 @@ class AktPembelianHartaTetapController extends Controller
         $pembelian_barang = $pembelian_detail - $diskon;
         $grand_total = $pembelian_barang + $pajak + $model->ongkir + $model->materai;
 
+        $data_jurnal_umum = array(
+            'grand_total' => $grand_total,
+            'pembelian_barang' => $pembelian_barang,
+            'pajak' => $pajak,
+            'uang_muka' => $model->uang_muka,
+            'materai' => $model->materai,
+            'ongkir' => $model->ongkir
+        );
 
 
         if ($model->jenis_bayar == 1) {
 
             $pembelian_cash = JurnalTransaksi::find()->where(['nama_transaksi' => 'Pembelian Harta Tetap Cash'])->one();
             $jurnal_transaksi_detail = JurnalTransaksiDetail::find()->where(['id_jurnal_transaksi' => $pembelian_cash['id_jurnal_transaksi']])->all();
-
-            foreach ($jurnal_transaksi_detail as $jt) {
-
-                $jurnal_umum_detail = new AktJurnalUmumDetail();
-                $jurnal_umum_detail->id_jurnal_umum = $jurnal_umum->id_jurnal_umum;
-                $jurnal_umum_detail->id_akun = $jt->id_akun;
-                $akun = AktAkun::find()->where(['id_akun' => $jt->id_akun])->one();
-
-                if ($akun->nama_akun == 'Aset Tetap' && $jt->tipe == 'D') {
-                    $jurnal_umum_detail->debit = $pembelian_barang;
-                    if ($akun->saldo_normal == 1) {
-                        $akun->saldo_akun = $akun->saldo_akun + $pembelian_barang;
-                    } else {
-                        $akun->saldo_akun = $akun->saldo_akun - $pembelian_barang;
-                    }
-                } else if ($akun->nama_akun == 'Aset Tetap' && $jt->tipe == 'K') {
-                    $jurnal_umum_detail->kredit = $pembelian_barang;
-                    if ($akun->saldo_normal == 1) {
-                        $akun->saldo_akun = $akun->saldo_akun - $pembelian_barang;
-                    } else {
-                        $akun->saldo_akun = $akun->saldo_akun + $pembelian_barang;
-                    }
-                } else if ($jt->id_akun == 64 && $jt->tipe == 'D') {
-                    $jurnal_umum_detail->debit = $grand_total;
-                    if ($akun->saldo_normal == 1) {
-                        $akun->saldo_akun = $akun->saldo_akun + $grand_total;
-                    } else {
-                        $akun->saldo_akun = $akun->saldo_akun - $grand_total;
-                    }
-                } else if ($jt->id_akun == 64 && $jt->tipe == 'K') {
-                    $jurnal_umum_detail->kredit = $grand_total;
-                    if ($akun->saldo_normal == 1) {
-                        $akun->saldo_akun = $akun->saldo_akun - $grand_total;
-                    } else {
-                        $akun->saldo_akun = $akun->saldo_akun + $grand_total;
-                    }
-                } else if ($akun->nama_akun == 'PPN Masukan' && $jt->tipe == 'D') {
-                    $jurnal_umum_detail->debit = $pajak;
-                    if ($akun->saldo_normal == 1) {
-                        $akun->saldo_akun = $akun->saldo_akun + $pajak;
-                    } else {
-                        $akun->saldo_akun = $akun->saldo_akun - $pajak;
-                    }
-                } else if ($akun->nama_akun == 'PPN Masukan' && $jt->tipe == 'K') {
-                    $jurnal_umum_detail->kredit = $pajak;
-                    if ($akun->saldo_normal == 1) {
-                        $akun->saldo_akun = $akun->saldo_akun - $pajak;
-                    } else {
-                        $akun->saldo_akun = $akun->saldo_akun + $pajak;
-                    }
-                } else if ($akun->nama_akun == 'Piutang Pengiriman' && $jt->tipe == 'D') {
-                    $jurnal_umum_detail->debit = $model->ongkir;
-                    if ($akun->saldo_normal == 1) {
-                        $akun->saldo_akun = $akun->saldo_akun + $model->ongkir;
-                    } else {
-                        $akun->saldo_akun = $akun->saldo_akun - $model->ongkir;
-                    }
-                } else if ($akun->nama_akun == 'Piutang Pengiriman' && $jt->tipe == 'K') {
-                    $jurnal_umum_detail->kredit = $model->ongkir;
-                    if ($akun->saldo_normal == 1) {
-                        $akun->saldo_akun = $akun->saldo_akun - $model->ongkir;
-                    } else {
-                        $akun->saldo_akun = $akun->saldo_akun + $model->ongkir;
-                    }
-                } else if ($akun->nama_akun == 'Biaya Admin Kantor' && $jt->tipe == 'D') {
-                    $jurnal_umum_detail->debit = $model->materai;
-                    if ($akun->saldo_normal == 1) {
-                        $akun->saldo_akun = $akun->saldo_akun + $model->materai;
-                    } else {
-                        $akun->saldo_akun = $akun->saldo_akun - $model->materai;
-                    }
-                } else if ($akun->nama_akun == 'Biaya Admin Kantor' && $jt->tipe == 'K') {
-                    $jurnal_umum_detail->kredit = $model->materai;
-                    if ($akun->saldo_normal == 1) {
-                        $akun->saldo_akun = $akun->saldo_akun - $model->materai;
-                    } else {
-                        $akun->saldo_akun = $akun->saldo_akun + $model->materai;
-                    }
-                } else if ($akun->nama_akun == 'Uang Muka Pembelian' && $jt->tipe == 'D') {
-                    $jurnal_umum_detail->debit = $model->uang_muka;
-                    if ($akun->saldo_normal == 1) {
-                        $akun->saldo_akun = $akun->saldo_akun + $model->uang_muka;
-                    } else {
-                        $akun->saldo_akun = $akun->saldo_akun - $model->uang_muka;
-                    }
-                } else if ($akun->nama_akun == 'Uang Muka Pembelian' && $jt->tipe == 'K') {
-                    $jurnal_umum_detail->kredit = $model->uang_muka;
-                    if ($akun->saldo_normal == 1) {
-                        $akun->saldo_akun = $akun->saldo_akun - $model->uang_muka;
-                    } else {
-                        $akun->saldo_akun = $akun->saldo_akun + $model->uang_muka;
-                    }
-                } else if ($model->id_kas_bank != null) {
-                    $akt_kas_bank = AktKasBank::findOne($model->id_kas_bank);
-                    if ($akun->nama_akun == 'kas' && $jt->tipe == 'D') {
-                        $jurnal_umum_detail->debit = $model->uang_muka;
-                        if ($akun->saldo_normal == 1) {
-                            $akt_kas_bank->saldo = $akt_kas_bank->saldo + $model->uang_muka;
-                        } else {
-                            $akt_kas_bank->saldo = $akt_kas_bank->saldo - $model->uang_muka;
-                        }
-                    } else if ($akun->nama_akun == 'kas' && $jt->tipe == 'K') {
-                        $jurnal_umum_detail->kredit = $model->uang_muka;
-                        if ($akun->saldo_normal == 1) {
-                            $akt_kas_bank->saldo = $akt_kas_bank->saldo - $model->uang_muka;
-                        } else {
-                            $akt_kas_bank->saldo = $akt_kas_bank->saldo + $model->uang_muka;
-                        }
-                    }
-                    $akt_kas_bank->save(false);
-                }
-                $akun->save(false);
-                $jurnal_umum_detail->keterangan = 'Pembelian Harta Tetap : ' .  $model->no_pembelian_harta_tetap;
-                $jurnal_umum_detail->save(false);
-
-                if ($akun->nama_akun == 'kas') {
-                    $history_transaksi_kas = new AktHistoryTransaksi();
-                    $history_transaksi_kas->nama_tabel = 'akt_kas_bank';
-                    $history_transaksi_kas->id_tabel = $model->id_kas_bank;
-                    $history_transaksi_kas->id_jurnal_umum = $jurnal_umum_detail->id_jurnal_umum_detail;
-                    $history_transaksi_kas->save(false);
-                }
-            }
+            AktPembelianHartaTetap::setAkunJurnalUmum($jurnal_transaksi_detail, $model, $data_jurnal_umum, $jurnal_umum);
         } else if ($model->jenis_bayar == 2) {
 
             $pembelian_cash = JurnalTransaksi::find()->where(['nama_transaksi' => 'Pembelian Harta Tetap Kredit'])->one();
             $jurnal_transaksi_detail = JurnalTransaksiDetail::find()->where(['id_jurnal_transaksi' => $pembelian_cash['id_jurnal_transaksi']])->all();
-
-            foreach ($jurnal_transaksi_detail as $jt) {
-
-                $jurnal_umum_detail = new AktJurnalUmumDetail();
-                $jurnal_umum_detail->id_jurnal_umum = $jurnal_umum->id_jurnal_umum;
-                $jurnal_umum_detail->id_akun = $jt->id_akun;
-                $akun = AktAkun::find()->where(['id_akun' => $jt->id_akun])->one();
-
-                if ($akun->nama_akun == 'Aset Tetap' && $jt->tipe == 'D') {
-                    $jurnal_umum_detail->debit = $pembelian_barang;
-                    if ($akun->saldo_normal == 1) {
-                        $akun->saldo_akun = $akun->saldo_akun + $pembelian_barang;
-                    } else {
-                        $akun->saldo_akun = $akun->saldo_akun - $pembelian_barang;
-                    }
-                } else if ($akun->nama_akun == 'Aset Tetap' && $jt->tipe == 'K') {
-                    $jurnal_umum_detail->kredit = $pembelian_barang;
-                    if ($akun->saldo_normal == 1) {
-                        $akun->saldo_akun = $akun->saldo_akun - $pembelian_barang;
-                    } else {
-                        $akun->saldo_akun = $akun->saldo_akun + $pembelian_barang;
-                    }
-                } else if ($jt->id_akun == 64 && $jt->tipe == 'D') {
-                    $jurnal_umum_detail->debit = $grand_total;
-                    if ($akun->saldo_normal == 1) {
-                        $akun->saldo_akun = $akun->saldo_akun + $grand_total;
-                    } else {
-                        $akun->saldo_akun = $akun->saldo_akun - $grand_total;
-                    }
-                } else if ($jt->id_akun == 64 && $jt->tipe == 'K') {
-                    $jurnal_umum_detail->kredit = $grand_total;
-                    if ($akun->saldo_normal == 1) {
-                        $akun->saldo_akun = $akun->saldo_akun - $grand_total;
-                    } else {
-                        $akun->saldo_akun = $akun->saldo_akun + $grand_total;
-                    }
-                } else if ($akun->nama_akun == 'PPN Masukan' && $jt->tipe == 'D') {
-                    $jurnal_umum_detail->debit = $pajak;
-                    if ($akun->saldo_normal == 1) {
-                        $akun->saldo_akun = $akun->saldo_akun + $pajak;
-                    } else {
-                        $akun->saldo_akun = $akun->saldo_akun - $pajak;
-                    }
-                } else if ($akun->nama_akun == 'PPN Masukan' && $jt->tipe == 'K') {
-                    $jurnal_umum_detail->kredit = $pajak;
-                    if ($akun->saldo_normal == 1) {
-                        $akun->saldo_akun = $akun->saldo_akun - $pajak;
-                    } else {
-                        $akun->saldo_akun = $akun->saldo_akun + $pajak;
-                    }
-                } else if ($akun->nama_akun == 'Piutang Pengiriman' && $jt->tipe == 'D') {
-                    $jurnal_umum_detail->debit = $model->ongkir;
-                    if ($akun->saldo_normal == 1) {
-                        $akun->saldo_akun = $akun->saldo_akun + $model->ongkir;
-                    } else {
-                        $akun->saldo_akun = $akun->saldo_akun - $model->ongkir;
-                    }
-                } else if ($akun->nama_akun == 'Piutang Pengiriman' && $jt->tipe == 'K') {
-                    $jurnal_umum_detail->kredit = $model->ongkir;
-                    if ($akun->saldo_normal == 1) {
-                        $akun->saldo_akun = $akun->saldo_akun - $model->ongkir;
-                    } else {
-                        $akun->saldo_akun = $akun->saldo_akun + $model->ongkir;
-                    }
-                } else if ($akun->nama_akun == 'Biaya Admin Kantor' && $jt->tipe == 'D') {
-                    $jurnal_umum_detail->debit = $model->materai;
-                    if ($akun->saldo_normal == 1) {
-                        $akun->saldo_akun = $akun->saldo_akun + $model->materai;
-                    } else {
-                        $akun->saldo_akun = $akun->saldo_akun - $model->materai;
-                    }
-                } else if ($akun->nama_akun == 'Biaya Admin Kantor' && $jt->tipe == 'K') {
-                    $jurnal_umum_detail->kredit = $model->materai;
-                    if ($akun->saldo_normal == 1) {
-                        $akun->saldo_akun = $akun->saldo_akun - $model->materai;
-                    } else {
-                        $akun->saldo_akun = $akun->saldo_akun + $model->materai;
-                    }
-                } else if ($akun->nama_akun == 'Uang Muka Pembelian' && $jt->tipe == 'D') {
-                    $jurnal_umum_detail->debit = $model->uang_muka;
-                    if ($akun->saldo_normal == 1) {
-                        $akun->saldo_akun = $akun->saldo_akun + $model->uang_muka;
-                    } else {
-                        $akun->saldo_akun = $akun->saldo_akun - $model->uang_muka;
-                    }
-                } else if ($akun->nama_akun == 'Uang Muka Pembelian' && $jt->tipe == 'K') {
-                    $jurnal_umum_detail->kredit = $model->uang_muka;
-                    if ($akun->saldo_normal == 1) {
-                        $akun->saldo_akun = $akun->saldo_akun - $model->uang_muka;
-                    } else {
-                        $akun->saldo_akun = $akun->saldo_akun + $model->uang_muka;
-                    }
-                } else if ($model->id_kas_bank != null) {
-                    $akt_kas_bank = AktKasBank::findOne($model->id_kas_bank);
-                    if ($akun->nama_akun == 'kas' && $jt->tipe == 'D') {
-                        $jurnal_umum_detail->debit = $model->uang_muka;
-                        if ($akun->saldo_normal == 1) {
-                            $akt_kas_bank->saldo = $akt_kas_bank->saldo + $model->uang_muka;
-                        } else {
-                            $akt_kas_bank->saldo = $akt_kas_bank->saldo - $model->uang_muka;
-                        }
-                    } else if ($akun->nama_akun == 'kas' && $jt->tipe == 'K') {
-                        $jurnal_umum_detail->kredit = $model->uang_muka;
-                        if ($akun->saldo_normal == 1) {
-                            $akt_kas_bank->saldo = $akt_kas_bank->saldo - $model->uang_muka;
-                        } else {
-                            $akt_kas_bank->saldo = $akt_kas_bank->saldo + $model->uang_muka;
-                        }
-                    }
-                    $akt_kas_bank->save(false);
-                }
-                $akun->save(false);
-                $jurnal_umum_detail->keterangan = 'Pembelian Harta Tetap : ' .  $model->no_pembelian_harta_tetap;
-                $jurnal_umum_detail->save(false);
-
-                if ($akun->nama_akun == 'kas') {
-                    $history_transaksi_kas = new AktHistoryTransaksi();
-                    $history_transaksi_kas->nama_tabel = 'akt_kas_bank';
-                    $history_transaksi_kas->id_tabel = $model->id_kas_bank;
-                    $history_transaksi_kas->id_jurnal_umum = $jurnal_umum_detail->id_jurnal_umum_detail;
-                    $history_transaksi_kas->save(false);
-                }
-            }
+            AktPembelianHartaTetap::setAkunJurnalUmum($jurnal_transaksi_detail, $model, $data_jurnal_umum, $jurnal_umum);
         }
 
         $model->save(FALSE);
@@ -473,13 +228,7 @@ class AktPembelianHartaTetapController extends Controller
         $data_mata_uang = ArrayHelper::map(AktMataUang::find()->all(), 'id_mata_uang', 'mata_uang');
 
 
-        $data_kas_bank = ArrayHelper::map(
-            AktKasBank::find()->all(),
-            'id_kas_bank',
-            function ($model) {
-                return $model['kode_kas_bank'] . ' - ' . $model['keterangan'] . ' : ' . ribuan($model['saldo']);
-            }
-        );
+        $data_kas_bank = AktPembelianHartaTetap::dataKasBank($model);
 
         $id_login =  Yii::$app->user->identity->id_login;
         $approve = AktApprover::find()
@@ -528,24 +277,7 @@ class AktPembelianHartaTetapController extends Controller
             }
         );
 
-        $akt_pembelian_harta_tetap = AktPembelianHartaTetap::find()->select(["no_pembelian_harta_tetap"])->orderBy("id_pembelian_harta_tetap DESC")->limit(1)->one();
-        if (!empty($akt_pembelian_harta_tetap->no_pembelian_harta_tetap)) {
-            # code...
-            $no_bulan = substr($akt_pembelian_harta_tetap->no_pembelian_harta_tetap, 2, 4);
-            if ($no_bulan == date('ym')) {
-                # code...
-                $noUrut = substr($akt_pembelian_harta_tetap->no_pembelian_harta_tetap, -3);
-                $noUrut++;
-                $noUrut_2 = sprintf("%03s", $noUrut);
-                $no_pembelian_harta_tetap = 'BT' . date('ym') . $noUrut_2;
-            } else {
-                # code...
-                $no_pembelian_harta_tetap = 'BT' . date('ym') . '001';
-            }
-        } else {
-            # code...
-            $no_pembelian_harta_tetap = 'BT' . date('ym') . '001';
-        }
+        $no_pembelian_harta_tetap = Utils::getNomorTransaksi($model, 'BT', 'no_pembelian_harta_tetap', 'id_pembelian_harta_tetap');
 
         $model->no_pembelian_harta_tetap = $no_pembelian_harta_tetap;
         if ($model->load(Yii::$app->request->post())) {
@@ -605,16 +337,47 @@ class AktPembelianHartaTetapController extends Controller
         $model = $this->findModel($id);
         $query = (new \yii\db\Query())->from('akt_pembelian_harta_tetap_detail')->where(['id_pembelian_harta_tetap' => $model->id_pembelian_harta_tetap]);
         $model_pembelian_detail = $query->sum('total');
+        $count_pembelian_detail = $query->count();
 
 
         if ($model->load(Yii::$app->request->post())) {
 
-            if ($model->uang_muka > 0 && $model->id_kas_bank == '') {
-                Yii::$app->session->setFlash('danger', [['Perhatian !', 'Jika ada uang muka, kas bank tidak boleh kosong!']]);
-                return $this->redirect(['view', 'id' => $model->id_pembelian_harta_tetap]);
-            }
 
-            $model->save();
+            if ($count_pembelian_detail > 0) {
+
+                $model_ongkir = Yii::$app->request->post('AktPembelianHartaTetap')['ongkir'];
+                $model_materai = Yii::$app->request->post('AktPembelianHartaTetap')['materai'];
+                $model_uang_muka = Yii::$app->request->post('AktPembelianHartaTetap')['uang_muka'];
+
+                $model->ongkir = empty($model_ongkir) ? '0' :  preg_replace("/[^0-9,]+/", "", $model_ongkir);
+                $model->materai = empty($model_materai) ? '0' : preg_replace("/[^0-9,]+/", "", $model_materai);
+                $model->uang_muka = empty($model_uang_muka) ? '0' : preg_replace("/[^0-9,]+/", "", $model_uang_muka);
+
+                if ($model->uang_muka > 0 && $model->id_kas_bank == '') {
+                    Yii::$app->session->setFlash('danger', [['Perhatian !', 'Jika ada uang muka, kas bank tidak boleh kosong!']]);
+                    return $this->redirect(['view', 'id' => $model->id_pembelian_harta_tetap]);
+                }
+
+                $diskon = ($model->diskon > 0) ? ($model->diskon * $model_pembelian_detail) / 100 : 0;
+                $pajak = ($model->pajak == 1) ? (($model_pembelian_detail - $diskon) * 10) / 100 : 0;
+
+                $model_total = (($model_pembelian_detail - $diskon) + $pajak) + $model->ongkir + $model->materai - $model->uang_muka;
+
+                $model->total = $model_total;
+                $model->ongkir = $model->ongkir;
+                $model->materai = $model->materai;
+                $model->uang_muka = $model->uang_muka;
+
+                if ($model->jenis_bayar == 1) {
+                    # code...
+                    $model->jatuh_tempo = NULL;
+                    $model->tanggal_tempo = NULL;
+                } else {
+                    $model->tanggal_tempo = date('Y-m-d', strtotime('+' . $model->jatuh_tempo . ' days', strtotime($model->tanggal)));
+                }
+            }
+            Yii::$app->session->setFlash('success', [['Perhatian !', 'Perubahan Data Pembelian Harta Tetap Berhasil Disimpan']]);
+            $model->save(FALSE);
             return $this->redirect(['view', 'id' => $model->id_pembelian_harta_tetap]);
         }
 

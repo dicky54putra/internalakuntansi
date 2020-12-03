@@ -23,7 +23,7 @@ use yii\helpers\Url;
                     <div class="row">
                         <div class="col-md-6">
 
-                        <?= $form->field($model, 'id_item_stok')->widget(Select2::classname(), [
+                            <?= $form->field($model, 'id_item_stok')->widget(Select2::classname(), [
                                 'data' => $data_item_stok,
                                 'language' => 'en',
                                 'options' => ['placeholder' => 'Pilih Barang', 'id' => 'id_item_stok'],
@@ -34,25 +34,25 @@ use yii\helpers\Url;
                             ?>
 
                             <?= $form->field($model, 'id_item_harga_jual')->widget(DepDrop::classname(), [
-                                    'data' => $data_level,
-                                    'type' => DepDrop::TYPE_SELECT2,
-                                    'options' => ['id'=>'id-harga-jual', 'placeholder' => 'Pilih Jenis...'],
-                                    'select2Options' => ['pluginOptions' => ['allowClear' => true]],
-                                    'pluginOptions' => [
-                                        'depends' => ['id_item_stok'],
-                                        'url'=>Url::to(['/akt-penjualan/level-harga'])
-                                    ]
-                                ])->label('Jenis');
+                                'data' => $data_level,
+                                'type' => DepDrop::TYPE_SELECT2,
+                                'options' => ['id' => 'id-harga-jual', 'placeholder' => 'Pilih Jenis...'],
+                                'select2Options' => ['pluginOptions' => ['allowClear' => true]],
+                                'pluginOptions' => [
+                                    'depends' => ['id_item_stok'],
+                                    'url' => Url::to(['/akt-penjualan/level-harga'])
+                                ]
+                            ])->label('Jenis');
                             ?>
 
                             <?= $form->field($model, 'qty')->textInput(['autocomplete' => 'off']) ?>
 
-                            <?= $form->field($model, 'harga')->textInput(['maxlength' => true, 'autocomplete' => 'off','id' => 'harga']) ?>
+                            <?= $form->field($model, 'harga')->textInput(['maxlength' => true, 'autocomplete' => 'off', 'id' => 'harga']) ?>
 
                         </div>
                         <div class="col-md-6">
 
-                            <?= $form->field($model, 'diskon')->textInput(['autocomplete' => 'off']) ?>
+                            <?= $form->field($model, 'diskon')->textInput(['autocomplete' => 'off', 'id' => 'diskon-floating', 'pattern' => '[+-]?([0-9]*[.])?[0-9]+']) ?>
 
                             <?= $form->field($model, 'keterangan')->textarea(['rows' => 5]) ?>
 
@@ -74,6 +74,19 @@ use yii\helpers\Url;
 
 <?php
 $script = <<< JS
+
+const elements = document.querySelectorAll('#diskon-floating');
+    for (var i = 0; i < elements.length; i++) {
+        elements[i].oninvalid = function(e) {
+            e.target.setCustomValidity("");
+            if (!e.target.validity.valid) {
+                e.target.setCustomValidity("Diskon hanya menerima inputan angka dan titik");
+            }
+        };
+        elements[i].oninput = function(e) {
+            e.target.setCustomValidity("");
+        };
+    }
 
 let harga = document.querySelector('#harga');
 harga.addEventListener('keyup', function(e){

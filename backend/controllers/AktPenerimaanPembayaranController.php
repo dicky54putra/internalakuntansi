@@ -13,10 +13,12 @@ use yii\filters\VerbFilter;
 use backend\models\AktKasBank;
 use backend\models\AktPenjualan;
 use backend\models\AktPenjualanSearch;
+use backend\models\AktReturPenjualan;
 use backend\models\AktJurnalUmum;
 use backend\models\AktJurnalUmumDetail;
 use backend\models\JurnalTransaksiDetail;
 use backend\models\AktAkun;
+use backend\models\Setting;
 use backend\models\AktPenjualanHartaTetap;
 use yii\helpers\ArrayHelper;
 use backend\models\JurnalTransaksi;
@@ -258,8 +260,6 @@ class AktPenerimaanPembayaranController extends Controller
         return $this->redirect(['view-penerimaan-pembayaran', 'id' => $model->id_penjualan]);
     }
 
-
-
     public function actionDeleteFromView($id)
     {
         $model = $this->findModel($id);
@@ -315,8 +315,6 @@ class AktPenerimaanPembayaranController extends Controller
         Yii::$app->session->setFlash('success', [['Perhatian !', 'Berhasil Terhapus dari Data Penerimaan Pembayaran']]);
         return $this->redirect(['view-penerimaan-pembayaran', 'id' => $model->id_penjualan]);
     }
-
-
 
     public function actionViewPenerimaanHartaTetap($id)
     {
@@ -566,6 +564,26 @@ class AktPenerimaanPembayaranController extends Controller
         return $this->redirect(['view-penerimaan-harta-tetap', 'id' => $model->id_penjualan_harta_tetap]);
     }
 
+    public function actionCetakInvoice($id)
+    {
+        // echo 'ok';
+        // die;
+        $model = AktPenjualan::findOne($id);
+
+        $data_setting = Setting::find()->one();
+
+
+        $sum_retur = Yii::$app->db->createCommand("SELECT SUM(total) from akt_retur_penjualan WHERE id_penjualan = '$id'")->queryScalar();
+        $query = (new \yii\db\Query())->from('akt_penjualan_detail')->where(['id_penjualan' => $model->id_penjualan]);
+        $total_penjualan_barang = $query->sum('total');
+
+        return $this->renderPartial('cetak_invoice', [
+            'model' => $model,
+            'data_setting' => $data_setting,
+            'total_penjualan_barang' => $total_penjualan_barang,
+            'sum_retur' => $sum_retur,
+        ]);
+    }
 
     protected function findModel($id)
     {

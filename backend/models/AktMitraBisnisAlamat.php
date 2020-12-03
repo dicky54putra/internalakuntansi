@@ -34,9 +34,9 @@ class AktMitraBisnisAlamat extends \yii\db\ActiveRecord
     {
         return [
             [['id_mitra_bisnis', 'keterangan_alamat', 'alamat_lengkap', 'id_kota', 'alamat_pengiriman_penagihan'], 'required'],
-            [['id_mitra_bisnis', 'id_kota', 'alamat_pengiriman_penagihan'], 'integer'],
+            [['id_mitra_bisnis', 'id_kota', 'alamat_pengiriman_penagihan', 'telephone', 'kode_pos'], 'integer'],
             [['keterangan_alamat', 'alamat_lengkap'], 'string'],
-            [['telephone', 'fax', 'kode_pos'], 'string', 'max' => 200],
+            [['fax'], 'string', 'max' => 200],
         ];
     }
 

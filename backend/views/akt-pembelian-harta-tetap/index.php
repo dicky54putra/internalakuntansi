@@ -34,7 +34,16 @@ $this->title = 'Daftar Pembelian Harta Tetap';
             'no_pembelian_harta_tetap',
             [
                 'attribute' => 'tanggal',
-                'format' => 'raw',
+                // 'format' => 'raw',
+                'headerOptions' => ['style' => 'color:#337ab7'],
+                'filterType' => GridView::FILTER_DATE,
+                'filterWidgetOptions' => [
+                    'pluginOptions' => [
+                        'format' => 'dd-mm-yyyy',
+                        'autoclose' => true,
+                        'todayHighlight' => true,
+                    ]
+                ],
                 'value' => function ($model) {
                     return tanggal_indo($model->tanggal);
                 }
@@ -50,6 +59,11 @@ $this->title = 'Daftar Pembelian Harta Tetap';
             [
                 'attribute' => 'status',
                 'format' => 'html',
+                'filter' => array(
+                    1 => 'Belum Disetujui',
+                    2 => "Disetujui",
+                    3 => 'Ditolak'
+                ),
                 'value' => function ($model) {
                     if ($model->id_login != null) {
                         $login = Login::find()->where(['id_login' => $model->id_login])->one();

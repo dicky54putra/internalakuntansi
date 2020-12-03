@@ -17,22 +17,31 @@ use yii\widgets\ActiveForm;
 
                     <?php $form = ActiveForm::begin(); ?>
 
-                    <?= $form->field($model, 'no_jurnal_umum')->textInput(['readonly' => true]) ?>
+                    <div class="row">
+                        <div class="col-md-6">
+                        <?= $form->field($model, 'no_jurnal_umum')->textInput(['readonly' => true]) ?>
 
-                    <?= $form->field($model, 'tanggal')->widget(\yii\jui\DatePicker::classname(), [
-                        'clientOptions' => [
-                            'changeMonth' => true,
-                            'changeYear' => true,
-                        ],
-                        'dateFormat' => 'yyyy-MM-dd',
-                        'options' => ['class' => 'form-control']
-                    ]) ?>
+                            <?= $form->field($model, 'tanggal')->widget(\yii\jui\DatePicker::classname(), [
+                                'clientOptions' => [
+                                    'changeMonth' => true,
+                                    'changeYear' => true,
+                                ],
+                                'dateFormat' => 'yyyy-MM-dd',
+                                'options' => ['class' => 'form-control']
+                            ]) ?>
 
-                    <?= $form->field($model, 'tipe')->dropDownList(
-                        array(
-                            1 => 'Jurnal Umum',
-                        )
-                    ) ?>
+                            <?= $form->field($model, 'tipe')->dropDownList(
+                                array(
+                                    1 => 'Jurnal Umum',
+                                )
+                            ) ?>
+                        </div>
+                        <div class="col-md-6">
+                             <?= $form->field($model, 'keterangan')->textarea(['rows' => 5]) ?>
+                        </div>
+                    </div>
+                   
+
 
                     <div class="form-group">
                         <?php

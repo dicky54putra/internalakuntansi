@@ -38,7 +38,12 @@ $this->title = 'Daftar Akun';
                 'attribute' => 'saldo_akun',
                 'hAlign' => 'right',
                 'value' => function ($model) {
-                    return ribuan($model->saldo_akun);
+                    $sum_kas_bank = Yii::$app->db->createCommand("SELECT SUM(saldo) FROM akt_kas_bank")->queryScalar();
+                    if (strtolower($model->nama_akun) == 'kas') {
+                        return ribuan($sum_kas_bank);
+                    } else {
+                        return ribuan($model->saldo_akun);
+                    }
                 }
             ],
             // 'header',

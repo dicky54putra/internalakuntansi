@@ -8,6 +8,7 @@ use backend\models\AktPembelianHartaTetapDetail;
 use backend\models\AktPembayaranBiayaSearch;
 use backend\models\AktPembelianHartaTetapSearch;
 use backend\models\AktPembelian;
+use backend\models\AktReturPembelian;
 use backend\models\JurnalTransaksi;
 use backend\models\AktHistoryTransaksi;
 use backend\models\AktPembelianSearch;
@@ -16,6 +17,7 @@ use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use yii\helpers\ArrayHelper;
 use backend\models\AktKasBank;
+use backend\models\Setting;
 use backend\models\AktJurnalUmum;
 use backend\models\JurnalTransaksiDetail;
 use backend\models\AktJurnalUmumDetail;
@@ -702,5 +704,24 @@ class AktPembayaranBiayaController extends Controller
 
         echo Json::encode(['output' => $all_state, 'selected' => '']);
         return;
+    }
+
+
+    public function actionCetakInvoice($id)
+    {
+        $model = AktPembelian::findOne($id);
+
+        $data_setting = Setting::find()->one();
+
+        $sum_retur = Yii::$app->db->createCommand("SELECT SUM(total) from akt_retur_pembelian WHERE id_pembelian = '$id'")->queryScalar();
+        $query = (new \yii\db\Query())->from('akt_pembelian_detail')->where(['id_pembelian' => $model->id_pembelian]);
+        $total_pembelian_barang = $query->sum('total');
+
+        return $this->renderPartial('cetak_invoice', [
+            'model' => $model,
+            'sum_retur' => $sum_retur,
+            'data_setting' => $data_setting,
+            'total_pembelian_barang' => $total_pembelian_barang,
+        ]);
     }
 }

@@ -2,6 +2,7 @@
 
 use yii\helpers\Html;
 use kartik\grid\GridView;
+use kartik\date\DatePicker;
 
 /* @var $this yii\web\View */
 /* @var $searchModel backend\models\AktPenyesuaianKasSearch */
@@ -32,6 +33,27 @@ $this->title = 'Daftar Penyesuaian Kas';
             'no_transaksi',
             [
                 'attribute' => 'tanggal',
+                'headerOptions' => ['style' => 'color:#337ab7'],
+                'filter' => DatePicker::widget([
+
+                    'model' => $searchModel,
+
+                    'attribute' => 'tanggal',
+
+                    'convertFormat' => true,
+
+                    'pluginOptions' => [
+
+                        'locale' => [
+
+                            'format' => 'd-m-Y'
+
+                        ],
+                        'todayHighlight' => true
+
+                    ],
+
+                ]),
                 'value' => function ($model) {
                     return tanggal_indo($model->tanggal, true);
                 }

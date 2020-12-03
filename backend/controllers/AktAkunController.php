@@ -38,6 +38,7 @@ class AktAkunController extends Controller
         $searchModel = new AktAkunSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
+
         $id_login =  Yii::$app->user->identity->id_login;
 
         $id_system_role = Yii::$app->db->createCommand("SELECT id_system_role from user_role WHERE id_login = '$id_login'")->queryScalar();
@@ -128,6 +129,7 @@ class AktAkunController extends Controller
         $model = $this->findModel($id);
 
         $nomor = $model->kode_akun;
+        $sum_kas_bank = Yii::$app->db->createCommand("SELECT SUM(saldo) FROM akt_kas_bank")->queryScalar();
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->id_akun]);
@@ -136,6 +138,7 @@ class AktAkunController extends Controller
         return $this->render('update', [
             'model' => $model,
             'nomor' => $nomor,
+            'sum_kas_bank' => $sum_kas_bank,
         ]);
     }
 

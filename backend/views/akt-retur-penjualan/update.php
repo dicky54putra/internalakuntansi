@@ -6,9 +6,6 @@ use yii\helpers\Html;
 /* @var $model backend\models\AktReturPenjualan */
 
 $this->title = 'Ubah Data Retur Penjualan : ' . $model->no_retur_penjualan;
-// $this->params['breadcrumbs'][] = ['label' => 'Akt Retur Penjualans', 'url' => ['index']];
-// $this->params['breadcrumbs'][] = ['label' => $model->id_retur_penjualan, 'url' => ['view', 'id' => $model->id_retur_penjualan]];
-// $this->params['breadcrumbs'][] = 'Update';
 ?>
 <div class="akt-retur-penjualan-update">
 
@@ -22,7 +19,8 @@ $this->title = 'Ubah Data Retur Penjualan : ' . $model->no_retur_penjualan;
 
     <?= $this->render('_form', [
         'model' => $model,
-        'data_penjualan_pengiriman' => $data_penjualan_pengiriman,
+        'data_penjualan' => $data_penjualan,
+        'data_kas_bank' => $data_kas_bank,
     ]) ?>
 
 </div>

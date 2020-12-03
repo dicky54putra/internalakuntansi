@@ -22,8 +22,7 @@ $this->title = 'Tambah Sales';
         'model' => $model,
         'nomor' => $nomor,
         'data_kota' => $data_kota,
-            'nomor_kota' => $nomor_kota,
-            'model_kota' => $model_kota 
+        'model_kota' => $model_kota
     ]) ?>
 
 </div>

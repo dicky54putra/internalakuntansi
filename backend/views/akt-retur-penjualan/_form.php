@@ -9,6 +9,13 @@ use kartik\select2\Select2;
 /* @var $form yii\widgets\ActiveForm */
 ?>
 
+
+<style>
+    .kas-bank {
+        display: none;
+    }
+</style>
+
 <div class="akt-retur-penjualan-form">
     <div class="panel panel-primary">
         <div class="panel-heading"><span class="glyphicon glyphicon-repeat"></span> <?= $this->title ?></div>
@@ -35,10 +42,10 @@ use kartik\select2\Select2;
                         </div>
                         <div class="col-md-6">
 
-                            <?= $form->field($model, 'id_penjualan_pengiriman')->widget(Select2::classname(), [
-                                'data' => $data_penjualan_pengiriman,
+                            <?= $form->field($model, 'id_penjualan')->widget(Select2::classname(), [
+                                'data' => $data_penjualan,
                                 'language' => 'en',
-                                'options' => ['placeholder' => 'Pilih Pengiriman'],
+                                'options' => ['placeholder' => 'Pilih Penjualan', 'id' => 'id_penjualan'],
                                 'pluginOptions' => [
                                     'allowClear' => true
                                 ],
@@ -49,7 +56,42 @@ use kartik\select2\Select2;
                             if ($model->isNewRecord) {
                                 # code...
                             ?>
+                                <div class="kas-bank kas-bank-get">
+                                    <div>
+
+                                        <span style="position: absolute;left:15%; color:red;">Jika jenis bayar cash, harus diisi.</span>
+                                        <?= $form->field($model, 'id_kas_bank')->widget(Select2::classname(), [
+                                            'data' => $data_kas_bank,
+                                            'language' => 'en',
+                                            'options' => ['placeholder' => 'Pilih Kas Bank', 'id' => 'id_kas_bank'],
+                                            'pluginOptions' => [
+                                                'allowClear' => true
+                                            ],
+                                        ])->label('Kas Bank')
+                                        ?>
+                                    </div>
+
+
+                                </div>
                                 <?= $form->field($model, 'status_retur')->dropDownList(array(0 => "Pengajuan")) ?>
+                            <?php } else { ?>
+                                <?php if ($model->id_kas_bank != null) { ?>
+
+                                    <div>
+
+                                        <span style="position: absolute;left:15%; color:red;">Jika jenis bayar cash, harus diisi.</span>
+                                        <?= $form->field($model, 'id_kas_bank')->widget(Select2::classname(), [
+                                            'data' => $data_kas_bank,
+                                            'language' => 'en',
+                                            'options' => ['placeholder' => 'Pilih Kas Bank', 'id' => 'id_kas_bank'],
+                                            'pluginOptions' => [
+                                                'allowClear' => true
+                                            ],
+                                        ])->label('Kas Bank')
+                                        ?>
+                                    </div>
+
+                                <?php } ?>
                             <?php } ?>
                         </div>
 
@@ -77,3 +119,33 @@ use kartik\select2\Select2;
         </div>
     </div>
 </div>
+
+
+<?php
+
+$script = <<< JS
+
+    $('#id_penjualan').on("select2:select", function (e) {
+        let value = $(this).val();
+        console.log(value);
+        let url = 'index.php?r=akt-retur-penjualan/get-jenis-pembayaran&id=' + value;
+
+        fetch(url)
+        .then(res => res.json())
+        .then(result =>{
+
+            if(result == 1) {
+                $('.kas-bank-get').removeClass("kas-bank");
+                $("#id_kas_bank").prop('required',true);
+            } else {
+                $('.kas-bank-get').addClass("kas-bank");
+                $("#id_kas_bank").prop('required',false);
+
+            }
+        });
+    })
+JS;
+
+$this->registerJs($script);
+
+?>

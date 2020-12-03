@@ -148,7 +148,7 @@ class SettingController extends Controller
 
         foreach ($tanggal as $t) {
 
-            $data_count = Yii::$app->db->createCommand("SELECT COUNT($select) as penjualan FROM $tabel WHERE $select = '$t[$select]' AND status >= 3")->query();
+            $data_count = Yii::$app->db->createCommand("SELECT COUNT($select) as penjualan FROM $tabel WHERE $select = '$t' AND status >= 3")->query();
 
             foreach ($data_count as $g) {
                 array_push($data, $g['penjualan']);

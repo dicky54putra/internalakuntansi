@@ -20,8 +20,7 @@ $this->title = 'Ubah Harga Jual Barang';
         'model' => $model,
         'data_mata_uang' => $data_mata_uang,
         'data_level_harga' => $data_level_harga,
-        'nomor_level_harga' => $nomor_level_harga,
-            'model_level_harga' => $model_level_harga,
+        'model_level_harga' => $model_level_harga,
         'id_item' => $id_item,
     ]) ?>
 

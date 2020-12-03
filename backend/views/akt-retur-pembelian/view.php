@@ -109,6 +109,17 @@ $this->title = 'Detail Data Retur Pembelian : ' . $model->no_retur_pembelian;
                                     // 'id_retur_pembelian',
                                     'no_retur_pembelian',
                                     [
+                                        'attribute' => 'id_kas_bank',
+                                        'value' => function ($model) {
+                                            if (!empty($model->id_kas_bank)) {
+                                                # code...
+                                                return $model->kas->keterangan;
+                                            } else {
+                                                # code...
+                                            }
+                                        }
+                                    ],
+                                    [
                                         'attribute' => 'status_retur',
                                         'format' => 'raw',
                                         'value' => function ($model) {
@@ -153,20 +164,6 @@ $this->title = 'Detail Data Retur Pembelian : ' . $model->no_retur_pembelian;
                                             }
                                         }
                                     ],
-
-                                    // [
-                                    //     'attribute' => 'status_retur',
-                                    //     'value' => function ($model) {
-                                    //         if ($model->status_retur == 1) {
-                                    //             return "<span class='label label-default'>Pengajuan</span>";
-                                    //         } elseif ($model->status_retur == 2) {
-                                    //             $nama_approver = Login::find()->where(['id_login' => $model->id_login])->one();
-                                    //             if (!empty($nama_approver->nama)) {
-                                    //                 return "<span class='label label-success'>Disetujui pada " . tanggal_indo2(date('D, d F Y H:i', strtotime($model->tanggal_approve))) . " oleh " . $nama_approver->nama . "</span>";
-                                    //             }
-                                    //         }
-                                    //     }
-                                    // ],
                                 ],
                             ]) ?>
                         </div>

@@ -31,30 +31,18 @@ $this->title = 'Daftar Hutang';
             [
                 'attribute' => 'tanggal_pembelian',
                 'headerOptions' => ['style' => 'color:#337ab7'],
-                // 'format'    => 'date', 
-                'filter' => DatePicker::widget([
-
-                    'model' => $searchModel,
-
-                    'attribute' => 'tanggal_order_pembelian',
-
-                    'convertFormat' => true,
-
+                'headerOptions' => ['style' => 'color:#337ab7'],
+                'filterType' => GridView::FILTER_DATE,
+                'filterWidgetOptions' => [
                     'pluginOptions' => [
-
-                        'locale' => [
-
-                            'format' => 'd-m-Y'
-
-                        ],
-                        'todayHighlight' => true
-
-                    ],
-
-                ]),
+                        'format' => 'dd-mm-yyyy',
+                        'autoclose' => true,
+                        'todayHighlight' => true,
+                    ]
+                ],
                 'value'     => function ($model) {
 
-                    return Yii::$app->formatter->asDate($model->tanggal_order_pembelian, 'php:d-m-Y');
+                    return tanggal_indo($model->tanggal_pembelian, true);
                 }
             ],
             [
@@ -81,8 +69,22 @@ $this->title = 'Daftar Hutang';
                 'attribute' => 'tanggal_tempo',
                 'label' => 'Tanggal Tempo',
                 'format' => 'raw',
+                'headerOptions' => ['style' => 'color:#337ab7'],
+                'filterType' => GridView::FILTER_DATE,
+                'filterWidgetOptions' => [
+                    'pluginOptions' => [
+                        'format' => 'dd-mm-yyyy',
+                        'autoclose' => true,
+                        'todayHighlight' => true,
+                    ]
+                ],
                 'value' => function ($model) {
-                    return tanggal_indo($model->tanggal_tempo);
+                    if ($model->tanggal_tempo != null) {
+
+                        return tanggal_indo($model->tanggal_tempo, true);
+                    } else {
+                        return null;
+                    }
                 }
             ],
             [
@@ -91,10 +93,10 @@ $this->title = 'Daftar Hutang';
                 'format' => 'raw',
                 'value' => function ($model) {
                     $sum_nominal_pembayaran  = Yii::$app->db->createCommand("SELECT SUM(nominal) from akt_pembayaran_biaya WHERE id_pembelian = '$model->id_pembelian'")->queryScalar();
-                    if($sum_nominal_pembayaran  == null ) {
+                    if ($sum_nominal_pembayaran  == null) {
                         return ribuan($model->total);
                     } else {
-                        return ribuan($model->total - $sum_nominal_pembayaran );
+                        return ribuan($model->total - $sum_nominal_pembayaran);
                     }
                 }
             ],

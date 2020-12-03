@@ -3,6 +3,7 @@
 namespace backend\models;
 
 use Yii;
+use yii\helpers\ArrayHelper;
 
 /**
  * This is the model class for table "akt_sales".
@@ -64,5 +65,13 @@ class AktSales extends \yii\db\ActiveRecord
     public function getakt_kota()
     {
         return $this->hasOne(AktKota::className(), ['id_kota' => 'id_kota']);
+    }
+
+    public static function getArrayKota($model)
+    {
+        $data =  ArrayHelper::map(AktKota::find()->all(), 'id_kota', function ($model) {
+            return $model->kode_kota . ' - ' . $model->nama_kota;
+        });
+        return $data;
     }
 }

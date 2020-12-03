@@ -29,8 +29,8 @@ class AktReturPenjualanDetail extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['id_retur_penjualan', 'id_penjualan_pengiriman_detail', 'qty', 'retur'], 'required'],
-            [['id_retur_penjualan', 'id_penjualan_pengiriman_detail', 'qty', 'retur'], 'integer'],
+            [['id_retur_penjualan', 'id_penjualan_detail', 'qty', 'retur'], 'required'],
+            [['id_retur_penjualan', 'id_penjualan_detail', 'qty', 'retur'], 'integer'],
             [['keterangan'], 'string'],
         ];
     }
@@ -43,7 +43,7 @@ class AktReturPenjualanDetail extends \yii\db\ActiveRecord
         return [
             'id_retur_penjualan_detail' => 'Id Retur Penjualan Detail',
             'id_retur_penjualan' => 'Id Retur Penjualan',
-            'id_penjualan_pengiriman_detail' => 'Nama Barang',
+            'id_penjualan_detail' => 'Nama Barang',
             'qty' => 'Qty',
             'retur' => 'Retur',
             'keterangan' => 'Keterangan',

@@ -77,9 +77,6 @@ class AktBomSearch extends AktBom
 
         // grid filtering conditions
         $query->andFilterWhere([
-            // 'id_bom' => $this->id_bom,
-            'no_bom' => $this->no_bom,
-            // 'id_item_stok' => $this->id_item_stok,
             'qty' => $this->qty,
             'total' => $this->total,
             'status_bom' => $this->status_bom,

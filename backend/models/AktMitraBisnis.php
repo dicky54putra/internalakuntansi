@@ -71,4 +71,11 @@ class AktMitraBisnis extends \yii\db\ActiveRecord
     {
         return $this->hasOne(AktLevelHarga::className(), ['id_level_harga' => 'id_level_harga']);
     }
+
+
+
+    public function getalamat()
+    {
+        return $this->hasOne(AktMitraBisnisAlamat::className(), ['id_mitra_bisnis' => 'id_mitra_bisnis']);
+    }
 }

@@ -2,6 +2,7 @@
 
 use yii\helpers\Html;
 use kartik\grid\GridView;
+use kartik\date\DatePicker;
 
 /* @var $this yii\web\View */
 /* @var $searchModel backend\models\AktTransferKasSearch */
@@ -12,7 +13,8 @@ $this->title = 'Daftar Transfer Kas';
 <div class="akt-transfer-kas-index">
 
     <h1><?= Html::encode($this->title) ?></h1>
-    <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
+    <?php // echo $this->render('_search', ['model' => $searchModel]); 
+    ?>
     <ul class="breadcrumb">
         <li><a href="/">Home</a></li>
         <li class="active">Daftar Transfer Kas</li>
@@ -31,21 +33,41 @@ $this->title = 'Daftar Transfer Kas';
             'no_transfer_kas',
             [
                 'attribute' => 'tanggal',
-                'value' => function($model){
-                    return tanggal_indo($model->tanggal,true);
+                'headerOptions' => ['style' => 'color:#337ab7'],
+                'filter' => DatePicker::widget([
+
+                    'model' => $searchModel,
+
+                    'attribute' => 'tanggal',
+
+                    'convertFormat' => true,
+
+                    'pluginOptions' => [
+
+                        'locale' => [
+
+                            'format' => 'd-m-Y'
+
+                        ],
+                        'todayHighlight' => true
+
+                    ],
+
+                ]),
+                'value' => function ($model) {
+                    return tanggal_indo($model->tanggal, true);
                 }
             ],
             [
                 'attribute' => 'id_asal_kas',
-                'value' => function($model){
+                'value' => function ($model) {
                     return $model->kas_bank->keterangan;
                 }
             ],
             [
                 'attribute' => 'id_tujuan_kas',
-                'value' => function($model){
-                    $tujuan_kas = Yii::$app->db->createCommand("SELECT keterangan FROM akt_kas_bank WHERE id_kas_bank = '$model->id_tujuan_kas'")->queryScalar();
-                    return $tujuan_kas;
+                'value' => function ($model) {
+                    return $model->kas_bank2->keterangan;
                 }
             ],
             //'jumlah1',

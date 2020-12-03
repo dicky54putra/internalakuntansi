@@ -33,6 +33,7 @@ $this->title = 'Detail Data Pembayaran : ' . $model->no_pembelian;
 
     <p>
         <?= Html::a('<span class="glyphicon glyphicon-circle-arrow-left"></span> Kembali', ['index'], ['class' => 'btn btn-warning']) ?>
+        <?= Html::a('<span class="glyphicon glyphicon-print"></span> Cetak Invoice', ['cetak-invoice', 'id' => $model->id_pembelian], ['class' => 'btn btn-default', 'target' => '_blank']) ?>
     </p>
 
     <div class="panel panel-primary">

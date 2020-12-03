@@ -126,6 +126,17 @@ $this->title = 'Detail Data Retur Penjualan : ' . $model->no_retur_penjualan;
                                     // 'id_retur_penjualan',
                                     'no_retur_penjualan',
                                     [
+                                        'attribute' => 'id_kas_bank',
+                                        'value' => function ($model) {
+                                            if (!empty($model->id_kas_bank)) {
+                                                # code...
+                                                return $model->kas->keterangan;
+                                            } else {
+                                                # code...
+                                            }
+                                        }
+                                    ],
+                                    [
                                         'attribute' => 'tanggal_retur_penjualan',
                                         'value' => function ($model) {
                                             return tanggal_indo($model->tanggal_retur_penjualan, true);
@@ -141,11 +152,11 @@ $this->title = 'Detail Data Retur Penjualan : ' . $model->no_retur_penjualan;
                                 'attributes' => [
                                     // 'id_retur_penjualan',
                                     [
-                                        'attribute' => 'id_penjualan_pengiriman',
+                                        'attribute' => 'id_penjualan',
                                         'value' => function ($model) {
-                                            if (!empty($model->penjualan_pengiriman->no_pengiriman)) {
+                                            if (!empty($model->penjualan->no_penjualan)) {
                                                 # code...
-                                                return $model->penjualan_pengiriman->no_pengiriman;
+                                                return $model->penjualan->no_penjualan;
                                             } else {
                                                 # code...
                                             }
@@ -201,8 +212,8 @@ $this->title = 'Detail Data Retur Penjualan : ' . $model->no_retur_penjualan;
                                                 <?= $form->field($model_retur_penjualan_detail, 'id_retur_penjualan')->textInput(['readonly' => true, 'type' => 'hidden'])->label(FALSE) ?>
 
                                                 <div class="col-md-9">
-                                                    <?= $form->field($model_retur_penjualan_detail, 'id_penjualan_pengiriman_detail')->widget(Select2::classname(), [
-                                                        'data' => $data_penjualan_pengiriman_detail,
+                                                    <?= $form->field($model_retur_penjualan_detail, 'id_penjualan_detail')->widget(Select2::classname(), [
+                                                        'data' => $data_penjualan_detail,
                                                         'language' => 'en',
                                                         'options' => ['placeholder' => 'Pilih Barang'],
                                                         'pluginOptions' => [
@@ -235,7 +246,7 @@ $this->title = 'Detail Data Retur Penjualan : ' . $model->no_retur_penjualan;
                                                     <th style="width: 45%;">Nama Barang</th>
                                                     <th style="width: 5%;white-space: nowrap;">Qty Dikirim</th>
                                                     <th style="width: 5%;">Retur</th>
-                                                    <th style="width: 45%;">Keterangan</th>
+                                                    <th style="width: 30%;">Keterangan</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -244,34 +255,40 @@ $this->title = 'Detail Data Retur Penjualan : ' . $model->no_retur_penjualan;
                                                 $query_retur_penjualan_detail = AktReturPenjualanDetail::find()->where(['id_retur_penjualan' => $model->id_retur_penjualan])->all();
                                                 foreach ($query_retur_penjualan_detail as $key => $data) {
                                                     # code...
-                                                    $penjualan_pengiriman_detail = AktPenjualanPengirimanDetail::findOne($data->id_penjualan_pengiriman_detail);
-                                                    $penjualan_detail = AktPenjualanDetail::findOne($penjualan_pengiriman_detail->id_penjualan_detail);
-                                                    $item_stok = AktItemStok::findOne($penjualan_detail->id_item_stok);
-                                                    $item = AktItem::findOne($item_stok->id_item);
+                                                    $penjualan_detail = AktPenjualanDetail::findOne($data['id_penjualan_detail']);
+                                                    if (!empty($penjualan_detail->id_item_stok)) {
+                                                        $item_stok = AktItemStok::findOne($penjualan_detail->id_item_stok);
+                                                        $item = AktItem::findOne($item_stok->id_item);
                                                 ?>
-                                                    <tr>
-                                                        <td><?= $no++ . '.' ?></td>
-                                                        <td><?= (!empty($item->nama_item)) ? $item->nama_item : '' ?></td>
-                                                        <td><?= $data['qty'] ?></td>
-                                                        <td><?= $data['retur'] ?></td>
-                                                        <td><?= $data['keterangan'] ?></td>
-                                                        <td style="white-space: nowrap;">
-                                                            <?php
-                                                            if ($model->status_retur == 0 && $angka_array_approve == 0) {
-                                                                # code...
-                                                            ?>
-                                                                <?= Html::a('<span class="glyphicon glyphicon-edit"></span>', ['akt-retur-penjualan-detail/update', 'id' => $data['id_retur_penjualan_detail']], ['class' => 'btn btn-primary']) ?>
-                                                                <?= Html::a('<span class="glyphicon glyphicon-trash"></span>', ['akt-retur-penjualan-detail/delete', 'id' => $data['id_retur_penjualan_detail']], [
-                                                                    'class' => 'btn btn-danger',
-                                                                    'data' => [
-                                                                        'confirm' => 'Apakah Anda yakin akan menghapus ' . $item->nama_item . ' dari Data Retur Barang Penjualan?',
-                                                                        'method' => 'post',
-                                                                    ],
-                                                                ]) ?>
-                                                            <?php } ?>
-                                                        </td>
-                                                    </tr>
-                                                <?php } ?>
+                                                        <tr>
+                                                            <td><?= $no++ . '.' ?></td>
+                                                            <td><?= (!empty($item->nama_item)) ? $item->nama_item : '' ?></td>
+                                                            <td><?= $data['qty'] ?></td>
+                                                            <td><?= $data['retur'] ?></td>
+                                                            <td><?= $data['keterangan'] ?></td>
+                                                            <td>
+                                                                <?php
+                                                                if ($model->status_retur == 0) {
+                                                                    # code...
+                                                                ?>
+                                                                    <p>
+                                                                        <?= Html::a('<span class="glyphicon glyphicon-edit"></span>', ['akt-retur-penjualan-detail/update', 'id' => $data['id_retur_penjualan_detail']], ['class' => 'btn btn-primary']) ?>
+
+                                                                        <?= Html::a('<span class="glyphicon glyphicon-trash"></span>', ['akt-retur-penjualan-detail/delete', 'id' => $data['id_retur_penjualan_detail']], [
+                                                                            'class' => 'btn btn-danger',
+                                                                            'data' => [
+                                                                                'confirm' => 'Apakah Anda yakin akan menghapus ' . $item->nama_item . ' dari Data Retur Barang Penjualan?',
+                                                                                'method' => 'post',
+                                                                            ],
+                                                                        ]) ?>
+
+                                                                    </p>
+
+                                                            <?php }
+                                                            } ?>
+                                                            </td>
+                                                        </tr>
+                                                    <?php } ?>
                                             </tbody>
                                         </table>
                                     </div>

@@ -5,9 +5,11 @@ namespace backend\controllers;
 use Yii;
 use backend\models\AktMerk;
 use backend\models\AktMerkSearch;
+use Error;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\helpers\Json;
 
 /**
  * AktMerkController implements the CRUD actions for AktMerk model.
@@ -71,19 +73,8 @@ class AktMerkController extends Controller
 
 
         if ($model->load(Yii::$app->request->post())) {
-            $create_in_item =  Yii::$app->request->post('create-in-item');
-            $update_in_item =  Yii::$app->request->post('update-in-item');
-            $id =  Yii::$app->request->post('id');
-            if (isset($create_in_item)) {
-                $model->save();
-                return $this->redirect(['akt-item/create']);
-            } else if (isset($update_in_item)) {
-                $model->save();
-                return $this->redirect(['akt-item/update', 'id' => $id]);
-            } else {
-                $model->save();
-                return $this->redirect(['view', 'id' => $model->id_merk]);
-            }
+            $model->save();
+            return $this->redirect(['view', 'id' => $model->id_merk]);
         }
 
         return $this->render('create', [
@@ -176,5 +167,37 @@ class AktMerkController extends Controller
         }
 
         throw new NotFoundHttpException('The requested page does not exist.');
+    }
+
+    public function actionGetMerkBarang($sort)
+    {
+        $data = AktMerk::find()->orderBy([
+            'id_merk' => $sort == 1 ? SORT_DESC : SORT_ASC
+        ])->all();
+        echo Json::encode($data);
+    }
+
+    public function actionGetKodeMerk()
+    {
+        $total_merk = AktMerk::find()->count();
+        $nomor_merk = 'MI' . str_pad($total_merk + 1, 3, "0", STR_PAD_LEFT);
+
+        echo Json::encode($nomor_merk);
+    }
+    public function actionCreateMerk()
+    {
+        $model = new AktMerk();
+        $params = Yii::$app->getRequest()->getBodyParams();
+
+        Yii::trace(print_r($params, true), __METHOD__);
+        $model->load($params, '');
+
+        if ($model->save()) {
+            Yii::$app->response->statusCode = 201;
+            echo Json::encode('Data Merk Berhasil Ditambahkan');
+        } else {
+            Yii::error($model->getErrors(), __METHOD__);
+            throw new Error("Something wen't wrong");
+        }
     }
 }

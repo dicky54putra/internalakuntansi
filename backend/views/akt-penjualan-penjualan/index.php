@@ -4,6 +4,7 @@ use yii\helpers\Html;
 // use yii\grid\GridView;
 use kartik\grid\GridView;
 use backend\models\AktPenjualan;
+use kartik\date\DatePicker;
 /* @var $this yii\web\View */
 /* @var $searchModel backend\models\AktPenjualanSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
@@ -36,6 +37,15 @@ $this->title = 'Data Penjualan';
             'no_penjualan',
             [
                 'attribute' => 'tanggal_penjualan',
+                'headerOptions' => ['style' => 'color:#337ab7'],
+                'filterType' => GridView::FILTER_DATE,
+                'filterWidgetOptions' => [
+                    'pluginOptions' => [
+                        'format' => 'dd-mm-yyyy',
+                        'autoclose' => true,
+                        'todayHighlight' => true,
+                    ]
+                ],
                 'value' => function ($model) {
                     if (!empty($model->tanggal_penjualan)) {
                         # code...
@@ -47,6 +57,15 @@ $this->title = 'Data Penjualan';
             ],
             [
                 'attribute' => 'tanggal_estimasi',
+                'headerOptions' => ['style' => 'color:#337ab7'],
+                'filterType' => GridView::FILTER_DATE,
+                'filterWidgetOptions' => [
+                    'pluginOptions' => [
+                        'format' => 'dd-mm-yyyy',
+                        'autoclose' => true,
+                        'todayHighlight' => true,
+                    ]
+                ],
                 'value' => function ($model) {
                     if (!empty($model->tanggal_estimasi)) {
                         # code...

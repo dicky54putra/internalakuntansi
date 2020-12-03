@@ -21,6 +21,7 @@ $this->title = 'Ubah Data Retur Pembelian: ' . $model->no_retur_pembelian;
     </ul>
 
     <?= $this->render('_form', [
+        'data_kas_bank' => $data_kas_bank,
         'model' => $model,
         'data_penerimaan' => $data_penerimaan,
     ]) ?>

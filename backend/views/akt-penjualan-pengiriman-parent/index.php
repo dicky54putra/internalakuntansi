@@ -31,6 +31,15 @@ $this->title = 'Data Pengiriman Penjualan';
             'no_penjualan',
             [
                 'attribute' => 'tanggal_penjualan',
+                'headerOptions' => ['style' => 'color:#337ab7'],
+                'filterType' => GridView::FILTER_DATE,
+                'filterWidgetOptions' => [
+                    'pluginOptions' => [
+                        'format' => 'dd-mm-yyyy',
+                        'autoclose' => true,
+                        'todayHighlight' => true,
+                    ]
+                ],
                 'value' => function ($model) {
                     if (!empty($model->tanggal_penjualan)) {
                         # code...
@@ -40,18 +49,6 @@ $this->title = 'Data Pengiriman Penjualan';
                     }
                 }
             ],
-            // 'no_faktur_penjualan',
-            // [
-            //     'attribute' => 'tanggal_faktur_penjualan',
-            //     'value' => function ($model) {
-            //         if (!empty($model->tanggal_faktur_penjualan)) {
-            //             # code...
-            //             return tanggal_indo($model->tanggal_faktur_penjualan, true);
-            //         } else {
-            //             # code...
-            //         }
-            //     }
-            // ],
             [
                 'attribute' => 'status',
                 'format' => 'raw',

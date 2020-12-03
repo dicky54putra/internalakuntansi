@@ -33,6 +33,15 @@ $this->title = 'Daftar Produksi Manual';
             'no_produksi_manual',
             [
                 'attribute' => 'tanggal',
+                'headerOptions' => ['style' => 'color:#337ab7'],
+                'filterType' => GridView::FILTER_DATE,
+                'filterWidgetOptions' => [
+                    'pluginOptions' => [
+                        'format' => 'dd-mm-yyyy',
+                        'autoclose' => true,
+                        'todayHighlight' => true,
+                    ]
+                ],
                 'value' => function ($model) {
                     return tanggal_indo($model->tanggal, true);
                 }

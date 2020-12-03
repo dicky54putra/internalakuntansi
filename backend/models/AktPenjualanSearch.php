@@ -61,46 +61,42 @@ class AktPenjualanSearch extends AktPenjualan
             return $dataProvider;
         }
 
+        if (!empty($this->tanggal_order_penjualan)) {
+            $query->andFilterWhere(["date_format(tanggal_order_penjualan, '%d-%m-%Y')" => $this->tanggal_order_penjualan]);
+        }
+
+        // if (!is_null($this->tanggal_order_penjualan) && strpos($this->tanggal_order_penjualan, ' - ') !== false) {
+
+        //     list($start_date, $end_date) = explode(' - ', $this->tanggal_order_penjualan);
+
+        //     $query->andFilterWhere(['between', 'date(tanggal_order_penjualan)', $start_date, $end_date]);
+        // }
+
         // grid filtering conditions
         $query->andFilterWhere([
             'id_penjualan' => $this->id_penjualan,
-            'tanggal_order_penjualan' => $this->tanggal_order_penjualan,
-            // 'id_customer' => $this->id_customer,
-            // 'id_sales' => $this->id_sales,
-            // 'id_mata_uang' => $this->id_mata_uang,
             'the_approver_date' => $this->the_approver_date,
-            'tanggal_penjualan' => $this->tanggal_penjualan,
-            'tanggal_faktur_penjualan' => $this->tanggal_faktur_penjualan,
-            'ongkir' => $this->ongkir,
-            'pajak' => $this->pajak,
-            'total' => $this->total,
-            'jenis_bayar' => $this->jenis_bayar,
-            'jumlah_tempo' => $this->jumlah_tempo,
-            'tanggal_tempo' => $this->tanggal_tempo,
-            'materai' => $this->materai,
-            'status' => $this->status,
-            'diskon' => $this->diskon,
-            'tanggal_estimasi' => $this->tanggal_estimasi,
         ]);
 
         $query->andFilterWhere(['like', 'no_order_penjualan', $this->no_order_penjualan])
             ->andFilterWhere(['like', 'no_penjualan', $this->no_penjualan])
-            ->andFilterWhere(['like', 'no_faktur_penjualan', $this->no_faktur_penjualan])
+            // ->andFilterWhere(['like', 'tanggal_order_penjualan', $this->tanggal_order_penjualan])
             ->andFilterWhere(['like', 'akt_mitra_bisnis.nama_mitra_bisnis', $this->id_customer])
             ->andFilterWhere(['like', 'akt_sales.nama_sales', $this->id_sales])
-            ->andFilterWhere(['like', 'akt_mata_uang.mata_uang', $this->id_mata_uang])
-            ->andFilterWhere(['like', 'login.nama', $this->the_approver])
-            ->andFilterWhere(['like', 'akt_kas_bank.keterangan', $this->id_kas_bank]);
+            ->andFilterWhere(['like', 'login.nama', $this->the_approver]);
 
         return $dataProvider;
     }
 
     public function searchPenjualan($params)
     {
-        $query = AktPenjualan::find()->where(['>', 'akt_penjualan.status', 1])->andWhere(['!=', 'akt_penjualan.status', 5])->orderBy("id_penjualan DESC");
+        $query = AktPenjualan::find();
         $query->joinWith("customer");
         $query->joinWith("sales");
         $query->joinWith("mata_uang");
+        $query->where(['>', 'akt_penjualan.status', 1])
+        ->andWhere(['!=', 'akt_penjualan.status', 5])
+        ->orderBy("id_penjualan DESC");
 
         // add conditions that should always apply here
 
@@ -116,43 +112,35 @@ class AktPenjualanSearch extends AktPenjualan
             return $dataProvider;
         }
 
+        if (!empty($this->tanggal_penjualan)) {
+            $query->andFilterWhere(["date_format(tanggal_penjualan, '%d-%m-%Y')" => $this->tanggal_penjualan]);
+        }
+
+        if (!empty($this->tanggal_estimasi)) {
+            $query->andFilterWhere(["date_format(tanggal_estimasi, '%d-%m-%Y')" => $this->tanggal_estimasi]);
+        }
+
         // grid filtering conditions
         $query->andFilterWhere([
             'id_penjualan' => $this->id_penjualan,
-            'tanggal_order_penjualan' => $this->tanggal_order_penjualan,
-            // 'id_customer' => $this->id_customer,
-            // 'id_sales' => $this->id_sales,
-            // 'id_mata_uang' => $this->id_mata_uang,
-            'tanggal_penjualan' => $this->tanggal_penjualan,
-            'tanggal_faktur_penjualan' => $this->tanggal_faktur_penjualan,
-            'ongkir' => $this->ongkir,
-            'pajak' => $this->pajak,
-            'total' => $this->total,
-            'jenis_bayar' => $this->jenis_bayar,
-            'jumlah_tempo' => $this->jumlah_tempo,
-            'tanggal_tempo' => $this->tanggal_tempo,
-            'materai' => $this->materai,
-            'status' => $this->status,
-            'diskon' => $this->diskon,
-            'tanggal_estimasi' => $this->tanggal_estimasi,
         ]);
 
         $query->andFilterWhere(['like', 'no_order_penjualan', $this->no_order_penjualan])
             ->andFilterWhere(['like', 'no_penjualan', $this->no_penjualan])
-            ->andFilterWhere(['like', 'no_faktur_penjualan', $this->no_faktur_penjualan])
             ->andFilterWhere(['like', 'akt_mitra_bisnis.nama_mitra_bisnis', $this->id_customer])
-            ->andFilterWhere(['like', 'akt_sales.nama_sales', $this->id_sales])
-            ->andFilterWhere(['like', 'akt_mata_uang.mata_uang', $this->id_mata_uang]);
+            ->andFilterWhere(['like', 'akt_sales.nama_sales', $this->id_sales]);
 
         return $dataProvider;
     }
 
     public function searchPiutang($params)
     {
-        $query = AktPenjualan::find()->where(['akt_penjualan.jenis_bayar' => 2, 'akt_penjualan.status' => 4]);
+        $query = AktPenjualan::find();
         $query->joinWith("customer");
         $query->joinWith("sales");
         $query->joinWith("mata_uang");
+        $query->where(['akt_penjualan.jenis_bayar' => 2, 'akt_penjualan.status' => 4]);
+        $query->andWhere(['!=', 'akt_penjualan.total', 0]);
 
         // add conditions that should always apply here
 
@@ -168,33 +156,25 @@ class AktPenjualanSearch extends AktPenjualan
             return $dataProvider;
         }
 
+        if (!empty($this->tanggal_penjualan)) {
+            $query->andFilterWhere(["date_format(tanggal_penjualan, '%d-%m-%Y')" => $this->tanggal_penjualan]);
+        }
+
+        if (!empty($this->tanggal_tempo)) {
+            $query->andFilterWhere(["date_format(tanggal_tempo, '%d-%m-%Y')" => $this->tanggal_tempo]);
+        }
+
+
+
         // grid filtering conditions
         $query->andFilterWhere([
             'id_penjualan' => $this->id_penjualan,
-            'tanggal_order_penjualan' => $this->tanggal_order_penjualan,
-            // 'id_customer' => $this->id_customer,
-            // 'id_sales' => $this->id_sales,
-            // 'id_mata_uang' => $this->id_mata_uang,
-            'tanggal_penjualan' => $this->tanggal_penjualan,
-            'tanggal_faktur_penjualan' => $this->tanggal_faktur_penjualan,
-            'ongkir' => $this->ongkir,
-            'pajak' => $this->pajak,
-            'total' => $this->total,
-            'jenis_bayar' => $this->jenis_bayar,
             'jumlah_tempo' => $this->jumlah_tempo,
-            'tanggal_tempo' => $this->tanggal_tempo,
-            'materai' => $this->materai,
-            'status' => $this->status,
-            'diskon' => $this->diskon,
-            'tanggal_estimasi' => $this->tanggal_estimasi,
+            'total' => $this->total,
         ]);
 
-        $query->andFilterWhere(['like', 'no_order_penjualan', $this->no_order_penjualan])
-            ->andFilterWhere(['like', 'no_penjualan', $this->no_penjualan])
-            ->andFilterWhere(['like', 'no_faktur_penjualan', $this->no_faktur_penjualan])
-            ->andFilterWhere(['like', 'akt_mitra_bisnis.nama_mitra_bisnis', $this->id_customer])
-            ->andFilterWhere(['like', 'akt_sales.nama_sales', $this->id_sales])
-            ->andFilterWhere(['like', 'akt_mata_uang.mata_uang', $this->id_mata_uang]);
+        $query->andFilterWhere(['like', 'no_penjualan', $this->no_penjualan])
+            ->andFilterWhere(['like', 'akt_mitra_bisnis.nama_mitra_bisnis', $this->id_customer]);
 
         return $dataProvider;
     }
@@ -220,25 +200,14 @@ class AktPenjualanSearch extends AktPenjualan
             return $dataProvider;
         }
 
+        if (!empty($this->tanggal_penjualan)) {
+            $query->andFilterWhere(["date_format(tanggal_penjualan, '%d-%m-%Y')" => $this->tanggal_penjualan]);
+        }
+
         // grid filtering conditions
         $query->andFilterWhere([
             'id_penjualan' => $this->id_penjualan,
-            'tanggal_order_penjualan' => $this->tanggal_order_penjualan,
-            // 'id_customer' => $this->id_customer,
-            // 'id_sales' => $this->id_sales,
-            // 'id_mata_uang' => $this->id_mata_uang,
-            'tanggal_penjualan' => $this->tanggal_penjualan,
-            'tanggal_faktur_penjualan' => $this->tanggal_faktur_penjualan,
-            'ongkir' => $this->ongkir,
-            'pajak' => $this->pajak,
-            'total' => $this->total,
-            'jenis_bayar' => $this->jenis_bayar,
-            'jumlah_tempo' => $this->jumlah_tempo,
-            'tanggal_tempo' => $this->tanggal_tempo,
-            'materai' => $this->materai,
             'status' => $this->status,
-            'diskon' => $this->diskon,
-            'tanggal_estimasi' => $this->tanggal_estimasi,
         ]);
 
         $query->andFilterWhere(['like', 'no_order_penjualan', $this->no_order_penjualan])
@@ -273,33 +242,24 @@ class AktPenjualanSearch extends AktPenjualan
             return $dataProvider;
         }
 
+        if (!empty($this->tanggal_penjualan)) {
+            $query->andFilterWhere(["date_format(tanggal_penjualan, '%d-%m-%Y')" => $this->tanggal_penjualan]);
+        }
+
+        if (!empty($this->tanggal_faktur_penjualan)) {
+            $query->andFilterWhere(["date_format(tanggal_faktur_penjualan, '%d-%m-%Y')" => $this->tanggal_faktur_penjualan]);
+        }
+
         // grid filtering conditions
         $query->andFilterWhere([
             'id_penjualan' => $this->id_penjualan,
-            'tanggal_order_penjualan' => $this->tanggal_order_penjualan,
-            // 'id_customer' => $this->id_customer,
-            // 'id_sales' => $this->id_sales,
-            // 'id_mata_uang' => $this->id_mata_uang,
-            'tanggal_penjualan' => $this->tanggal_penjualan,
-            'tanggal_faktur_penjualan' => $this->tanggal_faktur_penjualan,
-            'ongkir' => $this->ongkir,
-            'pajak' => $this->pajak,
-            'total' => $this->total,
-            'jenis_bayar' => $this->jenis_bayar,
-            'jumlah_tempo' => $this->jumlah_tempo,
-            'tanggal_tempo' => $this->tanggal_tempo,
-            'materai' => $this->materai,
             'status' => $this->status,
-            'diskon' => $this->diskon,
-            'tanggal_estimasi' => $this->tanggal_estimasi,
         ]);
 
-        $query->andFilterWhere(['like', 'no_order_penjualan', $this->no_order_penjualan])
-            ->andFilterWhere(['like', 'no_penjualan', $this->no_penjualan])
-            ->andFilterWhere(['like', 'no_faktur_penjualan', $this->no_faktur_penjualan])
-            ->andFilterWhere(['like', 'akt_mitra_bisnis.nama_mitra_bisnis', $this->id_customer])
-            ->andFilterWhere(['like', 'akt_sales.nama_sales', $this->id_sales])
-            ->andFilterWhere(['like', 'akt_mata_uang.mata_uang', $this->id_mata_uang]);
+        $query->andFilterWhere(['like', 'no_penjualan', $this->no_penjualan])
+            // ->andFilterWhere(['like', 'tanggal_faktur_penjualan', $this->tanggal_faktur_penjualan])
+            // ->andFilterWhere(['like', 'tanggal_penjualan', $this->tanggal_penjualan])
+            ->andFilterWhere(['like', 'no_faktur_penjualan', $this->no_faktur_penjualan]);
 
         return $dataProvider;
     }

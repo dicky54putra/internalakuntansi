@@ -42,24 +42,4 @@ class Utils
 
         return $no_transaksi;
     }
-
-    public function setfilterNamaAkun($model_akun, $nama_akun,  $model_jurnal_umum_detail, $nominal, $jt)
-    {
-
-        if (strtolower($model_akun->nama_akun) == $nama_akun && $jt->tipe == 'D') {
-            $model_jurnal_umum_detail->debit = $nominal;
-            if ($model_akun->saldo_normal == 1) {
-                $model_akun->saldo_akun = $model_akun->saldo_akun + $nominal;
-            } else {
-                $model_akun->saldo_akun = $model_akun->saldo_akun - $nominal;
-            }
-        } else if (strtolower($model_akun->nama_akun) == $nama_akun && $jt->tipe == 'K') {
-            $model_jurnal_umum_detail->kredit = $nominal;
-            if ($model_akun->saldo_normal == 1) {
-                $model_akun->saldo_akun = $model_akun->saldo_akun - $nominal;
-            } else {
-                $model_akun->saldo_akun = $model_akun->saldo_akun + $nominal;
-            }
-        }
-    }
 }

@@ -151,7 +151,7 @@ class AktPenjualanDetailController extends Controller
         $model_sebelumnya = $this->findModel($id);
         $akt_penjualan = AktPenjualan::findOne($model->id_penjualan);
         $akt_item_harga_jual = AktItemHargaJual::findOne($model->id_item_harga_jual);
-        $data_item_stok = AktPenjualan::data_item_stok();
+        $data_item_stok = AktPenjualan::data_item_stok($akt_penjualan);
 
         $data_level = AktPenjualan::dataLevel($akt_item_harga_jual->id_item);
 
@@ -234,7 +234,7 @@ class AktPenjualanDetailController extends Controller
         $akt_item_harga_jual = AktItemHargaJual::findOne($model->id_item_harga_jual);
 
 
-        $data_item_stok = AktPenjualan::data_item_stok();
+        $data_item_stok = AktPenjualan::data_item_stok($akt_penjualan);
 
         $data_level = AktPenjualan::dataLevel($akt_item_harga_jual->id_item);
 

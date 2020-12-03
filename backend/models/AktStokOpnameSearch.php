@@ -56,15 +56,19 @@ class AktStokOpnameSearch extends AktStokOpname
             return $dataProvider;
         }
 
+        if (!empty($this->tanggal_opname)) {
+            $query->andFilterWhere(["date_format(tanggal_opname, '%d-%m-%Y')" => $this->tanggal_opname]);
+        }
+
         // grid filtering conditions
         $query->andFilterWhere([
             'id_stok_opname' => $this->id_stok_opname,
-            'tanggal_opname' => $this->tanggal_opname,
-            'keterangan' => $this->keterangan,
-            // 'id_akun_persediaan' => $this->id_akun_persediaan,
         ]);
 
-        $query->andFilterWhere(['like', 'no_transaksi', $this->no_transaksi]);
+        $query->andFilterWhere(['like', 'no_transaksi', $this->no_transaksi])
+            // ->andFilterWhere(['like', 'tanggal_opname', $this->tanggal_opname])
+            ->andFilterWhere(['like', 'keterangan', $this->keterangan]);
+
 
         return $dataProvider;
     }

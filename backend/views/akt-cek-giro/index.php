@@ -12,7 +12,8 @@ $this->title = 'Daftar Cek/Giro';
 <div class="akt-cek-giro-index">
 
     <h1><?= Html::encode($this->title) ?></h1>
-    <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
+    <?php // echo $this->render('_search', ['model' => $searchModel]); 
+    ?>
     <ul class="breadcrumb">
         <li><a href="/">Home</a></li>
         <li class="active">Daftar Cek/Giro</li>
@@ -33,28 +34,36 @@ $this->title = 'Daftar Cek/Giro';
             'no_cek_giro',
             [
                 'attribute' => 'tanggal_terbit',
-                'value' => function($model){
-                    return tanggal_indo($model->tanggal_terbit,true);
+                'headerOptions' => ['style' => 'color:#337ab7'],
+                'filterType' => GridView::FILTER_DATE,
+                'filterWidgetOptions' => [
+                    'pluginOptions' => [
+                        'format' => 'dd-mm-yyyy',
+                        'autoclose' => true,
+                        'todayHighlight' => true,
+                    ]
+                ],
+                'value' => function ($model) {
+                    return tanggal_indo($model->tanggal_terbit, true);
                 }
             ],
             [
                 'attribute' => 'tanggal_effektif',
-                'value' => function($model){
-                    return tanggal_indo($model->tanggal_effektif,true);
+                'headerOptions' => ['style' => 'color:#337ab7'],
+                'filterType' => GridView::FILTER_DATE,
+                'filterWidgetOptions' => [
+                    'pluginOptions' => [
+                        'format' => 'dd-mm-yyyy',
+                        'autoclose' => true,
+                        'todayHighlight' => true,
+                    ]
+                ],
+                'value' => function ($model) {
+                    return tanggal_indo($model->tanggal_effektif, true);
                 }
             ],
-            //'tipe',
-            //'in_out',
-            //'id_bank_asal',
-            //'id_mata_uang',
-            //'jumlah',
-            //'cabang_bank',
-            //'tanggal_kliring',
-            //'bank_kliring',
-            //'id_penerbit',
-            //'id_penerima',
 
-            
+
             [
                 'class' => 'yii\grid\ActionColumn',
                 'header' => 'Aksi',

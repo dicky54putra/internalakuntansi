@@ -70,9 +70,6 @@ class AktMitraBisnisAlamatController extends Controller
 
         $model_kota = new AktKota();
 
-        $total_kota = AktKota::find()->count();
-        $nomor_kota = "KT" . str_pad($total_kota + 1, 3, "0", STR_PAD_LEFT);
-
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['akt-mitra-bisnis/view', 'id' => $model->id_mitra_bisnis, '#' => 'alamat']);
         }
@@ -80,7 +77,6 @@ class AktMitraBisnisAlamatController extends Controller
         return $this->render('create', [
             'model' => $model,
             'model_kota' => $model_kota,
-            'nomor_kota' => $nomor_kota
         ]);
     }
 
@@ -96,8 +92,6 @@ class AktMitraBisnisAlamatController extends Controller
         $model = $this->findModel($id);
         $model_kota = new AktKota();
 
-        $total_kota = AktKota::find()->count();
-        $nomor_kota = "KT" . str_pad($total_kota + 1, 3, "0", STR_PAD_LEFT);
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['akt-mitra-bisnis/view', 'id' => $model->id_mitra_bisnis, '#' => 'alamat']);
         }
@@ -105,7 +99,6 @@ class AktMitraBisnisAlamatController extends Controller
         return $this->render('update', [
             'model' => $model,
             'model_kota' => $model_kota,
-            'nomor_kota' => $nomor_kota
         ]);
     }
 

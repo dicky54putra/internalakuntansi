@@ -5,9 +5,11 @@ namespace backend\controllers;
 use Yii;
 use backend\models\AktLevelHarga;
 use backend\models\AktLevelHargaSearch;
+use Error;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\helpers\Json;
 
 /**
  * AktLevelHargaController implements the CRUD actions for AktLevelHarga model.
@@ -70,20 +72,8 @@ class AktLevelHargaController extends Controller
         $nomor = 'LH' . str_pad($total + 1, 3, "0", STR_PAD_LEFT);
 
         if ($model->load(Yii::$app->request->post())) {
-            $create_in_item =  Yii::$app->request->post('create-in-item');
-            $id =  Yii::$app->request->post('id');
-            $update_in_item =  Yii::$app->request->post('update-in-item');
-            $id_update =  Yii::$app->request->post('id_update');
-            if (isset($create_in_item)) {
-                $model->save();
-                return $this->redirect(['akt-item-harga-jual/create', 'id' => $id]);
-            } else if (isset($update_in_item)) {
-                $model->save();
-                return $this->redirect(['akt-item-harga-jual/update', 'id' => $id_update]);
-            } else {
-                $model->save();
-                return $this->redirect(['view', 'id' => $model->id_level_harga]);
-            }
+            $model->save();
+            return $this->redirect(['view', 'id' => $model->id_level_harga]);
         }
 
         return $this->render('create', [
@@ -178,5 +168,37 @@ class AktLevelHargaController extends Controller
         }
 
         throw new NotFoundHttpException('The requested page does not exist.');
+    }
+
+    public function actionGetLevelHarga($sort)
+    {
+        $data = AktLevelHarga::find()->orderBy([
+            'id_level_harga' => $sort == 1 ? SORT_DESC : SORT_ASC
+        ])->all();
+        echo Json::encode($data);
+    }
+
+    public function actionGetKodeLevelHarga()
+    {
+        $total_level_harga = AktLevelHarga::find()->count();
+        $nomor_level_harga = 'LH' . str_pad($total_level_harga + 1, 3, "0", STR_PAD_LEFT);
+
+        echo Json::encode($nomor_level_harga);
+    }
+    public function actionCreateLevelHarga()
+    {
+        $model = new AktLevelHarga();
+        $params = Yii::$app->getRequest()->getBodyParams();
+
+        Yii::trace(print_r($params, true), __METHOD__);
+        $model->load($params, '');
+
+        if ($model->save()) {
+            Yii::$app->response->statusCode = 201;
+            echo Json::encode('Data Level Harga Berhasil Ditambahkan');
+        } else {
+            Yii::error($model->getErrors(), __METHOD__);
+            throw new Error("Something wen't wrong");
+        }
     }
 }

@@ -77,14 +77,9 @@ class AktItemController extends Controller
         $model_tipe = new AktItemTipe();
         $model_merk = new AktMerk();
 
-        $total_merk = AktMerk::find()->count();
-        $nomor_merk = 'MI' . str_pad($total_merk + 1, 3, "0", STR_PAD_LEFT);
-
         $model_satuan = new AktSatuan();
 
         $model_mitra_bisnis = new AktMitraBisnis();
-        $total_mitra_bisnis = AktMitraBisnis::find()->count();
-        $nomor_mitra_bisnis = 'MB' . str_pad($total_mitra_bisnis + 1, 3, "0", STR_PAD_LEFT);
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->id_item]);
         }
@@ -93,11 +88,9 @@ class AktItemController extends Controller
             'model' => $model,
             'nomor' => $nomor,
             'model_merk' => $model_merk,
-            'nomor_merk' => $nomor_merk,
             'model_tipe' => $model_tipe,
             'model_satuan' => $model_satuan,
             'model_mitra_bisnis' => $model_mitra_bisnis,
-            'nomor_mitra_bisnis' => $nomor_mitra_bisnis
         ]);
     }
 
@@ -114,18 +107,9 @@ class AktItemController extends Controller
         $nomor = $model->kode_item;
 
         $model_tipe = new AktItemTipe();
-
         $model_merk = new AktMerk();
-
-        $total_merk = AktMerk::find()->count();
-        $nomor_merk = 'MI' . str_pad($total_merk + 1, 3, "0", STR_PAD_LEFT);
-
         $model_satuan = new AktSatuan();
-
         $model_mitra_bisnis = new AktMitraBisnis();
-        $total_mitra_bisnis = AktMitraBisnis::find()->count();
-        $nomor_mitra_bisnis = 'MB' . str_pad($total_mitra_bisnis + 1, 3, "0", STR_PAD_LEFT);
-
 
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
@@ -136,11 +120,9 @@ class AktItemController extends Controller
             'model' => $model,
             'nomor' => $nomor,
             'model_merk' => $model_merk,
-            'nomor_merk' => $nomor_merk,
             'model_tipe' => $model_tipe,
             'model_satuan' => $model_satuan,
             'model_mitra_bisnis' => $model_mitra_bisnis,
-            'nomor_mitra_bisnis' => $nomor_mitra_bisnis
         ]);
     }
 

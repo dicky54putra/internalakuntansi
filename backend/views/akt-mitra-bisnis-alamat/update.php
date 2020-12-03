@@ -19,7 +19,6 @@ $this->title = 'Ubah Alamat ';
     <?= $this->render('_form', [
         'model' => $model,
         'model_kota' => $model_kota,
-        'nomor_kota' => $nomor_kota
     ]) ?>
 
 </div>

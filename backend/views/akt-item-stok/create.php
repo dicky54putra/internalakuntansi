@@ -19,7 +19,6 @@ $this->title = 'Tambah Stok Gudang';
     <?= $this->render('_form', [
         'model' => $model,
         'model_gudang' => $model_gudang,
-        'nomor_gudang' => $nomor_gudang,
         'data_gudang' => $data_gudang
     ]) ?>
 

@@ -55,11 +55,12 @@ class AktSaldoAwalStokSearch extends AktSaldoAwalStok
             // $query->where('0=1');
             return $dataProvider;
         }
-
+        if (!empty($this->tanggal_order_pembelian)) {
+            $query->andFilterWhere(["date_format(tanggal_order_pembelian, '%d-%m-%Y')" => $this->tanggal_order_pembelian]);
+        }
         // grid filtering conditions
         $query->andFilterWhere([
             'id_saldo_awal_stok' => $this->id_saldo_awal_stok,
-            'tanggal' => $this->tanggal,
             'tipe' => $this->tipe,
         ]);
 

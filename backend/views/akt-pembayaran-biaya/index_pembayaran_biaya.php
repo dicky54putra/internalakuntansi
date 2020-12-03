@@ -46,7 +46,15 @@ $this->title = 'Data Pembayaran';
                                                 'no_pembelian',
                                                 [
                                                     'attribute' => 'tanggal_pembelian',
-                                                    // 'label' => 'Tanggal Faktur',
+                                                    'headerOptions' => ['style' => 'color:#337ab7'],
+                                                    'filterType' => GridView::FILTER_DATE,
+                                                    'filterWidgetOptions' => [
+                                                        'pluginOptions' => [
+                                                            'format' => 'dd-mm-yyyy',
+                                                            'autoclose' => true,
+                                                            'todayHighlight' => true,
+                                                        ]
+                                                    ],
                                                     'value' => function ($model) {
                                                         if (!empty($model->tanggal_pembelian)) {
                                                             # code...
@@ -57,7 +65,15 @@ $this->title = 'Data Pembayaran';
                                                 'no_faktur_pembelian',
                                                 [
                                                     'attribute' => 'tanggal_faktur_pembelian',
-                                                    // 'label' => 'Tanggal Faktur',
+                                                    'headerOptions' => ['style' => 'color:#337ab7'],
+                                                    'filterType' => GridView::FILTER_DATE,
+                                                    'filterWidgetOptions' => [
+                                                        'pluginOptions' => [
+                                                            'format' => 'dd-mm-yyyy',
+                                                            'autoclose' => true,
+                                                            'todayHighlight' => true,
+                                                        ]
+                                                    ],
                                                     'value' => function ($model) {
                                                         if (!empty($model->tanggal_faktur_pembelian)) {
                                                             # code...
@@ -66,7 +82,7 @@ $this->title = 'Data Pembayaran';
                                                     }
                                                 ],
                                                 [
-                                                    'attribute' => 'status',
+                                                    // 'attribute' => 'status',
                                                     'format' => 'raw',
                                                     'filter' => array(
                                                         1 => 'Lunas',
@@ -181,28 +197,21 @@ $this->title = 'Data Pembayaran';
                                                 // 'tanggal',
                                                 [
                                                     'attribute' => 'tanggal',
+                                                    'label' => 'Tanggal Pembelian Harta Tetap',
+                                                    'headerOptions' => ['style' => 'color:#337ab7'],
+                                                    'filterType' => GridView::FILTER_DATE,
+                                                    'filterWidgetOptions' => [
+                                                        'pluginOptions' => [
+                                                            'format' => 'dd-mm-yyyy',
+                                                            'autoclose' => true,
+                                                            'todayHighlight' => true,
+                                                        ]
+                                                    ],
                                                     'format' => 'raw',
                                                     'value' => function ($model) {
                                                         return tanggal_indo($model->tanggal);
                                                     }
                                                 ],
-                                                // 'termin',
-                                                // [
-                                                //     'attribute' => 'termin',
-                                                //     'format' => 'raw',
-                                                //     'filter' => array(0 => "CASH", 1 => "Credit"),
-                                                //     'value' => function ($model) {
-                                                //         if ($model->termin == 0) {
-                                                //             return 'CASH';
-                                                //         } else {
-                                                //             return 'Credit';
-                                                //         }
-                                                //     }
-                                                // ],
-                                                // 'id_kas_bank',
-                                                //'jumlah_hari',
-                                                //'tanggal_selesai',
-                                                // 'id_supplier',
                                                 [
                                                     'attribute' => 'id_supplier',
                                                     'format' => 'raw',
@@ -212,7 +221,7 @@ $this->title = 'Data Pembayaran';
                                                     }
                                                 ],
                                                 [
-                                                    'attribute' => 'status',
+                                                    // 'attribute' => 'status',
                                                     'format' => 'raw',
                                                     'filter' => array(
                                                         1 => 'Lunas',
@@ -232,30 +241,6 @@ $this->title = 'Data Pembayaran';
                                                         }
                                                     }
                                                 ],
-                                                // 'id_mata_uang',
-                                                // [
-                                                //     'attribute' => 'pajak',
-                                                //     'format' => 'raw',
-                                                //     'value' => function ($model) {
-                                                //         if ($model->pajak == 10) {
-                                                //             return '<input type="checkbox" checked disabled class="checkbox">';
-                                                //         } else {
-                                                //             return '<input type="checkbox" disabled class="checkbox">';
-                                                //         }
-                                                //     }
-                                                // ],
-                                                // [
-                                                //     'attribute' => 'id_mata_uang',
-                                                //     'format' => 'raw',
-                                                //     'label' => 'Mata Uang',
-                                                //     'value' => function ($model) {
-                                                //         return $model->akt_mata_uang->mata_uang;
-                                                //     }
-                                                // ],
-                                                //'status_pajak',
-                                                //'keterangan:ntext',
-                                                //'id_cabang',
-                                                //'draft',
 
                                                 [
                                                     'class' => 'yii\grid\ActionColumn',

@@ -17,8 +17,8 @@ class AktPenyesuaianKasSearch extends AktPenyesuaianKas
     public function rules()
     {
         return [
-            [['id_penyesuaian_kas', 'id_akun', 'tipe', 'id_kas_bank', 'id_mata_uang'], 'integer'],
-            [['no_transaksi', 'tanggal', 'no_referensi', 'keterangan'], 'safe'],
+            [['id_penyesuaian_kas', 'tipe', 'id_kas_bank', 'id_mata_uang'], 'integer'],
+            [['no_transaksi', 'tanggal', 'no_referensi', 'keterangan', 'id_akun'], 'safe'],
             [['jumlah'], 'number'],
         ];
     }
@@ -58,15 +58,12 @@ class AktPenyesuaianKasSearch extends AktPenyesuaianKas
             // $query->where('0=1');
             return $dataProvider;
         }
-
+        if (!empty($this->tanggal)) {
+            $query->andFilterWhere(["date_format(tanggal, '%d-%m-%Y')" => $this->tanggal]);
+        }
         // grid filtering conditions
         $query->andFilterWhere([
             'id_penyesuaian_kas' => $this->id_penyesuaian_kas,
-            'tanggal' => $this->tanggal,
-            // 'id_akun' => $this->id_akun,
-            // 'id_mitra_bisnis' => $this->id_mitra_bisnis,
-            // 'id_kas_bank' => $this->id_kas_bank,
-            // 'id_mata_uang' => $this->id_mata_uang,
             'jumlah' => $this->jumlah,
         ]);
 

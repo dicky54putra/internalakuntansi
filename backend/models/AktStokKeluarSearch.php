@@ -56,15 +56,19 @@ class AktStokKeluarSearch extends AktStokKeluar
             return $dataProvider;
         }
 
+        if (!empty($this->tanggal_keluar)) {
+            $query->andFilterWhere(["date_format(tanggal_keluar, '%d-%m-%Y')" => $this->tanggal_keluar]);
+        }
+
         // grid filtering conditions
         $query->andFilterWhere([
             'id_stok_keluar' => $this->id_stok_keluar,
-            'tanggal_keluar' => $this->tanggal_keluar,
             'tipe' => $this->tipe,
             // 'id_akun_persediaan' => $this->id_akun_persediaan,
         ]);
 
         $query->andFilterWhere(['like', 'nomor_transaksi', $this->nomor_transaksi])
+            // ->andFilterWhere(['like', 'tanggal_keluar', $this->tanggal_keluar])
             ->andFilterWhere(['like', 'keterangan', $this->keterangan]);
 
         return $dataProvider;

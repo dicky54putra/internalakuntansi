@@ -22,6 +22,7 @@ $this->title = 'Ubah Akun: ' . $model->nama_akun;
     <?= $this->render('_form', [
         'model' => $model,
         'nomor' => $nomor,
+        'sum_kas_bank' => $sum_kas_bank,
     ]) ?>
 
 </div>

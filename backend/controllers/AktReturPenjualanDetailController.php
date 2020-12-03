@@ -74,21 +74,41 @@ class AktReturPenjualanDetailController extends Controller
     {
         $model = new AktReturPenjualanDetail();
 
+
+
+
         if ($model->load(Yii::$app->request->post())) {
 
-            $akt_penjualan_pengiriman_detail = AktPenjualanPengirimanDetail::findOne($model->id_penjualan_pengiriman_detail);
+            $model_id_retur_penjualan = Yii::$app->request->post('AktReturPenjualanDetail')['id_retur_penjualan'];
+            $model_id_penjualan_detail = Yii::$app->request->post('AktReturPenjualanDetail')['id_penjualan_detail'];
+            // $model_qty = Yii::$app->request->post('AktReturPenjualanDetail')['qty'];
+            $model_retur = Yii::$app->request->post('AktReturPenjualanDetail')['retur'];
+            $model_keterangan = Yii::$app->request->post('AktReturPenjualanDetail')['keterangan'];
 
-            $model->qty = $akt_penjualan_pengiriman_detail->qty_dikirim;
+            $model->id_retur_penjualan = $model_id_retur_penjualan;
+            $model->id_penjualan_detail = $model_id_penjualan_detail;
 
-            $count_retur_penjualan_detail = AktReturPenjualanDetail::find()->where(['id_retur_penjualan' => $model->id_retur_penjualan])->andWhere(['id_penjualan_pengiriman_detail' => $model->id_penjualan_pengiriman_detail])->count();
+            $model->retur = $model_retur;
+            $model->keterangan = $model_keterangan;
 
-            if ($count_retur_penjualan_detail == 0) {
-                # code...
-                $model->save();
-                Yii::$app->session->setFlash('success', [['Perhatian !', 'Barang yang Di Input Berhasil Tambahkan']]);
+            $count_retur_penjualan_detail = AktReturPenjualanDetail::find()->where(['id_retur_penjualan' => $model_id_retur_penjualan])->andWhere(['id_penjualan_detail' => $model_id_penjualan_detail])->count();
+
+            $penjualan_detail = AktPenjualanDetail::findOne($model_id_penjualan_detail);
+            $item_stok = AktItemStok::findOne($penjualan_detail->id_item_stok);
+            $item = AktItem::findOne($item_stok->id_item);
+            $model->qty = $penjualan_detail['qty'];
+
+            if ($model_retur > $penjualan_detail['qty']) {
+                Yii::$app->session->setFlash('danger', [['Perhatian !', ' Jumlah retur tidak boleh melebihi qty penjualan!']]);
             } else {
-                # code...
-                Yii::$app->session->setFlash('danger', [['Perhatian !', 'Barang yang Di Input Sudah Terdaftar']]);
+                if ($count_retur_penjualan_detail == 0) {
+                    # code...
+                    $model->save();
+                    Yii::$app->session->setFlash('success', [['Perhatian !', '' . $item->nama_item . ' Berhasil Tersimpan di Data Retur Barang Penjualan']]);
+                } else {
+                    # code...
+                    Yii::$app->session->setFlash('danger', [['Perhatian !', '' . $item->nama_item . ' Sudah Terdaftar di Data Retur Barang Penjualan']]);
+                }
             }
 
             return $this->redirect(['akt-retur-penjualan/view', 'id' => $model->id_retur_penjualan]);

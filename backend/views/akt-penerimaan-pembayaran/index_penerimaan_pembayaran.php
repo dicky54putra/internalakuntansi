@@ -43,6 +43,15 @@ $this->title = 'Data Penerimaan Pembayaran';
                                                 'no_penjualan',
                                                 [
                                                     'attribute' => 'tanggal_penjualan',
+                                                    'headerOptions' => ['style' => 'color:#337ab7'],
+                                                    'filterType' => GridView::FILTER_DATE,
+                                                    'filterWidgetOptions' => [
+                                                        'pluginOptions' => [
+                                                            'format' => 'dd-mm-yyyy',
+                                                            'autoclose' => true,
+                                                            'todayHighlight' => true,
+                                                        ]
+                                                    ],
                                                     'value' => function ($model) {
                                                         if (!empty($model->tanggal_penjualan)) {
                                                             # code...
@@ -55,6 +64,15 @@ $this->title = 'Data Penerimaan Pembayaran';
                                                 'no_faktur_penjualan',
                                                 [
                                                     'attribute' => 'tanggal_faktur_penjualan',
+                                                    'headerOptions' => ['style' => 'color:#337ab7'],
+                                                    'filterType' => GridView::FILTER_DATE,
+                                                    'filterWidgetOptions' => [
+                                                        'pluginOptions' => [
+                                                            'format' => 'dd-mm-yyyy',
+                                                            'autoclose' => true,
+                                                            'todayHighlight' => true,
+                                                        ]
+                                                    ],
                                                     'value' => function ($model) {
                                                         if (!empty($model->tanggal_faktur_penjualan)) {
                                                             # code...
@@ -189,6 +207,14 @@ $this->title = 'Data Penerimaan Pembayaran';
                                                 'no_penjualan_harta_tetap',
                                                 [
                                                     'attribute' => 'tanggal_penjualan_harta_tetap',
+                                                    'filterType' => GridView::FILTER_DATE,
+                                                    'filterWidgetOptions' => [
+                                                        'pluginOptions' => [
+                                                            'format' => 'dd-mm-yyyy',
+                                                            'autoclose' => true,
+                                                            'todayHighlight' => true,
+                                                        ]
+                                                    ],
                                                     'value' => function ($model) {
                                                         return tanggal_indo($model->tanggal_penjualan_harta_tetap, true);
                                                     }

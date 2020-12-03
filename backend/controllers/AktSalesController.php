@@ -5,6 +5,7 @@ namespace backend\controllers;
 use Yii;
 use backend\models\AktSales;
 use backend\models\AktKota;
+use backend\models\AktPegawai;
 use yii\helpers\ArrayHelper;
 use backend\models\AktSalesSearch;
 use yii\web\Controller;
@@ -72,9 +73,7 @@ class AktSalesController extends Controller
         $nomor = 'SL' . str_pad($total + 1, 3, "0", STR_PAD_LEFT);
 
         $model_kota = new AktKota();
-        $total_kota = AktKota::find()->count();
-        $nomor_kota = "KT" . str_pad($total_kota + 1, 3, "0", STR_PAD_LEFT);
-        $data_kota =  ArrayHelper::map(AktKota::find()->all(), 'id_kota', 'nama_kota');
+        $data_kota =  AktSales::getArrayKota($model_kota);
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->id_sales]);
@@ -84,7 +83,6 @@ class AktSalesController extends Controller
             'model' => $model,
             'nomor' => $nomor,
             'data_kota' => $data_kota,
-            'nomor_kota' => $nomor_kota,
             'model_kota' => $model_kota
         ]);
     }
@@ -102,9 +100,7 @@ class AktSalesController extends Controller
 
         $nomor = $model->kode_sales;
         $model_kota = new AktKota();
-        $total_kota = AktKota::find()->count();
-        $nomor_kota = "KT" . str_pad($total_kota + 1, 3, "0", STR_PAD_LEFT);
-        $data_kota =  ArrayHelper::map(AktKota::find()->all(), 'id_kota', 'nama_kota');
+        $data_kota =  AktSales::getArrayKota($model_kota);
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->id_sales]);
         }
@@ -113,7 +109,6 @@ class AktSalesController extends Controller
             'model' => $model,
             'nomor' => $nomor,
             'data_kota' => $data_kota,
-            'nomor_kota' => $nomor_kota,
             'model_kota' => $model_kota
         ]);
     }

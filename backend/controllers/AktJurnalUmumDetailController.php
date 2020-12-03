@@ -103,17 +103,32 @@ class AktJurnalUmumDetailController extends Controller
 
 
         $akun = AktAkun::find()->where(['id_akun' => $model_id_akun])->one();
+        $kas_bank = AktKasBank::findOne($post_kas_bank);
 
         if ($akun->saldo_normal == 1) {
-            // debet
             if ($model_debit > 0 && $model_kredit == 0) {
-                $akun->saldo_akun = $akun->saldo_akun + $model_debit;
-            } elseif ($model_debit == 0 && $model_kredit > 0) {
-                if ($akun->saldo_akun >= $model_kredit) {
-                    $akun->saldo_akun = $akun->saldo_akun - $model_kredit;
+                if (strtolower($akun->nama_akun) == 'kas') {
+                    $kas_bank->saldo = $kas_bank->saldo + $model_debit - $model_kredit;
+                    $kas_bank->save(false);
                 } else {
-                    Yii::$app->session->setFlash("danger", "Saldo tidak mencukupi");
-                    return $this->redirect(['akt-jurnal-umum/view', 'id' => $model->id_jurnal_umum]);
+                    $akun->saldo_akun = $akun->saldo_akun + $model_debit;
+                }
+            } elseif ($model_debit == 0 && $model_kredit > 0) {
+                if (strtolower($akun->nama_akun) == 'kas') {
+                    if ($model_kredit > $kas_bank->saldo) {
+                        Yii::$app->session->setFlash("danger", "Saldo tidak mencukupi");
+                        return $this->redirect(['akt-jurnal-umum/view', 'id' => $model->id_jurnal_umum]);
+                    } else {
+                        $kas_bank->saldo = $kas_bank->saldo + $model_debit - $model_kredit;
+                        $kas_bank->save(false);
+                    }
+                } else {
+                    if ($akun->saldo_akun >= $model_kredit) {
+                        $akun->saldo_akun = $akun->saldo_akun - $model_kredit;
+                    } else {
+                        Yii::$app->session->setFlash("danger", "Saldo tidak mencukupi");
+                        return $this->redirect(['akt-jurnal-umum/view', 'id' => $model->id_jurnal_umum]);
+                    }
                 }
             }
         } elseif ($akun->saldo_normal == 2) {
@@ -121,11 +136,21 @@ class AktJurnalUmumDetailController extends Controller
             if ($model_kredit > 0 && $model_debit == 0) {
                 $akun->saldo_akun = $akun->saldo_akun + $model_kredit;
             } elseif ($model_kredit == 0 && $model_debit > 0) {
-                if ($akun->saldo_akun >= $model_debit) {
-                    $akun->saldo_akun = $akun->saldo_akun - $model_debit;
+                if (strtolower($akun->nama_akun) == 'kas') {
+                    if ($model_kredit > $kas_bank->saldo) {
+                        Yii::$app->session->setFlash("danger", "Saldo tidak mencukupi");
+                        return $this->redirect(['akt-jurnal-umum/view', 'id' => $model->id_jurnal_umum]);
+                    } else {
+                        $kas_bank->saldo = $kas_bank->saldo + $model_debit - $model_kredit;
+                        $kas_bank->save(false);
+                    }
                 } else {
-                    Yii::$app->session->setFlash("danger", "Saldo tidak mencukupi");
-                    return $this->redirect(['akt-jurnal-umum/view', 'id' => $model->id_jurnal_umum]);
+                    if ($akun->saldo_akun >= $model_debit) {
+                        $akun->saldo_akun = $akun->saldo_akun - $model_debit;
+                    } else {
+                        Yii::$app->session->setFlash("danger", "Saldo tidak mencukupi");
+                        return $this->redirect(['akt-jurnal-umum/view', 'id' => $model->id_jurnal_umum]);
+                    }
                 }
             }
         }
@@ -133,9 +158,6 @@ class AktJurnalUmumDetailController extends Controller
         $model->save(FALSE);
 
         if ($post_kas_bank != null) {
-            $kas_bank = AktKasBank::findOne($post_kas_bank);
-            $kas_bank->saldo = $kas_bank->saldo + $model_debit - $model_kredit;
-            $kas_bank->save(false);
             $history_transaksi = new AktHistoryTransaksi();
             $history_transaksi->nama_tabel = 'akt_kas_bank';
             $history_transaksi->id_tabel = $post_kas_bank;
@@ -160,31 +182,25 @@ class AktJurnalUmumDetailController extends Controller
     {
         $model = $this->findModel($id);
         $akun = AktAkun::find()->where(['id_akun' => $model->id_akun])->one();
-        if ($akun->saldo_normal == 1) {
-            // debet
-            if ($model->debit > 0 && $model->kredit == 0) {
-                $akun->saldo_akun = $akun->saldo_akun - $model->debit;
-            } elseif ($model->debit == 0 && $model->kredit == 0) {
-                $akun->saldo_akun = $akun->saldo_akun + $model->kredit;
-            }
-            // var_dump($akun->saldo_normal);
-        } elseif ($akun->saldo_normal == 2) {
-            // kredit
-            if ($model->debit > 0 && $model->kredit == 0) {
-                $akun->saldo_akun = $akun->saldo_akun + $model->debit;
-            } elseif ($model->debit == 0 && $model->kredit == 0) {
-                $akun->saldo_akun = $akun->saldo_akun - $model->kredit;
-            }
-            // var_dump($akun->saldo_normal);
-        }
-        // die;
-
-        if ($akun->nama_akun == 'kas') {
+        if (strtolower($akun->nama_akun) == 'kas') {
             $history_transaksi = AktHistoryTransaksi::find()->where(['id_jurnal_umum' => $model->id_jurnal_umum_detail])->andWhere(['nama_tabel' => 'akt_kas_bank'])->one();
             $akt_kas_bank = AktKasBank::find()->where(['id_kas_bank' => $history_transaksi['id_tabel']])->one();
-            $akt_kas_bank->saldo = $akt_kas_bank->saldo - $model->debit + $model->kredit;
-            $akt_kas_bank->save(false);
+            if ($akt_kas_bank) {
+                $akt_kas_bank->saldo = $akt_kas_bank->saldo - $model->debit + $model->kredit;
+                $akt_kas_bank->save(false);
+            }
             $history_transaksi->delete();
+        } else {
+            if ($akun->saldo_normal == 1 && $model->debit > 0 || $model->debit < 0) {
+                $akun->saldo_akun = $akun->saldo_akun - $model->debit;
+            } else if ($akun->saldo_normal == 1 && $model->kredit > 0 || $model->kredit < 0) {
+                $akun->saldo_akun = $akun->saldo_akun + $model->kredit;
+            } else if ($akun->saldo_normal == 2 && $model->kredit > 0 || $model->kredit < 0) {
+                $akun->saldo_akun = $akun->saldo_akun - $model->kredit;
+            } else if ($akun->saldo_normal == 2 && $model->debit > 0 || $model->debit < 0) {
+                $akun->saldo_akun = $akun->saldo_akun + $model->debit;
+            }
+            // die;
         }
 
         $akun->save(false);
@@ -192,6 +208,7 @@ class AktJurnalUmumDetailController extends Controller
 
         return $this->redirect(['akt-jurnal-umum/view', 'id' => $model->id_jurnal_umum]);
     }
+
 
     /**
      * Finds the AktJurnalUmumDetail model based on its primary key value.

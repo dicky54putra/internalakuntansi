@@ -71,14 +71,20 @@ $this->title = 'Daftar Harta Tetap';
             ],
             [
                 'label' => 'Status',
+                'format' => 'raw', 
                 'value' => function ($model) {
 
                     if ($model->status == 1) {
                         # code...
-                        return 'Ada';
+                        if($model->id_kelompok_aset_tetap == null ) {
+                            return '<span class="label label-warning"> Ada | Belum Disetting </span>';
+                        } else {
+                            return '<span class="label label-info"> Ada | Sudah Disetting </span>';
+                        }
                     } else {
-                        return 'Terjual';
+                        return '<span class="label label-success"> Terjual </span>';
                     }
+                    
                 }
             ],
             [

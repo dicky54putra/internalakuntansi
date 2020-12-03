@@ -2,12 +2,15 @@
 
 namespace backend\controllers;
 
+use backend\models\AktItem;
 use Yii;
 use backend\models\AktItemTipe;
 use backend\models\AktItemTipeSearch;
+use Error;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\helpers\Json;
 
 /**
  * AktItemTipeController implements the CRUD actions for AktItemTipe model.
@@ -68,19 +71,8 @@ class AktItemTipeController extends Controller
 
         if ($model->load(Yii::$app->request->post())) {
 
-            $create_in_item =  Yii::$app->request->post('create-in-item');
-            $update_in_item =  Yii::$app->request->post('update-in-item');
-            $id =  Yii::$app->request->post('id');
-            if (isset($create_in_item)) {
-                $model->save();
-                return $this->redirect(['akt-item/create']);
-            } else if (isset($update_in_item)) {
-                $model->save();
-                return $this->redirect(['akt-item/update', 'id' => $id]);
-            } else {
-                $model->save();
-                return $this->redirect(['view', 'id' => $model->id_tipe_item]);
-            }
+            $model->save();
+            return $this->redirect(['view', 'id' => $model->id_tipe_item]);
         }
 
         return $this->render('create', [
@@ -171,5 +163,30 @@ class AktItemTipeController extends Controller
         }
 
         throw new NotFoundHttpException('The requested page does not exist.');
+    }
+    public function actionCreateTipe()
+    {
+        $model = new AktItemTipe();
+        $params = Yii::$app->getRequest()->getBodyParams();
+
+        Yii::trace(print_r($params, true), __METHOD__);
+        $model->load($params, '');
+
+        if ($model->save()) {
+            Yii::$app->response->statusCode = 201;
+            echo Json::encode('Data Tipe Berhasil Ditambahkan');
+        } else {
+            Yii::error($model->getErrors(), __METHOD__);
+            throw new Error("Something wen't wrong");
+        }
+    }
+
+
+    public function actionGetTipeBarang($sort)
+    {
+        $data = AktItemTipe::find()->select(['id_tipe_item', 'nama_tipe_item'])->orderBy([
+            'id_tipe_item' => $sort == 1 ? SORT_DESC : SORT_ASC
+        ])->all();
+        echo Json::encode($data);
     }
 }

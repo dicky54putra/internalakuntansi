@@ -65,18 +65,76 @@ class AktLaporanKasController extends Controller
         ]);
     }
 
+    public function actionLaporanTransferKasCetak($tanggal_awal, $tanggal_akhir, $kasbank_asal = null, $kasbank_tujuan = null)
+    {
+        return $this->renderPartial('laporan_transfer_kas_cetak', [
+            'tanggal_awal' => $tanggal_awal,
+            'tanggal_akhir' => $tanggal_akhir,
+            'kasbank_asal' => $kasbank_asal,
+            'kasbank_tujuan' => $kasbank_tujuan,
+        ]);
+    }
+
+    public function actionLaporanTransferKasExport($tanggal_awal, $tanggal_akhir, $kasbank_asal = null, $kasbank_tujuan = null)
+    {
+        return $this->renderPartial('laporan_transfer_kas_cetak', [
+            'tanggal_awal' => $tanggal_awal,
+            'tanggal_akhir' => $tanggal_akhir,
+            'kasbank_asal' => $kasbank_asal,
+            'kasbank_tujuan' => $kasbank_tujuan,
+        ]);
+    }
+
     public function actionLaporanDetailPembayaran()
     {
         $tanggal_awal = Yii::$app->request->post('tanggal_awal');
         $tanggal_akhir = Yii::$app->request->post('tanggal_akhir');
-        // $akun_asal = Yii::$app->request->post('akun_asal');
+        $supplier = Yii::$app->request->post('supplier');
         // $akun_tujuan = Yii::$app->request->post('akun_tujuan');
 
         return $this->render('laporan_detail_pembayaran', [
             'tanggal_awal' => $tanggal_awal,
             'tanggal_akhir' => $tanggal_akhir,
-            // 'akun_asal' => $akun_asal,
+            'supplier' => $supplier,
             // 'akun_tujuan' => $akun_tujuan,
+        ]);
+    }
+
+    public function actionLaporanDetailPenerimaanPembayaran()
+    {
+        $tanggal_awal = Yii::$app->request->post('tanggal_awal');
+        $tanggal_akhir = Yii::$app->request->post('tanggal_akhir');
+        $customer = Yii::$app->request->post('customer');
+        // $akun_tujuan = Yii::$app->request->post('akun_tujuan');
+
+        return $this->render('laporan_detail_penerimaan_pembayaran', [
+            'tanggal_awal' => $tanggal_awal,
+            'tanggal_akhir' => $tanggal_akhir,
+            'customer' => $customer,
+            // 'akun_tujuan' => $akun_tujuan,
+        ]);
+    }
+
+    public function actionLaporanHutangVsPiutang()
+    {
+        $jatuh_tempo = Yii::$app->request->post('jatuh_tempo');
+
+        return $this->render('laporan_hutang_vs_piutang', [
+            'jatuh_tempo' => $jatuh_tempo,
+        ]);
+    }
+
+    public function actionLaporanHutangVsPiutangCetak($jatuh_tempo)
+    {
+        return $this->renderPartial('laporan_hutang_vs_piutang_cetak', [
+            'jatuh_tempo' => $jatuh_tempo,
+        ]);
+    }
+
+    public function actionLaporanHutangVsPiutangExport($jatuh_tempo)
+    {
+        return $this->renderPartial('laporan_hutang_vs_piutang_export', [
+            'jatuh_tempo' => $jatuh_tempo,
         ]);
     }
 }

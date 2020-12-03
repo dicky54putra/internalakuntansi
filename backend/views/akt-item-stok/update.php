@@ -19,8 +19,7 @@ $this->title = 'Ubah Item Stok';
     <?= $this->render('_form', [
         'model' => $model,
         'data_gudang' => $data_gudang,
-            'model_gudang' => $model_gudang,
-            'nomor_gudang' => $nomor_gudang
+        'model_gudang' => $model_gudang,
     ]) ?>
 
 </div>

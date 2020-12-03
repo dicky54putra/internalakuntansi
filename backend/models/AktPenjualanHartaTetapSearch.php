@@ -61,26 +61,13 @@ class AktPenjualanHartaTetapSearch extends AktPenjualanHartaTetap
             return $dataProvider;
         }
 
+        if (!empty($this->tanggal_penjualan_harta_tetap)) {
+            $query->andFilterWhere(["date_format(tanggal_penjualan_harta_tetap, '%d-%m-%Y')" => $this->tanggal_penjualan_harta_tetap]);
+        }
+
         // grid filtering conditions
         $query->andFilterWhere([
             'id_penjualan_harta_tetap' => $this->id_penjualan_harta_tetap,
-            'tanggal_penjualan_harta_tetap' => $this->tanggal_penjualan_harta_tetap,
-            // 'id_customer' => $this->id_customer,
-            // 'id_sales' => $this->id_sales,
-            // 'id_mata_uang' => $this->id_mata_uang,
-            // 'the_approver' => $this->the_approver,
-            'the_approver_date' => $this->the_approver_date,
-            'tanggal_faktur_penjualan_harta_tetap' => $this->tanggal_faktur_penjualan_harta_tetap,
-            'ongkir' => $this->ongkir,
-            'pajak' => $this->pajak,
-            'uang_muka' => $this->uang_muka,
-            // 'id_kas_bank' => $this->id_kas_bank,
-            'total' => $this->total,
-            'diskon' => $this->diskon,
-            'jenis_bayar' => $this->jenis_bayar,
-            'jumlah_tempo' => $this->jumlah_tempo,
-            'tanggal_tempo' => $this->tanggal_tempo,
-            'materai' => $this->materai,
             'status' => $this->status,
         ]);
 
@@ -119,36 +106,18 @@ class AktPenjualanHartaTetapSearch extends AktPenjualanHartaTetap
             return $dataProvider;
         }
 
+        if (!empty($this->tanggal_penjualan_harta_tetap)) {
+            $query->andFilterWhere(["date_format(tanggal_penjualan_harta_tetap, '%d-%m-%Y')" => $this->tanggal_penjualan_harta_tetap]);
+        }
+
         // grid filtering conditions
         $query->andFilterWhere([
             'id_penjualan_harta_tetap' => $this->id_penjualan_harta_tetap,
-            'tanggal_penjualan_harta_tetap' => $this->tanggal_penjualan_harta_tetap,
-            // 'id_customer' => $this->id_customer,
-            // 'id_sales' => $this->id_sales,
-            // 'id_mata_uang' => $this->id_mata_uang,
-            // 'the_approver' => $this->the_approver,
-            'the_approver_date' => $this->the_approver_date,
-            'tanggal_faktur_penjualan_harta_tetap' => $this->tanggal_faktur_penjualan_harta_tetap,
-            'ongkir' => $this->ongkir,
-            'pajak' => $this->pajak,
-            'uang_muka' => $this->uang_muka,
-            // 'id_kas_bank' => $this->id_kas_bank,
-            'total' => $this->total,
-            'diskon' => $this->diskon,
-            'jenis_bayar' => $this->jenis_bayar,
-            'jumlah_tempo' => $this->jumlah_tempo,
-            'tanggal_tempo' => $this->tanggal_tempo,
-            'materai' => $this->materai,
             'status' => $this->status,
         ]);
 
         $query->andFilterWhere(['like', 'no_penjualan_harta_tetap', $this->no_penjualan_harta_tetap])
-            ->andFilterWhere(['like', 'no_faktur_penjualan_harta_tetap', $this->no_faktur_penjualan_harta_tetap])
-            ->andFilterWhere(['like', 'akt_mitra_bisnis.nama_mitra_bisnis', $this->id_customer])
-            ->andFilterWhere(['like', 'akt_sales.nama_sales', $this->id_sales])
-            ->andFilterWhere(['like', 'akt_mata_uang.mata_uang', $this->id_mata_uang])
-            ->andFilterWhere(['like', 'login.nama', $this->the_approver])
-            ->andFilterWhere(['like', 'akt_kas_bank.keterangan', $this->id_kas_bank]);
+            ->andFilterWhere(['like', 'akt_mitra_bisnis.nama_mitra_bisnis', $this->id_customer]);
 
         return $dataProvider;
     }

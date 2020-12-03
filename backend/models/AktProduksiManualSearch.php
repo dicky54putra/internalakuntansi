@@ -17,7 +17,7 @@ class AktProduksiManualSearch extends AktProduksiManual
     public function rules()
     {
         return [
-            [['id_produksi_manual', 'tanggal', 'status_produksi'], 'integer'],
+            [['id_produksi_manual', 'status_produksi'], 'integer'],
             [['no_produksi_manual', 'id_pegawai', 'id_customer', 'id_akun'], 'safe'],
         ];
     }
@@ -59,14 +59,12 @@ class AktProduksiManualSearch extends AktProduksiManual
             // $query->where('0=1');
             return $dataProvider;
         }
-
+        if (!empty($this->tanggal)) {
+            $query->andFilterWhere(["date_format(tanggal, '%d-%m-%Y')" => $this->tanggal]);
+        }
         // grid filtering conditions
         $query->andFilterWhere([
             'id_produksi_manual' => $this->id_produksi_manual,
-            'tanggal' => $this->tanggal,
-            // 'id_pegawai' => $this->id_pegawai,
-            // 'id_customer' => $this->id_customer,
-            // 'id_akun' => $this->id_akun,
             'status_produksi' => $this->status_produksi,
         ]);
 

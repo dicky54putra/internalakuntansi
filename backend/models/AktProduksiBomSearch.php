@@ -17,7 +17,7 @@ class AktProduksiBomSearch extends AktProduksiBom
     public function rules()
     {
         return [
-            [['id_produksi_bom' ,'id_bom'], 'integer'],
+            [['id_produksi_bom', 'id_bom'], 'integer'],
             [['tanggal', 'tipe', 'id_pegawai', 'id_customer', 'id_akun', 'no_produksi_bom'], 'safe'],
         ];
     }
@@ -59,21 +59,21 @@ class AktProduksiBomSearch extends AktProduksiBom
             return $dataProvider;
         }
 
+        if (!empty($this->tanggal)) {
+            $query->andFilterWhere(["date_format(tanggal, '%d-%m-%Y')" => $this->tanggal]);
+        }
+
         // grid filtering conditions
         $query->andFilterWhere([
             'id_produksi_bom' => $this->id_produksi_bom,
-            'no_produksi_bom' => $this->no_produksi_bom,
-            'tanggal' => $this->tanggal,
-            // 'id_pegawai' => $this->id_pegawai,
-            // 'id_customer' => $this->id_customer,
             'id_bom' => $this->id_bom,
-            // 'id_akun' => $this->id_akun,
         ]);
 
         $query->andFilterWhere(['like', 'tipe', $this->tipe])
-        ->andFilterWhere(['like', 'akt_pegawai.nama_pegawai', $this->id_pegawai])
-        ->andFilterWhere(['like', 'akt_akun.nama_akun', $this->id_akun])
-        ->andFilterWhere(['like', 'akt_mitra_bisnis.nama_mitra_bisnis', $this->id_customer]);
+            ->andFilterWhere(['like', 'no_produksi_bom', $this->no_produksi_bom])
+            ->andFilterWhere(['like', 'akt_pegawai.nama_pegawai', $this->id_pegawai])
+            ->andFilterWhere(['like', 'akt_akun.nama_akun', $this->id_akun])
+            ->andFilterWhere(['like', 'akt_mitra_bisnis.nama_mitra_bisnis', $this->id_customer]);
 
         return $dataProvider;
     }

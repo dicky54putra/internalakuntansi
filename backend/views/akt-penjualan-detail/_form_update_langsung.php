@@ -9,7 +9,6 @@ use yii\helpers\Url;
 /* @var $model backend\models\AktPenjualanDetail */
 /* @var $form yii\widgets\ActiveForm */
 ?>
-
 <div class="akt-penjualan-detail-form">
     <div class="panel panel-primary">
         <div class="panel-heading"><span class="fa fa-box"></span> <?= $this->title ?></div>

@@ -5,6 +5,7 @@ use yii\helpers\Html;
 use kartik\grid\GridView;
 use backend\models\Login;
 use backend\models\AktPembelian;
+use kartik\date\DatePicker;
 /* @var $this yii\web\View */
 /* @var $searchModel backend\models\AktpembelianSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
@@ -35,27 +36,43 @@ $this->title = 'Data pembelian';
         'filterModel' => $searchModel,
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
-
             'no_pembelian',
             [
                 'attribute' => 'tanggal_pembelian',
+                'headerOptions' => ['style' => 'color:#337ab7'],
+                'filterType' => GridView::FILTER_DATE,
+                'filterWidgetOptions' => [
+                    'pluginOptions' => [
+                        'format' => 'dd-mm-yyyy',
+                        'autoclose' => true,
+                        'todayHighlight' => true,
+                    ]
+                ],
                 'value' => function ($model) {
-                    if (!empty($model->tanggal_pembelian)) {
+                    if ($model->tanggal_pembelian != null) {
                         # code...
                         return tanggal_indo($model->tanggal_pembelian, true);
                     } else {
-                        # code...
+                        return null;
                     }
                 }
             ],
             [
                 'attribute' => 'tanggal_estimasi',
+                'headerOptions' => ['style' => 'color:#337ab7'],
+                'filterType' => GridView::FILTER_DATE,
+                'filterWidgetOptions' => [
+                    'pluginOptions' => [
+                        'format' => 'dd-mm-yyyy',
+                        'autoclose' => true,
+                        'todayHighlight' => true,
+                    ]
+                ],
                 'value' => function ($model) {
-                    if (!empty($model->tanggal_estimasi)) {
-                        # code...
+                    if ($model->tanggal_estimasi != null) {
                         return tanggal_indo($model->tanggal_estimasi, true);
                     } else {
-                        # code...
+                        return null;
                     }
                 }
             ],

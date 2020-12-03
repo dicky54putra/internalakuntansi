@@ -56,13 +56,12 @@ class AktSaldoAwalKasSearch extends AktSaldoAwalKas
             // $query->where('0=1');
             return $dataProvider;
         }
-
+        if (!empty($this->tanggal_transaksi)) {
+            $query->andFilterWhere(["date_format(tanggal_transaksi, '%d-%m-%Y')" => $this->tanggal_transaksi]);
+        }
         // grid filtering conditions
         $query->andFilterWhere([
             'id_saldo_awal_kas' => $this->id_saldo_awal_kas,
-            'tanggal_transaksi' => $this->tanggal_transaksi,
-            // 'id_kas_bank' => $this->id_kas_bank,
-            // 'jumlah' => $this->jumlah,
         ]);
 
         $query->andFilterWhere(['like', 'no_transaksi', $this->no_transaksi])

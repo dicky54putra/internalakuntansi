@@ -58,17 +58,19 @@ class AktTransferStokSearch extends AktTransferStok
             return $dataProvider;
         }
 
+        if (!empty($this->tanggal_transfer)) {
+            $query->andFilterWhere(["date_format(tanggal_transfer, '%d-%m-%Y')" => $this->tanggal_transfer]);
+        }
+
         // grid filtering conditions
         $query->andFilterWhere([
             'id_transfer_stok' => $this->id_transfer_stok,
-            'tanggal_transfer' => $this->tanggal_transfer,
-            // 'id_gudang_asal' => $this->id_gudang_asal,
-            // 'id_gudang_tujuan' => $this->id_gudang_tujuan,
         ]);
 
         $query->andFilterWhere(['like', 'no_transfer', $this->no_transfer])
             ->andFilterWhere(['like', 'gudang_asal.nama_gudang', $this->id_gudang_asal])
             ->andFilterWhere(['like', 'gudang_tujuan.nama_gudang', $this->id_gudang_tujuan])
+            // ->andFilterWhere(['like', 'tanggal_transfer', $this->tanggal_transfer])
             ->andFilterWhere(['like', 'keterangan', $this->keterangan]);
 
         return $dataProvider;

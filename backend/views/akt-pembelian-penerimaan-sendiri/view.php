@@ -392,13 +392,13 @@ $this->title = 'Detail Data Penerimaan. No Pembelian : ' . $model->no_pembelian;
                                                         ]
                                                     ); ?>
                                                     <!-- <?= Html::a('<span class="glyphicon glyphicon-print"></span> Surat Pengantar', ['akt-pembelian-penerimaan/cetak-surat-pengantar', 'id' => $d->id_pembelian_penerimaan], [
-                                                        'class' => 'btn btn-default btn-sm btn-flat',
-                                                        'style' => [
-                                                            'float' => 'right',
-                                                            'margin-right' => '5px',
-                                                        ],
-                                                        'target' => '_blank'
-                                                    ]) ?>
+                                                                'class' => 'btn btn-default btn-sm btn-flat',
+                                                                'style' => [
+                                                                    'float' => 'right',
+                                                                    'margin-right' => '5px',
+                                                                ],
+                                                                'target' => '_blank'
+                                                            ]) ?>
                                                     <?= Html::a('<span class="glyphicon glyphicon-print"></span> Label Barang', ['akt-pembelian-penerimaan/cetak-label-barang', 'id' => $d->id_pembelian_penerimaan], [
                                                         'class' => 'btn btn-default btn-sm btn-flat',
                                                         'style' => [

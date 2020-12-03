@@ -17,8 +17,8 @@ class AktKasBankSearch extends AktKasBank
     public function rules()
     {
         return [
-            [['id_kas_bank', 'id_mata_uang', 'saldo', 'total_giro_keluar', 'id_akun', 'status_aktif'], 'integer'],
-            [['kode_kas_bank', 'keterangan', 'jenis'], 'safe'],
+            [['id_kas_bank', 'saldo', 'total_giro_keluar', 'status_aktif', 'jenis'], 'integer'],
+            [['kode_kas_bank', 'keterangan',  'id_mata_uang', 'id_akun'], 'safe'],
         ];
     }
 
@@ -61,18 +61,16 @@ class AktKasBankSearch extends AktKasBank
         // grid filtering conditions
         $query->andFilterWhere([
             'id_kas_bank' => $this->id_kas_bank,
-            // 'id_mata_uang' => $this->id_mata_uang,
             'saldo' => $this->saldo,
+            'akt_kas_bank.jenis' => $this->jenis,
             'total_giro_keluar' => $this->total_giro_keluar,
-            // 'id_akun' => $this->id_akun,
             'status_aktif' => $this->status_aktif,
         ]);
 
         $query->andFilterWhere(['like', 'kode_kas_bank', $this->kode_kas_bank])
             ->andFilterWhere(['like', 'akt_akun.nama_akun', $this->id_akun])
             ->andFilterWhere(['like', 'keterangan', $this->keterangan])
-            ->andFilterWhere(['like', 'akt_mata_uang.mata_uang', $this->id_mata_uang])
-            ->andFilterWhere(['like', 'jenis', $this->jenis]);
+            ->andFilterWhere(['like', 'akt_mata_uang.mata_uang', $this->id_mata_uang]);
 
         return $dataProvider;
     }

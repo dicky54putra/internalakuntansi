@@ -189,6 +189,12 @@ $this->title = 'Detail Data Pengiriman Penjualan : ' . $model->no_penjualan;
                                             }
                                         }
                                     ],
+                                    [
+                                        'attribute' => 'id_customer',
+                                        'value' => function ($model) {
+                                            return $model->customer->nama_mitra_bisnis;
+                                        }
+                                    ],
                                 ],
                             ]) ?>
                         </div>

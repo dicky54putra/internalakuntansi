@@ -17,8 +17,8 @@ class AktTransferKasSearch extends AktTransferKas
     public function rules()
     {
         return [
-            [['id_transfer_kas', 'no_transfer_kas', 'id_asal_kas', 'id_tujuan_kas'], 'integer'],
-            [['tanggal', 'keterangan'], 'safe'],
+            [['id_transfer_kas', 'no_transfer_kas'], 'integer'],
+            [['tanggal', 'keterangan', 'id_asal_kas', 'id_tujuan_kas'], 'safe'],
             [['jumlah1', 'jumlah2'], 'number'],
         ];
     }
@@ -43,6 +43,7 @@ class AktTransferKasSearch extends AktTransferKas
     {
         $query = AktTransferKas::find();
         $query->joinWith(['kas_bank']);
+        $query->joinWith(['kas_bank2 AS kas_bank2']);
 
         // add conditions that should always apply here
 
@@ -58,18 +59,19 @@ class AktTransferKasSearch extends AktTransferKas
             return $dataProvider;
         }
 
+        if (!empty($this->tanggal)) {
+            $query->andFilterWhere(["date_format(tanggal, '%d-%m-%Y')" => $this->tanggal]);
+        }
+
         // grid filtering conditions
         $query->andFilterWhere([
             'id_transfer_kas' => $this->id_transfer_kas,
             'no_transfer_kas' => $this->no_transfer_kas,
-            'tanggal' => $this->tanggal,
-            'id_asal_kas' => $this->id_asal_kas,
-            'id_tujuan_kas' => $this->id_tujuan_kas,
-            'jumlah1' => $this->jumlah1,
-            'jumlah2' => $this->jumlah2,
         ]);
 
-        $query->andFilterWhere(['like', 'keterangan', $this->keterangan]);
+        $query->andFilterWhere(['like', 'keterangan', $this->keterangan])
+            ->andFilterWhere(['like', 'akt_kas_bank.keterangan', $this->id_asal_kas])
+            ->andFilterWhere(['like', 'kas_bank2.keterangan', $this->id_tujuan_kas]);
 
         return $dataProvider;
     }

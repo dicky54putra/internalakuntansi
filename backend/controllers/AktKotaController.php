@@ -5,9 +5,11 @@ namespace backend\controllers;
 use Yii;
 use backend\models\AktKota;
 use backend\models\AktKotaSearch;
+use Error;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\helpers\Json;
 
 /**
  * AktKotaController implements the CRUD actions for AktKota model.
@@ -70,41 +72,9 @@ class AktKotaController extends Controller
         $nomor = "KT" . str_pad($total + 1, 3, "0", STR_PAD_LEFT);
 
         if ($model->load(Yii::$app->request->post())) {
-            $create_in_item =  Yii::$app->request->post('create-in-item');
-            $update_in_item =  Yii::$app->request->post('update-in-item');
-            $id_update_alamat =  Yii::$app->request->post('id-update-alamat');
-            $id =  Yii::$app->request->post('id');
 
-            $create_in_pegawai =  Yii::$app->request->post('create-in-pegawai');
-            $update_in_pegawai =  Yii::$app->request->post('update-in-pegawai');
-            $id_update_pegawai =  Yii::$app->request->post('id-update-pegawai');
-
-            $create_in_sales =  Yii::$app->request->post('create-in-sales');
-            $update_in_sales =  Yii::$app->request->post('update-in-sales');
-            $id_update_sales =  Yii::$app->request->post('id-update-sales');
-
-            if (isset($create_in_item)) {
-                $model->save();
-                return $this->redirect(['akt-mitra-bisnis-alamat/create', 'id' => $id]);
-            } else if (isset($update_in_item)) {
-                $model->save();
-                return $this->redirect(['akt-mitra-bisnis-alamat/update', 'id' => $id_update_alamat]);
-            } else if (isset($create_in_pegawai)) {
-                $model->save();
-                return $this->redirect(['akt-pegawai/create']);
-            } else if (isset($update_in_pegawai)) {
-                $model->save();
-                return $this->redirect(['akt-pegawai/update', 'id' => $id_update_pegawai]);
-            } else if (isset($create_in_sales)) {
-                $model->save();
-                return $this->redirect(['akt-sales/create']);
-            } else if (isset($update_in_sales)) {
-                $model->save();
-                return $this->redirect(['akt-sales/update', 'id' => $id_update_sales]);
-            } else {
-                $model->save();
-                return $this->redirect(['view', 'id' => $model->id_kota]);
-            }
+            $model->save();
+            return $this->redirect(['view', 'id' => $model->id_kota]);
         }
 
         return $this->render('create', [
@@ -199,5 +169,37 @@ class AktKotaController extends Controller
         }
 
         throw new NotFoundHttpException('The requested page does not exist.');
+    }
+
+    public function actionGetKota($sort)
+    {
+        $data = AktKota::find()->orderBy([
+            'id_kota' => $sort == 1 ? SORT_DESC : SORT_ASC
+        ])->all();
+        echo Json::encode($data);
+    }
+
+    public function actionGetKodeKota()
+    {
+        $total_kota = AktKota::find()->count();
+        $nomor_kota = 'KT' . str_pad($total_kota + 1, 3, "0", STR_PAD_LEFT);
+
+        echo Json::encode($nomor_kota);
+    }
+    public function actionCreateKota()
+    {
+        $model = new AktKota();
+        $params = Yii::$app->getRequest()->getBodyParams();
+
+        Yii::trace(print_r($params, true), __METHOD__);
+        $model->load($params, '');
+
+        if ($model->save()) {
+            Yii::$app->response->statusCode = 201;
+            echo Json::encode('Data Kota Berhasil Ditambahkan');
+        } else {
+            Yii::error($model->getErrors(), __METHOD__);
+            throw new Error("Something wen't wrong");
+        }
     }
 }

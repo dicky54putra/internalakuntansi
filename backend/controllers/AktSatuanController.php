@@ -5,9 +5,11 @@ namespace backend\controllers;
 use Yii;
 use backend\models\AktSatuan;
 use backend\models\AktSatuanSearch;
+use Error;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\helpers\Json;
 
 /**
  * AktSatuanController implements the CRUD actions for AktSatuan model.
@@ -67,19 +69,9 @@ class AktSatuanController extends Controller
         $model = new AktSatuan();
 
         if ($model->load(Yii::$app->request->post())) {
-            $create_in_item =  Yii::$app->request->post('create-in-item');
-            $update_in_item =  Yii::$app->request->post('update-in-item');
-            $id =  Yii::$app->request->post('id');
-            if (isset($create_in_item)) {
-                $model->save();
-                return $this->redirect(['akt-item/create']);
-            } else if (isset($update_in_item)) {
-                $model->save();
-                return $this->redirect(['akt-item/update', 'id' => $id]);
-            } else {
-                $model->save();
-                return $this->redirect(['view', 'id' => $model->id_satuan]);
-            }
+
+            $model->save();
+            return $this->redirect(['view', 'id' => $model->id_satuan]);
         }
 
         return $this->render('create', [
@@ -170,5 +162,31 @@ class AktSatuanController extends Controller
         }
 
         throw new NotFoundHttpException('The requested page does not exist.');
+    }
+
+    public function actionCreateSatuan()
+    {
+        $model = new AktSatuan();
+        $params = Yii::$app->getRequest()->getBodyParams();
+
+        Yii::trace(print_r($params, true), __METHOD__);
+        $model->load($params, '');
+
+        if ($model->save()) {
+            Yii::$app->response->statusCode = 201;
+            echo Json::encode('Data Satuan Berhasil Ditambahkan');
+        } else {
+            Yii::error($model->getErrors(), __METHOD__);
+            throw new Error("Something wen't wrong");
+        }
+    }
+
+
+    public function actionGetSatuanBarang($sort)
+    {
+        $data = AktSatuan::find()->select(['id_satuan', 'nama_satuan'])->orderBy([
+            'id_satuan' => $sort == 1 ? SORT_DESC : SORT_ASC
+        ])->all();
+        echo Json::encode($data);
     }
 }

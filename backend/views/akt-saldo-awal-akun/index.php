@@ -11,7 +11,7 @@ $this->title = 'Daftar Saldo Awal Akun';
 ?>
 <div class="akt-saldo-awal-akun-index">
 
-<h1><?= Html::encode($this->title) ?></h1>
+    <h1><?= Html::encode($this->title) ?></h1>
     <ul class="breadcrumb">
         <li><a href="/">Home</a></li>
         <li class="active"><?= $this->title ?></li>
@@ -34,6 +34,15 @@ $this->title = 'Daftar Saldo Awal Akun';
             'no_jurnal',
             [
                 'attribute' => 'tanggal',
+                'headerOptions' => ['style' => 'color:#337ab7'],
+                'filterType' => GridView::FILTER_DATE,
+                'filterWidgetOptions' => [
+                    'pluginOptions' => [
+                        'format' => 'dd-mm-yyyy',
+                        'autoclose' => true,
+                        'todayHighlight' => true,
+                    ]
+                ],
                 'value' => function ($model) {
                     return tanggal_indo($model->tanggal);
                 }
@@ -41,7 +50,7 @@ $this->title = 'Daftar Saldo Awal Akun';
             [
                 'attribute' => 'tipe',
                 'value' => function ($model) {
-                    if($model->tipe == 1) {
+                    if ($model->tipe == 1) {
                         return 'Saldo Awal';
                     }
                 }

@@ -11,7 +11,6 @@ use yii\helpers\ArrayHelper;
 
 $this->title = 'Laporan Detail Pembayaran';
 ?>
-
 <div class="absensi-index">
 
     <h1><?= Html::encode($this->title) ?></h1>
@@ -44,7 +43,7 @@ $this->title = 'Laporan Detail Pembayaran';
                                 </td>
                                 <td width="30%">
                                     <div class="form-group">
-                                        <input type="date" name="tanggal_awal" value="<?= (!empty($tanggal_awal)) ? $tanggal_awal : null; ?>" class="form-control" required>
+                                        <input type="date" name="tanggal_awal" value="<?= (!empty($tanggal_awal)) ? $tanggal_awal : date('Y-m-d', strtotime('-30 days', strtotime(date('Y-m-d')))); ?>" class="form-control" required>
                                     </div>
                                 </td>
                             </tr>
@@ -57,7 +56,7 @@ $this->title = 'Laporan Detail Pembayaran';
                                 </td>
                                 <td width="30%">
                                     <div class="form-group">
-                                        <input type="date" name="tanggal_akhir" value="<?= (!empty($tanggal_awal)) ? $tanggal_awal : null; ?>" class="form-control" required>
+                                        <input type="date" name="tanggal_akhir" value="<?= (!empty($tanggal_akhir)) ? $tanggal_akhir : date('Y-m-d'); ?>" class="form-control" required>
                                     </div>
                                 </td>
                             </tr>
@@ -78,12 +77,12 @@ $this->title = 'Laporan Detail Pembayaran';
                                         );
 
                                         echo Select2::widget([
-                                            'name' => 'kasbank_asal',
+                                            'name' => 'supplier',
                                             'data' => $data,
                                             'options' => [
                                                 'placeholder' => 'Pilih Supplier'
                                             ],
-                                            'value' => (!empty($kasbank_asal)) ? $kasbank_asal : '',
+                                            'value' => (!empty($supplier)) ? $supplier : '',
                                             'pluginOptions' => [
                                                 'allowClear' => true
                                             ],
@@ -120,94 +119,101 @@ $this->title = 'Laporan Detail Pembayaran';
             <?= Html::a('Cetak', ['laporan-jurnal-umum-cetak', 'tanggal_awal' => $tanggal_awal, 'tanggal_akhir' => $tanggal_akhir], ['class' => 'btn btn-primary', 'target' => '_blank', 'method' => 'post']) ?>
             <?= Html::a('Export', ['laporan-jurnal-umum-excel', 'tanggal_awal' => $tanggal_awal, 'tanggal_akhir' => $tanggal_akhir], ['class' => 'btn btn-success', 'target' => '_blank', 'method' => 'post']) ?>
         </p>
-        <?php
-        $query_jurnal_umum = AktJurnalUmum::find()->where(['BETWEEN', 'tanggal', $tanggal_awal, $tanggal_akhir])->orderBy("tanggal ASC")->all();
-        foreach ($query_jurnal_umum as $key => $data) {
-            # code...
-        ?>
-            <div class="box">
-                <div class="panel panel-primary">
-                    <div class="panel-heading" style="overflow-x: auto;">
-                        <style>
-                            .tabel {
-                                width: 100%;
-                            }
+        <div class="box box-primary">
+            <div class="box-body" style="overflow-x: auto;">
 
-                            .tabel th,
-                            .tabel td {
-                                padding: 2px;
-                            }
-                        </style>
-                        <table class="tabel">
-                            <thead>
-                                <tr>
-                                    <th style="width: 12%;white-space: nowrap;">Tanggal Jurnal</th>
-                                    <th style="width: 12%;white-space: nowrap;">No. Jurnal Umum</th>
-                                    <th style="width: 12%;white-space: nowrap;">Tipe</th>
-                                    <th></th>
-                                </tr>
-                                <tr>
-                                    <td><?= date('d/m/Y', strtotime($data['tanggal'])) ?></td>
-                                    <td><?= $data['no_jurnal_umum'] ?></td>
-                                    <td><?= ($data['tipe'] == 1) ? 'Jurnal Umum' : '-' ?></td>
-                                </tr>
-                            </thead>
-                        </table>
-                    </div>
-                    <div class="panel-body">
-                        <div class="col-md-12">
-                            <div class="box-body" style="overflow-x: auto;">
-
-                                <table class="table table-condensed table-bordered">
-                                    <thead>
-                                        <tr>
-                                            <th style="width: 2%;">#</th>
-                                            <th style="width: 7%;">No. Akun</th>
-                                            <th style="width: 22%;">Nama Akun</th>
-                                            <th>Keterangan</th>
-                                            <th style="width: 10%; text-align: center;">Debet</th>
-                                            <th style="width: 10%; text-align: center;">Kredit</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <?php
-                                        $no = 0;
-                                        $totalan_debit = 0;
-                                        $totalan_kredit = 0;
-                                        $query_jurnal_umum_detail = AktJurnalUmumDetail::findAll(['id_jurnal_umum' => $data['id_jurnal_umum']]);
-                                        foreach ($query_jurnal_umum_detail as $key => $dataa) {
-                                            # code...
-                                            $no++;
-                                            $akt_akun = AktAkun::findOne($dataa['id_akun']);
-
-                                            $totalan_debit += $dataa['debit'];
-                                            $totalan_kredit += $dataa['kredit'];
-                                        ?>
+                <table style="width: 100%;">
+                    <thead style="border-top: 1px solid #000000;border-bottom: 1px solid #000000; height: 30px;">
+                        <tr>
+                            <th style="width: 2%;">#</th>
+                            <th style="width: 15%;">Tanggal</th>
+                            <th style="width: 22%;">No. Pembayaran</th>
+                            <th>Vendor</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php
+                        $no = 0;
+                        $totalan_debit = 0;
+                        $totalan_kredit = 0;
+                        $query_pembayaran = Yii::$app->db->createCommand("SELECT * FROM akt_pembayaran_biaya WHERE tanggal_pembayaran_biaya BETWEEN '$tanggal_awal' AND '$tanggal_akhir'")->query();
+                        foreach ($query_pembayaran as $key => $val) {
+                            $no++;
+                        ?>
+                            <tr>
+                                <td><?= $no . '.' ?></td>
+                                <td><?= tanggal_indo($val['tanggal_pembayaran_biaya']) ?></td>
+                                <td><?= 'ok' ?></td>
+                                <td><?= $val['nominal'] ?></td>
+                            </tr>
+                            <tr>
+                                <th colspan="4" style="color: blue;"></th>
+                            </tr>
+                            <tr>
+                                <td colspan="4">
+                                    <h4 style="color: blue;">Yang Dibayar</h4>
+                                    <table class="table2" style="width: 90%; margin-right: 20px; float: right;">
+                                        <thead style="border-top: 1px solid #000000;border-bottom: 1px solid #000000; height: 30px;">
                                             <tr>
-                                                <td><?= $no . '.' ?></td>
-                                                <td><?= $akt_akun->kode_akun ?></td>
-                                                <td><?= $akt_akun->nama_akun ?></td>
-                                                <td><?= $dataa['keterangan'] ?></td>
-                                                <td style="text-align: right;"><?= ($dataa['debit'] != 0) ? ribuan($dataa['debit']) : '' ?></td>
-                                                <td style="text-align: right;"><?= ($dataa['kredit'] != 0) ? ribuan($dataa['kredit']) : '' ?></td>
+                                                <th>Transaksi</th>
+                                                <th>Tanggal</th>
+                                                <th>Keterangan</th>
+                                                <th>Jumlah</th>
+                                                <th>Bayar</th>
                                             </tr>
-                                        <?php } ?>
-                                    </tbody>
-                                    <tfoot>
-                                        <tr>
-                                            <th colspan="4" style="text-align: left;">Total</th>
-                                            <th style="text-align: right;"><?= ribuan($totalan_debit) ?></th>
-                                            <th style="text-align: right;"><?= ribuan($totalan_kredit) ?></th>
-                                        </tr>
-                                    </tfoot>
-                                </table>
+                                        </thead>
+                                        <tbody>
+                                            <?php
+                                            $yang_dibayar = Yii::$app->db->createCommand("SELECT * FROM akt_pembelian_detail LEFT JOIN akt_pembelian ON akt_pembelian.id_pembelian = akt_pembelian_detail.id_pembelian LEFT JOIN akt_pembayaran_biaya ON akt_pembayaran_biaya.id_pembelian = akt_pembelian.id_pembelian WHERE akt_pembelian.id_pembelian = '$val[id_pembelian]'")->query();
+                                            foreach ($yang_dibayar as $key => $val2) {
+                                            ?>
+                                                <tr>
+                                                    <td><?= $val2['no_pembelian'] ?></td>
+                                                    <td>oaksdo</td>
+                                                    <td>oaksdo</td>
+                                                    <td>oaksdo</td>
+                                                    <td>oaksdo</td>
+                                                </tr>
+                                            <?php } ?>
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="4">
+                                    <h4 style="color: blue;">Cara Bayar</h4>
+                                    <table class="table2" style="width: 90%; margin-right: 20px; float: right;">
+                                        <thead style="border-top: 1px solid #000000;border-bottom: 1px solid #000000; height: 30px;">
+                                            <tr>
+                                                <th>Cash</th>
+                                                <th>No CBG</th>
+                                                <th>Tanggal</th>
+                                                <th>Keterangan</th>
+                                                <th>Bayar</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>oaksdo</td>
+                                                <td>oaksdo</td>
+                                                <td>oaksdo</td>
+                                                <td>oaksdo</td>
+                                                <td>oaksdo</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+                        <?php } ?>
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <th colspan="4" style="text-align: left;">Total</th>
+                        </tr>
+                    </tfoot>
+                </table>
 
-                            </div>
-                        </div>
-                    </div>
-                </div>
             </div>
-        <?php } ?>
+        </div>
     <?php } ?>
-
 </div>

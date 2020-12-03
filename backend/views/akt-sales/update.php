@@ -23,8 +23,7 @@ $this->title = 'Ubah Sales : ' . $model->nama_sales;
         'model' => $model,
         'nomor' => $nomor,
         'data_kota' => $data_kota,
-            'nomor_kota' => $nomor_kota,
-            'model_kota' => $model_kota 
+        'model_kota' => $model_kota
     ]) ?>
 
 </div>

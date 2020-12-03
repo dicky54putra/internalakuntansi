@@ -144,12 +144,20 @@ $this->title = 'Laporan Transfer Kas';
 
     <?php
     if (!empty($tanggal_awal) && !empty($tanggal_akhir)) {
-        # code...
+        if ($kasbank_asal == null && $kasbank_tujuan == null) {
+            $query_transfer_kasbank = Yii::$app->db->createCommand("SELECT * FROM akt_transfer_kas WHERE tanggal BETWEEN '$tanggal_awal' AND '$tanggal_akhir'")->query();
+        } elseif ($kasbank_asal == null) {
+            $query_transfer_kasbank = Yii::$app->db->createCommand("SELECT * FROM akt_transfer_kas WHERE id_tujuan_kas = '$kasbank_tujuan' AND tanggal BETWEEN '$tanggal_awal' AND '$tanggal_akhir'")->query();
+        } elseif ($kasbank_tujuan == null) {
+            $query_transfer_kasbank = Yii::$app->db->createCommand("SELECT * FROM akt_transfer_kas WHERE id_asal_kas = '$kasbank_asal' AND tanggal BETWEEN '$tanggal_awal' AND '$tanggal_akhir'")->query();
+        } else {
+            $query_transfer_kasbank = Yii::$app->db->createCommand("SELECT * FROM akt_transfer_kas WHERE id_asal_kas = '$kasbank_asal' AND id_tujuan_kas = '$kasbank_tujuan' AND tanggal BETWEEN '$tanggal_awal' AND '$tanggal_akhir'")->query();
+        }
     ?>
         <p style="font-weight: bold; font-size: 20px;">
             <?= 'Periode : ' . date('d/m/Y', strtotime($tanggal_awal)) . ' s/d ' . date('d/m/Y', strtotime($tanggal_akhir)) ?>
-            <?= Html::a('Cetak', ['laporan-jurnal-umum-cetak', 'tanggal_awal' => $tanggal_awal, 'tanggal_akhir' => $tanggal_akhir], ['class' => 'btn btn-primary', 'target' => '_blank', 'method' => 'post']) ?>
-            <?= Html::a('Export', ['laporan-jurnal-umum-excel', 'tanggal_awal' => $tanggal_awal, 'tanggal_akhir' => $tanggal_akhir], ['class' => 'btn btn-success', 'target' => '_blank', 'method' => 'post']) ?>
+            <?= Html::a('Cetak', ['laporan-transfer-kas-cetak', 'tanggal_awal' => $tanggal_awal, 'tanggal_akhir' => $tanggal_akhir, 'kasbank_asal' => $kasbank_asal, 'kasbank_tujuan' => $kasbank_tujuan], ['class' => 'btn btn-primary', 'target' => '_blank', 'method' => 'post']) ?>
+            <?= Html::a('Export', ['laporan-jurnal-umum-excel', 'tanggal_awal' => $tanggal_awal, 'tanggal_akhir' => $tanggal_akhir, 'kasbank_asal' => $kasbank_asal, 'kasbank_tujuan' => $kasbank_tujuan], ['class' => 'btn btn-success', 'target' => '_blank', 'method' => 'post']) ?>
         </p>
         <div class="box">
             <div class="box box-primary">
@@ -194,36 +202,27 @@ $this->title = 'Laporan Transfer Kas';
                             $no = 0;
                             $sum_asal = 0;
                             $sum_tujuan = 0;
-                            if ($kasbank_asal == null && $kasbank_tujuan == null) {
-                                $query_transfer_kasbank = Yii::$app->db->createCommand("SELECT * FROM akt_transfer_kas WHERE tanggal BETWEEN $tanggal_awal AND $tanggal_akhir")->query();
-                            } elseif ($kasbank_asal == null) {
-                                $query_transfer_kasbank = Yii::$app->db->createCommand("SELECT * FROM akt_transfer_kas WHERE id_tujuan_kas = '$kasbank_tujuan' AND tanggal BETWEEN $tanggal_awal AND $tanggal_akhir")->query();
-                            } elseif ($kasbank_tujuan == null) {
-                                $query_transfer_kasbank = Yii::$app->db->createCommand("SELECT * FROM akt_transfer_kas WHERE id_asal_kas = '$kasbank_asal' AND tanggal BETWEEN $tanggal_awal AND $tanggal_akhir")->query();
-                            } else {
-                                $query_transfer_kasbank = Yii::$app->db->createCommand("SELECT * FROM akt_transfer_kas WHERE id_asal_kas = '$kasbank_asal' AND id_tujuan_kas = '$kasbank_tujuan' AND tanggal BETWEEN $tanggal_awal AND $tanggal_akhir")->query();
-                            }
                             foreach ($query_transfer_kasbank as $key => $value) {
                                 $no++;
-                                $sum_asal += $value->jumlah1;
-                                $sum_tujuan += $value->jumlah2;
-                                $kas_asal = AktKasBank::find()->where(['id_kas_bank' => 'id_asal_kas'])->one();
-                                $kas_tujuan = AktKasBank::find()->where(['id_kas_bank' => 'id_tujuan_kas'])->one();
+                                $sum_asal += $value['jumlah1'];
+                                $sum_tujuan += $value['jumlah2'];
+                                $kas_asal = AktKasBank::find()->where(['id_kas_bank' =>  $value['id_asal_kas']])->asArray()->one();
+                                $kas_tujuan = AktKasBank::find()->where(['id_kas_bank' =>  $value['id_tujuan_kas']])->asArray()->one();
                             ?>
                                 <tr>
                                     <td><?= $no ?></td>
-                                    <td><?= $value->tanggal ?></td>
-                                    <td><?= $value->no_transfer_kas ?></td>
-                                    <td><?= $kas_asal->keterangan ?></td>
-                                    <td><?= $kas_tujuan->keterangan ?></td>
-                                    <td>Rp. <?= ribuan($value->jumlah1) ?></td>
-                                    <td>Rp. <?= ribuan($value->jumlah2) ?></td>
+                                    <td><?= $value['tanggal'] ?></td>
+                                    <td><?= $value['no_transfer_kas'] ?></td>
+                                    <td><?= $kas_asal['keterangan'] ?></td>
+                                    <td><?= $kas_tujuan['keterangan'] ?></td>
+                                    <td>Rp. <?= ribuan($value['jumlah1']) ?></td>
+                                    <td>Rp. <?= ribuan($value['jumlah2']) ?></td>
                                 </tr>
                             <?php } ?>
                         </tbody>
                         <tfoot>
                             <tr>
-                                <th colspan="4" style="text-align: left;">Total</th>
+                                <th colspan="5" style="text-align: left;">Total</th>
                                 <th style="text-align: right;">Rp. <?= ribuan($sum_asal) ?></th>
                                 <th style="text-align: right;">Rp. <?= ribuan($sum_tujuan) ?></th>
                             </tr>

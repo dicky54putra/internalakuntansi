@@ -57,10 +57,18 @@ class AktPengajuanBiayaSearch extends AktPengajuanBiaya
             return $dataProvider;
         }
 
+        if (!empty($this->tanggal_pengajuan)) {
+            $query->andFilterWhere(["date_format(tanggal_pengajuan, '%d-%m-%Y')" => $this->tanggal_pengajuan]);
+        }
+
+        if (!empty($this->tanggal_jatuh_tempo)) {
+            $query->andFilterWhere(["date_format(tanggal_jatuh_tempo, '%d-%m-%Y')" => $this->tanggal_jatuh_tempo]);
+        }
+
+
         // grid filtering conditions
         $query->andFilterWhere([
             'id_pengajuan_biaya' => $this->id_pengajuan_biaya,
-            'tanggal_pengajuan' => $this->tanggal_pengajuan,
             // 'dibuat_oleh' => $this->dibuat_oleh,
             'approver1' => $this->approver1,
             'approver2' => $this->approver2,
@@ -69,7 +77,6 @@ class AktPengajuanBiayaSearch extends AktPengajuanBiaya
             'approver2_date' => $this->approver2_date,
             'approver3_date' => $this->approver3_date,
             'status' => $this->status,
-            'tanggal_jatuh_tempo' => $this->tanggal_jatuh_tempo,
             'sumber_dana' => $this->sumber_dana,
             'status_pembayaran' => $this->status_pembayaran,
         ]);

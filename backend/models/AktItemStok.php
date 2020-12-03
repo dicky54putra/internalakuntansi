@@ -1,8 +1,10 @@
 <?php
 
 namespace backend\models;
+
 use backend\models\AktItem;
 use Yii;
+use yii\helpers\ArrayHelper;
 
 /**
  * This is the model class for table "akt_item_stok".
@@ -62,5 +64,14 @@ class AktItemStok extends \yii\db\ActiveRecord
     public function getgudang()
     {
         return $this->hasOne(AktGudang::className(), ['id_gudang' => 'id_gudang']);
+    }
+
+    public static function getKodeGudang($model)
+    {
+        $data_gudang = ArrayHelper::map(AktGudang::find()->all(), 'id_gudang', function ($model) {
+            return $model->kode_gudang . ' - ' . $model->nama_gudang;
+        });
+
+        return $data_gudang;
     }
 }

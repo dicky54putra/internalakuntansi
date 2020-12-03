@@ -109,7 +109,7 @@ use backend\models\AktMataUang;
                 <h4 class="modal-title">Tambah Supplier</h4>
             </div>
             <div class="modal-body">
-                <?= Html::beginForm(['akt-pembelian/create-supplier', 'aksi' => 'supplier'], 'post') ?>
+                <?= Html::beginForm(['akt-pembelian-pembelian/create-supplier', 'aksi' => 'supplier'], 'post') ?>
 
                 <div class="form-group">
                     <label for="">Nama Supplier</label>

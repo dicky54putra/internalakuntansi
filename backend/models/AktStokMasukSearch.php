@@ -56,15 +56,17 @@ class AktStokMasukSearch extends AktStokMasuk
             return $dataProvider;
         }
 
+        if (!empty($this->tanggal_masuk)) {
+            $query->andFilterWhere(["date_format(tanggal_masuk, '%d-%m-%Y')" => $this->tanggal_masuk]);
+        }
         // grid filtering conditions
         $query->andFilterWhere([
             'id_stok_masuk' => $this->id_stok_masuk,
-            'tanggal_masuk' => $this->tanggal_masuk,
             'tipe' => $this->tipe,
-            // 'id_akun_persediaan' => $this->id_akun_persediaan,
         ]);
 
         $query->andFilterWhere(['like', 'nomor_transaksi', $this->nomor_transaksi])
+            // ->andFilterWhere(['like', 'tanggal_masuk', $this->tanggal_masuk])
             ->andFilterWhere(['like', 'keterangan', $this->keterangan]);
 
         return $dataProvider;

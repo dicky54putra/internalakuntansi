@@ -4,6 +4,8 @@ use yii\helpers\Html;
 // use yii\grid\GridView;
 use kartik\grid\GridView;
 use backend\models\AktApprover;
+use kartik\date\DatePicker;
+use kartik\daterange\DateRangePicker;
 
 /* @var $this yii\web\View */
 /* @var $searchModel backend\models\AktPenjualanSearch */
@@ -56,8 +58,32 @@ $this->title = 'Data Order Penjualan';
             'no_order_penjualan',
             [
                 'attribute' => 'tanggal_order_penjualan',
-                'value' => function ($model) {
-                    return tanggal_indo($model->tanggal_order_penjualan, true);
+                'headerOptions' => ['style' => 'color:#337ab7'],
+                'filter' => DatePicker::widget([
+
+                    'model' => $searchModel,
+
+                    'attribute' => 'tanggal_order_penjualan',
+
+                    'convertFormat' => true,
+
+                    'pluginOptions' => [
+
+                        'locale' => [
+
+                            'format' => 'd-m-Y'
+
+                        ],
+                        'todayHighlight' => true
+
+                    ],
+
+                ]),
+                'value'     => function ($model) {
+                    if ($model->tanggal_order_penjualan != null) {
+                        # code...
+                        return tanggal_indo($model->tanggal_order_penjualan, true);
+                    }
                 }
             ],
             [
@@ -162,7 +188,7 @@ $this->title = 'Data Order Penjualan';
         'containerOptions' => ['style' => 'overflow: auto'], // only set when $responsive = false
         'headerRowOptions' => ['class' => 'kartik-sheet-style'],
         'filterRowOptions' => ['class' => 'kartik-sheet-style'],
-        'pjax' => true, // pjax is set to always true for this demo
+        // 'pjax' => true, // pjax is set to always true for this demo
         // set your toolbar
         'toolbar' =>  [
 

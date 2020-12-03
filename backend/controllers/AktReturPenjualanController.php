@@ -22,10 +22,14 @@ use backend\models\AktPenjualanPengiriman;
 use backend\models\AktPenjualanPengirimanDetail;
 use backend\models\AktPenjualanDetail;
 use backend\models\AktItemStok;
+use backend\models\AktKasBank;
 use yii\helpers\ArrayHelper;
+use yii\helpers\Utils;
 use backend\models\Foto;
 use backend\models\Setting;
 use Mpdf\Mpdf;
+use yii\helpers\Json;
+
 
 /**
  * AktReturPenjualanController implements the CRUD actions for AktReturPenjualan model.
@@ -79,18 +83,19 @@ class AktReturPenjualanController extends Controller
 
         $foto = Foto::find()->where(["id_tabel" => $model->id_retur_penjualan, "nama_tabel" => "akt_retur_penjualan"])->all();
 
-        $data_penjualan_pengiriman_detail = ArrayHelper::map(
-            AktPenjualanPengirimanDetail::find()
-                ->select(["akt_penjualan_pengiriman_detail.id_penjualan_pengiriman_detail", "akt_item.nama_item", "akt_penjualan_pengiriman_detail.qty_dikirim"])
-                ->leftJoin("akt_penjualan_detail", "akt_penjualan_detail.id_penjualan_detail = akt_penjualan_pengiriman_detail.id_penjualan_detail")
+        $data_penjualan_detail = ArrayHelper::map(
+            AktPenjualanDetail::find()
+                ->select(["akt_penjualan_detail.id_penjualan_detail", "akt_item.nama_item", "akt_penjualan_detail.qty"])
                 ->leftJoin("akt_item_stok", "akt_item_stok.id_item_stok = akt_penjualan_detail.id_item_stok")
                 ->leftJoin("akt_item", "akt_item.id_item = akt_item_stok.id_item")
-                ->where(['id_penjualan_pengiriman' => $model->id_penjualan_pengiriman])
+                ->where(['id_penjualan' => $model->id_penjualan])
                 ->asArray()
                 ->all(),
-            'id_penjualan_pengiriman_detail',
+            'id_penjualan_detail',
             function ($model) {
-                return $model['nama_item'] . ', Qty Dikirim : ' . $model['qty_dikirim'];
+                $sum_retur_detail = Yii::$app->db->createCommand("SELECT SUM(retur) as retur FROM akt_retur_penjualan_detail WHERE id_penjualan_detail = '$model[id_penjualan_detail]'")->queryScalar();
+                $qty = $model['qty'] - $sum_retur_detail;
+                return $model['nama_item'] . ', Qty penjualan : ' . $qty;
             }
         );
 
@@ -101,7 +106,7 @@ class AktReturPenjualanController extends Controller
         return $this->render('view', [
             'model' => $model,
             'model_retur_penjualan_detail' => $model_retur_penjualan_detail,
-            'data_penjualan_pengiriman_detail' => $data_penjualan_pengiriman_detail,
+            'data_penjualan_detail' => $data_penjualan_detail,
             'foto' => $foto,
         ]);
     }
@@ -132,35 +137,19 @@ class AktReturPenjualanController extends Controller
         $model = new AktReturPenjualan();
         $model->tanggal_retur_penjualan = date('Y-m-d');
 
-        $akt_retur_penjualan = AktReturPenjualan::find()->select(["no_retur_penjualan"])->orderBy("id_retur_penjualan DESC")->limit(1)->one();
-        if (!empty($akt_retur_penjualan->no_retur_penjualan)) {
-            # code...
-            $no_bulan = substr($akt_retur_penjualan->no_retur_penjualan, 2, 4);
-            if ($no_bulan == date('ym')) {
-                # code...
-                $noUrut = substr($akt_retur_penjualan->no_retur_penjualan, -3);
-                $noUrut++;
-                $noUrut_2 = sprintf("%03s", $noUrut);
-                $no_retur_penjualan = 'RP' . date('ym') . $noUrut_2;
-            } else {
-                # code...
-                $no_retur_penjualan = 'RP' . date('ym') . '001';
-            }
-        } else {
-            # code...
-            $no_retur_penjualan = 'RP' . date('ym') . '001';
-        }
-
+        $no_retur_penjualan = Utils::getNomorTransaksi($model, 'RP', 'no_retur_penjualan', 'no_retur_penjualan');
         $model->no_retur_penjualan = $no_retur_penjualan;
 
-        $data_penjualan_pengiriman = ArrayHelper::map(
-            AktPenjualanPengiriman::find()
-                ->where(['status' => 1])
-                ->orderBy("no_pengiriman ASC")
+        $data_penjualan = ArrayHelper::map(
+            AktPenjualan::find()
+                ->where(["=", 'status', 4])
+                ->andWhere(['IS NOT', 'no_penjualan', NULL])
                 ->all(),
-            'id_penjualan_pengiriman',
-            'no_pengiriman'
+            'id_penjualan',
+            'no_penjualan'
         );
+
+        $data_kas_bank = AktReturPenjualan::getKasBank();
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
 
@@ -170,7 +159,8 @@ class AktReturPenjualanController extends Controller
 
         return $this->render('create', [
             'model' => $model,
-            'data_penjualan_pengiriman' => $data_penjualan_pengiriman,
+            'data_kas_bank' => $data_kas_bank,
+            'data_penjualan' => $data_penjualan,
         ]);
     }
 
@@ -185,14 +175,16 @@ class AktReturPenjualanController extends Controller
     {
         $model = $this->findModel($id);
 
-        $data_penjualan_pengiriman = ArrayHelper::map(
-            AktPenjualanPengiriman::find()
-                ->where(['status' => 1])
-                ->orderBy("no_pengiriman ASC")
+        $data_penjualan = ArrayHelper::map(
+            AktPenjualan::find()
+                ->where(["=", 'status', 4])
+                ->andWhere(['IS NOT', 'no_penjualan', NULL])
                 ->all(),
-            'id_penjualan_pengiriman',
-            'no_pengiriman'
+            'id_penjualan',
+            'no_penjualan'
         );
+
+        $data_kas_bank = AktReturPenjualan::getKasBank();
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
 
@@ -202,7 +194,8 @@ class AktReturPenjualanController extends Controller
 
         return $this->render('update', [
             'model' => $model,
-            'data_penjualan_pengiriman' => $data_penjualan_pengiriman,
+            'data_kas_bank' => $data_kas_bank,
+            'data_penjualan' => $data_penjualan,
         ]);
     }
 
@@ -244,124 +237,117 @@ class AktReturPenjualanController extends Controller
     {
         $model = $this->findModel($id);
         $query_retur_penjualan_detail = AktReturPenjualanDetail::find()->where(['id_retur_penjualan' => $model->id_retur_penjualan])->all();
-
+        $model_penjualan = AktPenjualan::findOne($model->id_penjualan);
 
         $jurnal_umum = new AktJurnalUmum();
-        $akt_jurnal_umum = AktJurnalUmum::find()->select(["no_jurnal_umum"])->orderBy("id_jurnal_umum DESC")->limit(1)->one();
-        if (!empty($akt_jurnal_umum->no_jurnal_umum)) {
-            # code...
-            $no_bulan = substr($akt_jurnal_umum->no_jurnal_umum, 2, 4);
-            if ($no_bulan == date('ym')) {
-                # code...
-                $noUrut = substr($akt_jurnal_umum->no_jurnal_umum, -3);
-                $noUrut++;
-                $noUrut_2 = sprintf("%03s", $noUrut);
-                $no_jurnal_umum = 'JU' . date('ym') . $noUrut_2;
-            } else {
-                # code...
-                $no_jurnal_umum = 'JU' . date('ym') . '001';
-            }
-        } else {
-            # code...
-            $no_jurnal_umum = 'JU' . date('ym') . '001';
-        }
-
+        $no_jurnal_umum = AktJurnalUmum::getKodeJurnalUmum();
         $jurnal_umum->no_jurnal_umum = $no_jurnal_umum;
         $jurnal_umum->tipe = 1;
         $jurnal_umum->tanggal = date('Y-m-d');
-        $jurnal_umum->keterangan = 'Retur Penjualan : ' .  $model->no_retur_penjualan;
+        $jurnal_umum->keterangan = 'Retur Penjualan : ' .  $model_penjualan->no_penjualan;
         $jurnal_umum->save(false);
         // End Create Jurnal Umum
 
-        $jurnal_transaksi = JurnalTransaksi::find()->where(['nama_transaksi' => 'Retur Penjualan'])->one();
-        $jurnal_transaksi_detail = JurnalTransaksiDetail::find()->where(['id_jurnal_transaksi' => $jurnal_transaksi['id_jurnal_transaksi']])->all();
-
         $qty_x_hpp = 0;
+        $total_harga_semua_retur = 0;
 
         foreach ($query_retur_penjualan_detail as $key => $data) {
-
-            $penjualan_pengiriman_detail = AktPenjualanPengirimanDetail::findOne($data->id_penjualan_pengiriman_detail);
-
-            $penjualan_detail = AktPenjualanDetail::findOne($penjualan_pengiriman_detail->id_penjualan_detail);
-            $query_retur_penjualan_detail_ = AktReturPenjualanDetail::find()->where(['id_penjualan_pengiriman_detail' => $data['id_penjualan_pengiriman_detail']])->one();
+            $penjualan_detail = AktPenjualanDetail::findOne($data['id_penjualan_detail']);
+            $query_retur_penjualan_detail_ = AktReturPenjualanDetail::find()->where(['id_penjualan_detail' => $data['id_penjualan_detail']])->one();
             $item_stok = AktItemStok::findOne($penjualan_detail->id_item_stok);
             $item_stok->qty = $item_stok->qty + $query_retur_penjualan_detail_->retur;
 
             $qty_x_hpp += ($penjualan_detail['harga'] * $data['retur']);
 
             $item_stok->save(false);
+
+
+            $diskon_pembelian = $penjualan_detail->diskon == NULL ? 0 : $penjualan_detail->diskon;
+            $diskon = $diskon_pembelian / 100 * $penjualan_detail['harga'];
+            $harga_per_item = $penjualan_detail['harga'] - $diskon;
+            $diskon_keseluruhan = $model_penjualan->diskon / 100 * $harga_per_item;
+
+            $harga_diskon_keseluruhan = $harga_per_item - $diskon_keseluruhan;
+
+            $total = $harga_diskon_keseluruhan * $data['retur'];
+            $total_harga_semua_retur += $total;
         }
 
-        $model->tanggal_approve = date("Y-m-d h:i:sa");
-        $model->id_login = Yii::$app->user->identity->id_login;
-        $model->status_retur = 1;
-        $model->save(FALSE);
 
-        foreach ($jurnal_transaksi_detail as $jt) {
-            $jurnal_umum_detail = new AktJurnalUmumDetail();
-            $jurnal_umum_detail->id_jurnal_umum = $jurnal_umum->id_jurnal_umum;
-            $jurnal_umum_detail->id_akun = $jt->id_akun;
-            $akun = AktAkun::find()->where(['id_akun' => $jt->id_akun])->one();
-            if ($akun->nama_akun == 'Persediaan Barang Dagang' && $jt->tipe == 'D') {
-                $jurnal_umum_detail->debit = $qty_x_hpp;
-                if ($akun->saldo_normal == 1) {
-                    $akun->saldo_akun = $akun->saldo_akun + $qty_x_hpp;
+        $pajak = 0.1 * $total_harga_semua_retur;
+
+        if ($model_penjualan->pajak == 1) {
+            $ppn = $pajak;
+            $hutang_usaha = $total_harga_semua_retur + $ppn;
+        } else {
+            $ppn = 0;
+            $hutang_usaha = $total_harga_semua_retur;
+        }
+
+
+
+
+        // Debit
+        if ($model_penjualan->jenis_bayar == 1) {
+            $jurnal_transaksi_detail = AktReturPenjualan::getJurnalTransaksi('Retur Penjualan Transaksi Cash');
+            foreach ($jurnal_transaksi_detail as $jt) {
+                $jurnal_umum_detail = new AktJurnalUmumDetail();
+                $jurnal_umum_detail->id_jurnal_umum = $jurnal_umum->id_jurnal_umum;
+                $jurnal_umum_detail->id_akun = $jt->id_akun;
+                $akun = AktAkun::find()->where(['id_akun' => $jt->id_akun])->one();
+                if ($akun->id_akun == 1) {
+                    $akt_kas_bank = AktKasBank::findOne($model->id_kas_bank);
+                    if (strtolower($akun->nama_akun) == 'kas' && $jt->tipe == 'D') {
+                        $jurnal_umum_detail->debit = $hutang_usaha;
+                        if ($akun->saldo_normal == 1) {
+                            $akt_kas_bank->saldo = $akt_kas_bank->saldo + $hutang_usaha;
+                        } else {
+                            $akt_kas_bank->saldo = $akt_kas_bank->saldo - $hutang_usaha;
+                        }
+                    } else if (strtolower($akun->nama_akun) == 'kas' && $jt->tipe == 'K') {
+                        $jurnal_umum_detail->kredit = $hutang_usaha;
+                        if ($akun->saldo_normal == 1) {
+                            $akt_kas_bank->saldo = $akt_kas_bank->saldo - $hutang_usaha;
+                        } else {
+                            $akt_kas_bank->saldo = $akt_kas_bank->saldo + $hutang_usaha;
+                        }
+                    }
+                    $akt_kas_bank->save(false);
                 } else {
-                    $akun->saldo_akun = $akun->saldo_akun - $qty_x_hpp;
+                    AktReturPenjualan::setfilterNamaAkun($akun, 'ppn keluaran', $jurnal_umum_detail, $ppn, $jt);
+                    AktReturPenjualan::setfilterNamaAkun($akun, 'retur penjualan', $jurnal_umum_detail, $total_harga_semua_retur, $jt);
+                    AktReturPenjualan::setfilterNamaAkun($akun, 'penjualan barang', $jurnal_umum_detail, $qty_x_hpp, $jt);
+                    AktReturPenjualan::setfilterNamaAkun($akun, 'hpp', $jurnal_umum_detail, $qty_x_hpp, $jt);
                 }
-            } else if ($akun->nama_akun == 'Persediaan Barang Dagang' && $jt->tipe == 'K') {
-                $jurnal_umum_detail->kredit = $qty_x_hpp;
-                if ($akun->saldo_normal == 1) {
-                    $akun->saldo_akun = $akun->saldo_akun - $qty_x_hpp;
-                } else {
-                    $akun->saldo_akun = $akun->saldo_akun + $qty_x_hpp;
-                }
-            } else if ($akun->nama_akun == 'Retur Penjualan' && $jt->tipe == 'D') {
-                $jurnal_umum_detail->debit = $qty_x_hpp;
-                if ($akun->saldo_normal == 1) {
-                    $akun->saldo_akun = $akun->saldo_akun + $qty_x_hpp;
-                } else {
-                    $akun->saldo_akun = $akun->saldo_akun - $qty_x_hpp;
-                }
-            } else if ($akun->nama_akun == 'Retur Penjualan' && $jt->tipe == 'K') {
-                $jurnal_umum_detail->kredit = $qty_x_hpp;
-                if ($akun->saldo_normal == 1) {
-                    $akun->saldo_akun = $akun->saldo_akun - $qty_x_hpp;
-                } else {
-                    $akun->saldo_akun = $akun->saldo_akun + $qty_x_hpp;
-                }
-            } else if ($akun->nama_akun == 'Piutang Usaha' && $jt->tipe == 'D') {
-                $jurnal_umum_detail->debit = $qty_x_hpp;
-                if ($akun->saldo_normal == 1) {
-                    $akun->saldo_akun = $akun->saldo_akun + $qty_x_hpp;
-                } else {
-                    $akun->saldo_akun = $akun->saldo_akun - $qty_x_hpp;
-                }
-            } else if ($akun->nama_akun == 'Piutang Usaha' && $jt->tipe == 'K') {
-                $jurnal_umum_detail->kredit = $qty_x_hpp;
-                if ($akun->saldo_normal == 1) {
-                    $akun->saldo_akun = $akun->saldo_akun - $qty_x_hpp;
-                } else {
-                    $akun->saldo_akun = $akun->saldo_akun + $qty_x_hpp;
-                }
-            } else if ($akun->nama_akun == 'HPP' && $jt->tipe == 'D') {
-                $jurnal_umum_detail->debit = $qty_x_hpp;
-                if ($akun->saldo_normal == 1) {
-                    $akun->saldo_akun = $akun->saldo_akun + $qty_x_hpp;
-                } else {
-                    $akun->saldo_akun = $akun->saldo_akun - $qty_x_hpp;
-                }
-            } else if ($akun->nama_akun == 'HPP' && $jt->tipe == 'K') {
-                $jurnal_umum_detail->kredit = $qty_x_hpp;
-                if ($akun->saldo_normal == 1) {
-                    $akun->saldo_akun = $akun->saldo_akun - $qty_x_hpp;
-                } else {
-                    $akun->saldo_akun = $akun->saldo_akun + $qty_x_hpp;
+                $akun->save(false);
+                $jurnal_umum_detail->keterangan = 'Retur Penjualan Transaksi Cash : ' .  $model->no_retur_penjualan;
+                $jurnal_umum_detail->save(false);
+
+                if ($akun->id_akun == 1) {
+                    $history_transaksi_kas = new AktHistoryTransaksi();
+                    $history_transaksi_kas->nama_tabel = 'akt_kas_bank';
+                    $history_transaksi_kas->id_tabel = $model->id_kas_bank;
+                    $history_transaksi_kas->id_jurnal_umum = $jurnal_umum_detail->id_jurnal_umum_detail;
+                    $history_transaksi_kas->save(false);
                 }
             }
-            $akun->save(false);
-            $jurnal_umum_detail->keterangan = 'Retur Penjualan : ' .  $model->no_retur_penjualan;
-            $jurnal_umum_detail->save(false);
+        } else if ($model_penjualan->jenis_bayar == 2) {
+            $jurnal_transaksi_detail = AktReturPenjualan::getJurnalTransaksi('Retur Penjualan Transaksi Kredit');
+            foreach ($jurnal_transaksi_detail as $jt) {
+                $jurnal_umum_detail = new AktJurnalUmumDetail();
+                $jurnal_umum_detail->id_jurnal_umum = $jurnal_umum->id_jurnal_umum;
+                $jurnal_umum_detail->id_akun = $jt->id_akun;
+                $akun = AktAkun::find()->where(['id_akun' => $jt->id_akun])->one();
+                AktReturPenjualan::setfilterNamaAkun($akun, 'ppn keluaran', $jurnal_umum_detail, $ppn, $jt);
+                AktReturPenjualan::setfilterNamaAkun($akun, 'retur penjualan', $jurnal_umum_detail, $total_harga_semua_retur, $jt);
+                AktReturPenjualan::setfilterNamaAkun($akun, 'penjualan barang', $jurnal_umum_detail, $qty_x_hpp, $jt);
+                AktReturPenjualan::setfilterNamaAkun($akun, 'piutang usaha', $jurnal_umum_detail, $hutang_usaha, $jt);
+                AktReturPenjualan::setfilterNamaAkun($akun, 'hpp', $jurnal_umum_detail, $qty_x_hpp, $jt);
+
+                $akun->save(false);
+                $jurnal_umum_detail->keterangan = 'Retur Penjualan Transaksi Kredit : ' .  $model->no_retur_penjualan;
+                $jurnal_umum_detail->save(false);
+            }
         }
 
         $history_transaksi = new AktHistoryTransaksi();
@@ -370,7 +356,14 @@ class AktReturPenjualanController extends Controller
         $history_transaksi->id_jurnal_umum = $jurnal_umum->id_jurnal_umum;
         $history_transaksi->save(false);
 
+        $model_penjualan->total  = $model_penjualan->total - $hutang_usaha;
+        $model_penjualan->save(false);
 
+        $model->tanggal_approve = date("Y-m-d h:i:sa");
+        $model->id_login = Yii::$app->user->identity->id_login;
+        $model->status_retur = 1;
+        $model->total = $hutang_usaha;
+        $model->save(FALSE);
 
         Yii::$app->session->setFlash('success', [['Perhatian !', 'Retur ' . $model->no_retur_penjualan . ' Berhasil Disetujui']]);
         return $this->redirect(['view', 'id' => $model->id_retur_penjualan]);
@@ -393,11 +386,8 @@ class AktReturPenjualanController extends Controller
         $model = $this->findModel($id);
         $query_retur_penjualan_detail = AktReturPenjualanDetail::find()->where(['id_retur_penjualan' => $model->id_retur_penjualan])->all();
         foreach ($query_retur_penjualan_detail as $key => $data) {
-
-            $penjualan_pengiriman_detail = AktPenjualanPengirimanDetail::findOne($data->id_penjualan_pengiriman_detail);
-
-            $penjualan_detail = AktPenjualanDetail::findOne($penjualan_pengiriman_detail->id_penjualan_detail);
-            $query_retur_penjualan_detail_ = AktReturPenjualanDetail::find()->where(['id_penjualan_pengiriman_detail' => $data['id_penjualan_pengiriman_detail']])->one();
+            $penjualan_detail = AktPenjualanDetail::findOne($data['id_penjualan_detail']);
+            $query_retur_penjualan_detail_ = AktReturPenjualanDetail::find()->where(['id_penjualan_detail' => $data['id_penjualan_detail']])->one();
             $item_stok = AktItemStok::findOne($penjualan_detail->id_item_stok);
             $item_stok->qty = $item_stok->qty - $query_retur_penjualan_detail_->retur;
             $item_stok->save(false);
@@ -412,14 +402,26 @@ class AktReturPenjualanController extends Controller
             $jurnal_umum_detail = AktJurnalUmumDetail::find()->where(['id_jurnal_umum' => $jurnal_umum['id_jurnal_umum']])->all();
             foreach ($jurnal_umum_detail as $ju) {
                 $akun = AktAkun::find()->where(['id_akun' => $ju->id_akun])->one();
-                if ($akun->saldo_normal == 1 && $ju->debit > 0 || $ju->debit < 0) {
-                    $akun->saldo_akun = $akun->saldo_akun - $ju->debit;
-                } else if ($akun->saldo_normal == 1 && $ju->kredit > 0 || $ju->kredit < 0) {
-                    $akun->saldo_akun = $akun->saldo_akun + $ju->kredit;
-                } else if ($akun->saldo_normal == 2 && $ju->kredit > 0 || $ju->kredit < 0) {
-                    $akun->saldo_akun = $akun->saldo_akun - $ju->kredit;
-                } else if ($akun->saldo_normal == 2 && $ju->debit > 0 || $ju->debit < 0) {
-                    $akun->saldo_akun = $akun->saldo_akun + $ju->debit;
+                if ($akun->id_akun == 1) {
+                    $history_transaksi_kas = AktHistoryTransaksi::find()
+                        ->where(['id_tabel' => $model->id_kas_bank])
+                        ->andWhere(['nama_tabel' => 'akt_kas_bank'])
+                        ->andWhere(['id_jurnal_umum' => $ju->id_jurnal_umum_detail])->one();
+                    $akt_kas_bank = AktKasBank::find()->where(['id_kas_bank' => $model->id_kas_bank])->one();
+                    $akt_kas_bank->saldo = $akt_kas_bank->saldo - $ju->debit + $ju->kredit;
+                    $akt_kas_bank->save(false);
+                    $history_transaksi_kas->delete();
+                } else {
+
+                    if ($akun->saldo_normal == 1 && $ju->debit > 0 || $ju->debit < 0) {
+                        $akun->saldo_akun = $akun->saldo_akun - $ju->debit;
+                    } else if ($akun->saldo_normal == 1 && $ju->kredit > 0 || $ju->kredit < 0) {
+                        $akun->saldo_akun = $akun->saldo_akun + $ju->kredit;
+                    } else if ($akun->saldo_normal == 2 && $ju->kredit > 0 || $ju->kredit < 0) {
+                        $akun->saldo_akun = $akun->saldo_akun - $ju->kredit;
+                    } else if ($akun->saldo_normal == 2 && $ju->debit > 0 || $ju->debit < 0) {
+                        $akun->saldo_akun = $akun->saldo_akun + $ju->debit;
+                    }
                 }
                 $akun->save(false);
                 $ju->delete();
@@ -428,10 +430,13 @@ class AktReturPenjualanController extends Controller
             $jurnal_umum->delete();
             $history_transaksi->delete();
         }
-
+        $model_penjualan = AktPenjualan::findOne($model->id_penjualan);
         $model->tanggal_approve = NULL;
         $model->id_login = NULL;
         $model->status_retur = 0;
+        $model_penjualan->total = $model_penjualan->total + $model->total;
+        $model_penjualan->save(false);
+        $model->total = 0;
         $model->save(FALSE);
 
         Yii::$app->session->setFlash('success', [['Perhatian !', 'Retur ' . $model->no_retur_penjualan . ' Berhasil Dipending']]);
@@ -455,5 +460,12 @@ class AktReturPenjualanController extends Controller
         $mPDF->writeHTML($print);
         $mPDF->Output();
         exit();
+    }
+
+
+    public function actionGetJenisPembayaran($id)
+    {
+        $data = AktPenjualan::findOne($id);
+        echo Json::encode($data->jenis_bayar);
     }
 }

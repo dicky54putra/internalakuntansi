@@ -23,14 +23,13 @@ $this->title = 'Home';
     <ul class="breadcrumb">
         <li><a href="/">Home</a></li>
     </ul>
-
     <!-- label -->
     <div class="row">
         <div class="col-lg-3">
             <!-- small box -->
             <div class="small-box bg-green">
                 <div class="inner">
-                    <h3>Rp. <?= pretty_money_minus($sum_omzet) ?> </h3>
+                    <h3>Rp. <?= !empty($sum_omzet) ? pretty_money($sum_omzet) : 0 ?> </h3>
                     <p>Total Omzet</p>
                 </div>
                 <div class="icon">
@@ -43,7 +42,7 @@ $this->title = 'Home';
             <!-- small box -->
             <div class="small-box bg-aqua">
                 <div class="inner">
-                    <h3>Rp.<?= pretty_money_minus($saldo_kas->saldo_akun) ?> </h3>
+                    <h3>Rp.<?= !empty($saldo_kas) ? pretty_money($saldo_kas) : 0 ?> </h3>
                     <p>Total Kas</p>
                 </div>
                 <div class="icon">
@@ -56,7 +55,7 @@ $this->title = 'Home';
             <!-- small box -->
             <div class="small-box bg-yellow">
                 <div class="inner">
-                    <h3>Rp. <?= pretty_money_minus($saldo_piutang) ?> </h3>
+                    <h3>Rp. <?= !empty($saldo_piutang) ?  pretty_money_minus($saldo_piutang) : 0 ?> </h3>
                     <p>Total Piutang</p>
                 </div>
                 <div class="icon">
@@ -69,7 +68,7 @@ $this->title = 'Home';
             <!-- small box -->
             <div class="small-box bg-red">
                 <div class="inner">
-                    <h3>Rp. <?= pretty_money_minus($saldo_hutang) ?> </h3>
+                    <h3>Rp. <?= !empty($saldo_hutang) ?  pretty_money_minus($saldo_hutang) : 0  ?> </h3>
                     <p>Total Hutang</p>
                 </div>
                 <div class="icon">
@@ -84,15 +83,13 @@ $this->title = 'Home';
         <div class="col-md-12">
             <div class="panel panel-primary">
                 <div class="panel-heading panel-primary">
-                    <h4 style="font-weight: bold;"> Data Penjualan Dan Pembelian per Hari </h4>
+                    <h4 style="font-weight: bold;"> Data Penjualan Dan Pembelian per Hari Bulan <?= bulan(date('m'))
+                                                                                                ?> </h4>
 
                 </div>
                 <div class="panel-body">
-                    <div class="col-md-6">
+                    <div class="col-md-12">
                         <canvas id="chart-area" style="height:350px;"></canvas>
-                    </div>
-                    <div class="col-md-6">
-                        <canvas id="chart-area2" style="height:350px;"></canvas>
                     </div>
                 </div>
             </div>
@@ -137,7 +134,11 @@ $this->title = 'Home';
                         echo "<p style='font-weight:bold;'>Belum ada penjualan</p>";
                     };
                     foreach ($penjualan as $p) {
-                        $width = $p['penjualan'] / $sum_penjualan * 100 - 20;
+                        if ($sum_penjualan == 0) {
+                            $width = $p['penjualan'] / 1 * 100 - 20;
+                        } else {
+                            $width = $p['penjualan'] / $sum_penjualan * 100 - 20;
+                        }
                     ?>
                         <p><?= $p['nama_item'] ?></p>
                         <div class="progress">
@@ -185,7 +186,7 @@ $this->title = 'Home';
     <script type="text/javascript" src="js/Chart.js"></script>
     <script>
         const ctx = document.getElementById("chart-area").getContext('2d');
-        const ctx2 = document.getElementById("chart-area2").getContext('2d');
+        // const ctx2 = document.getElementById("chart-area2").getContext('2d');
 
         const ctx3count = document.querySelector(".chart-area-penjualan-count");
         const ctxcount = ctx3count.getContext('2d');
@@ -194,6 +195,16 @@ $this->title = 'Home';
         const ctxrupiah = ctx3rupiah.getContext('2d');
 
         const ctx4 = document.getElementById("chart-area-pie").getContext('2d');
+
+        function nameMonth(xLabel) {
+            var d = new Date();
+            var n = d.getMonth();
+            var y = d.getFullYear();
+            var months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+            return ` ${xLabel} ${months[n]} ${y}`
+            months[n - 1];
+
+        }
 
         function addCommas(nStr) {
             nStr += '';
@@ -233,12 +244,13 @@ $this->title = 'Home';
             },
             tooltips: {
                 callbacks: {
-                    title: function(tooltipItems, data) {
-                        return false;
+                    title: function(tooltipItem, data) {
+                        console.log(tooltipItem[0].datasetIndex);
+                        return `${data.datasets[tooltipItem[0].datasetIndex].label} ${nameMonth(tooltipItem[0].xLabel)}`;
                     },
 
                     label: function(tooltipItem, data) {
-                        return `${data.datasets[tooltipItem.datasetIndex].label} ` + tooltipItem.yLabel.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                        return `Total : ` + tooltipItem.yLabel.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
                     },
                 },
             },
@@ -284,7 +296,6 @@ $this->title = 'Home';
 
 
         chartPenjualanPerHari(configOptions);
-        chartPembelianPerHari(configOptions);
 
         async function chartPiePenjualanPerBulan(type) {
             let year = new Date().getFullYear();
@@ -296,7 +307,7 @@ $this->title = 'Home';
                 type: 'pie',
                 data: {
                     datasets: [{
-                        data: [dataPenjualanTahunIni, 3],
+                        data: [dataPenjualanTahunIni, dataPenjualanTahunSebelumnya],
                         backgroundColor: ['#34BE4A', '#D72828'],
                         borderColor: ['#34BE4A', '#D72828'],
                         fill: false,
@@ -349,7 +360,8 @@ $this->title = 'Home';
         }
 
         async function chartPenjualanPerHari(option) {
-            const dataPenjualan = await dataGrafik(`get-data-per-hari&select=tanggal_penjualan&tabel=akt_penjualan`)
+            const dataPenjualan = await dataGrafik(`get-data-per-hari&select=tanggal_penjualan&tabel=akt_penjualan`);
+            const dataPembelian = await dataGrafik(`get-data-per-hari&select=tanggal_pembelian&tabel=akt_pembelian`)
             var myChart = new Chart(ctx, {
                 type: 'bar',
                 data: {
@@ -360,11 +372,18 @@ $this->title = 'Home';
                         fill: false,
                         lineTension: 0.5,
                         label: 'Penjualan'
+                    }, {
+                        data: dataPembelian,
+                        backgroundColor: 'red',
+                        borderColor: 'red',
+                        fill: false,
+                        lineTension: 0.5,
+                        label: 'Pembelian'
                     }],
                     labels: [
                         <?php
                         foreach ($tanggal_label as $tgl) {
-                            echo '"' . tanggal_indo($tgl['tanggal_penjualan']) . '",';
+                            echo '"' . substr($tgl, 8, 2) . '",';
                         }
                         ?>
                     ]
@@ -373,30 +392,6 @@ $this->title = 'Home';
             });
         }
 
-        async function chartPembelianPerHari(option) {
-            const dataPembelian = await dataGrafik(`get-data-per-hari&select=tanggal_pembelian&tabel=akt_pembelian`)
-            var myChart = new Chart(ctx2, {
-                type: 'bar',
-                data: {
-                    datasets: [{
-                        data: dataPembelian,
-                        backgroundColor: 'green',
-                        borderColor: 'green',
-                        fill: false,
-                        lineTension: 0.5,
-                        label: 'Pembelian'
-                    }],
-                    labels: [
-                        <?php
-                        foreach ($tanggal_label2 as $tgl) {
-                            echo '"' . tanggal_indo($tgl['tanggal_pembelian']) . '",';
-                        }
-                        ?>
-                    ]
-                },
-                options: option,
-            });
-        }
 
         async function chartPenjualanPerBulan(option, link, chart) {
 

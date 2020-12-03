@@ -55,16 +55,18 @@ class AktPenyesuaianStokSearch extends AktPenyesuaianStok
             // $query->where('0=1');
             return $dataProvider;
         }
-
+        if (!empty($this->tanggal_penyesuaian)) {
+            $query->andFilterWhere(["date_format(tanggal_penyesuaian, '%d-%m-%Y')" => $this->tanggal_penyesuaian]);
+        }
         // grid filtering conditions
         $query->andFilterWhere([
             'id_penyesuaian_stok' => $this->id_penyesuaian_stok,
-            'tanggal_penyesuaian' => $this->tanggal_penyesuaian,
             'tipe_penyesuaian' => $this->tipe_penyesuaian,
         ]);
 
         $query->andFilterWhere(['like', 'no_transaksi', $this->no_transaksi])
             ->andFilterWhere(['like', 'keterangan_penyesuaian', $this->keterangan_penyesuaian]);
+        // ->andFilterWhere(['like', 'tanggal_penyesuaian', $this->tanggal_penyesuaian]);
 
         return $dataProvider;
     }
