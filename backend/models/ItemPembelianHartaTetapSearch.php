@@ -17,8 +17,8 @@ class ItemPembelianHartaTetapSearch extends ItemPembelianHartaTetap
     public function rules()
     {
         return [
-            [['id_item_pembelian_harta_tetap', 'id_pembelian_harta_tetap', 'id_harta_tetap', 'harga', 'diskon',], 'integer'],
-            [['keterangan'], 'safe'],
+            [['id_item_pembelian_harta_tetap', 'id_pembelian_harta_tetap', 'id_harta_tetap', 'diskon',], 'integer'],
+            [['keterangan', 'harga'], 'safe'],
         ];
     }
 

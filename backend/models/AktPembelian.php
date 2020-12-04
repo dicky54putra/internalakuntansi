@@ -44,8 +44,8 @@ class AktPembelian extends \yii\db\ActiveRecord
     {
         return [
             [['id_customer',], 'required'],
-            [['id_customer', 'id_mata_uang', 'pajak', 'total', 'jenis_bayar', 'jatuh_tempo', 'id_penagih', 'status', 'id_kas_bank'], 'integer'],
-            [['tanggal_pembelian', 'tanggal_faktur_pembelian', 'tanggal_tempo', 'tanggal_order_pembelian', 'tanggal_penerimaan', 'tanggal_estimasi', 'uang_muka', 'materai', 'diskon'], 'safe'],
+            [['id_customer', 'id_mata_uang', 'pajak', 'jenis_bayar', 'jatuh_tempo', 'id_penagih', 'status', 'id_kas_bank'], 'integer'],
+            [['tanggal_pembelian', 'tanggal_faktur_pembelian', 'tanggal_tempo', 'tanggal_order_pembelian', 'tanggal_penerimaan', 'tanggal_estimasi', 'uang_muka', 'materai', 'diskon', 'total'], 'safe'],
             [['no_order_pembelian', 'no_pembelian', 'no_faktur_pembelian', 'no_penerimaan', 'pengantar', 'penerima', 'no_spb'], 'string', 'max' => 255],
             [['keterangan_penerimaan'], 'string'],
         ];
@@ -267,11 +267,10 @@ class AktPembelian extends \yii\db\ActiveRecord
             }
 
             $akun->save(false);
-            if($type == 'order_pembelian') {
+            if ($type == 'order_pembelian') {
                 $jurnal_umum_detail->keterangan = 'Order Pembelian : ' .  $model->no_order_pembelian;
             } else if ($type == 'pembelian') {
                 $jurnal_umum_detail->keterangan = 'Pembelian : ' .  $model->no_pembelian;
-
             }
             $jurnal_umum_detail->save(false);
 

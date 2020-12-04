@@ -309,15 +309,14 @@ class AktPenjualan extends \yii\db\ActiveRecord
                 }
             }
             $akun->save(false);
-            if($type == 'order_penjualan') {
+            if ($type == 'order_penjualan') {
                 $jurnal_umum_detail->keterangan = 'Order Penjualan : ' .  $model->no_order_penjualan;
             } else if ($type == 'penjualan') {
                 $jurnal_umum_detail->keterangan = 'Penjualan : ' .  $model->no_penjualan;
-
             }
             $jurnal_umum_detail->save(false);
 
-            if ($akun->nama_akun == 'kas') {
+            if ($akun->id_akun == 1) {
                 $history_transaksi_kas = new AktHistoryTransaksi();
                 $history_transaksi_kas->nama_tabel = 'akt_kas_bank';
                 $history_transaksi_kas->id_tabel = $model->id_kas_bank;

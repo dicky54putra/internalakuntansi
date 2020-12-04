@@ -79,14 +79,10 @@ $this->title = 'Detail Data Pembayaran : ' . $model->no_pembelian_harta_tetap;
                                     [
                                         'label' => 'Total Biaya Pembelian',
                                         'value' => function ($model) {
-                                            $total = AktPembelianHartaTetapDetail::find()->where(['id_pembelian_harta_tetap' => $model->id_pembelian_harta_tetap])->sum('harga');
-                                            // $sum_subtotal = 0;
-                                            // foreach ($total as $k) {
-                                            //     $subtotal = $k->qty * $k->harga;
-                                            //     $sum_subtotal += $subtotal;
-                                            // }
-                                            // return ribuan($total);
-                                            return ribuan($total + $model->uang_muka);
+                                            $total = AktPembelianHartaTetapDetail::find()->where(['id_pembelian_harta_tetap' => $model->id_pembelian_harta_tetap])->sum('total');
+                                            $diskon = $model->diskon / 100 * $total;
+                                            $pajak = $model->pajak == 1 ? 0.1 * ($total - $diskon) : 0;
+                                            return ribuan($total - $diskon + $pajak + $model->materai + $model->ongkir);
                                         }
                                     ],
                                     [
@@ -102,14 +98,10 @@ $this->title = 'Detail Data Pembayaran : ' . $model->no_pembelian_harta_tetap;
                                         'value' => function ($model) {
                                             $query = (new \yii\db\Query())->from('akt_pembayaran_biaya_harta_tetap')->where(['id_pembelian_harta_tetap' => $model->id_pembelian_harta_tetap]);
                                             $sum_nominal = $query->sum('nominal');
-
                                             $kekurangan_pembayaran = 0;
-
-                                            $total_ = AktPembelianHartaTetapDetail::find()->where(['id_pembelian_harta_tetap' => $model->id_pembelian_harta_tetap])->sum('harga');
-
                                             $total = 0;
                                             if ($sum_nominal != 0) {
-                                                $total = $total_;
+                                                $total = $model->total;
                                                 $total_belum_dibayar = $total - $sum_nominal;
 
                                                 if ($sum_nominal > $total) {
@@ -118,7 +110,7 @@ $this->title = 'Detail Data Pembayaran : ' . $model->no_pembelian_harta_tetap;
                                                 }
                                                 return ribuan($total_belum_dibayar);
                                             } else {
-                                                return ribuan($total_);
+                                                return ribuan($model->total);
                                             }
                                         }
                                     ],
@@ -172,7 +164,8 @@ $this->title = 'Detail Data Pembayaran : ' . $model->no_pembelian_harta_tetap;
                                         'value' => function ($model) {
                                             $query = (new \yii\db\Query())->from('akt_pembayaran_biaya_harta_tetap')->where(['id_pembelian_harta_tetap' => $model->id_pembelian_harta_tetap]);
                                             $sum_nominal = $query->sum('nominal');
-                                            $total = AktPembelianHartaTetapDetail::find()->where(['id_pembelian_harta_tetap' => $model->id_pembelian_harta_tetap])->sum('harga');
+                                            $pembelian_harta_tetap = AktPembelianHartaTetap::findOne($model->id_pembelian_harta_tetap);
+                                            $total = $pembelian_harta_tetap->total;
                                             // return $sum_nominal;
                                             if ($total == $sum_nominal) {
                                                 return "<span class='label label-success'>Lunas</span>";

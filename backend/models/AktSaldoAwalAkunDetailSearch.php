@@ -18,7 +18,7 @@ class AktSaldoAwalAkunDetailSearch extends AktSaldoAwalAkunDetail
     {
         return [
             [['id_saldo_awal_akun_detail', 'id_saldo_awal_akun', 'id_akun'], 'integer'],
-            [['debet', 'kredit'], 'number'],
+            [['debet', 'kredit'], 'safe'],
         ];
     }
 

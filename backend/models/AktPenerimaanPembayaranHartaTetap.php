@@ -32,8 +32,8 @@ class AktPenerimaanPembayaranHartaTetap extends \yii\db\ActiveRecord
     {
         return [
             [['tanggal_penerimaan_pembayaran', 'id_penjualan_harta_tetap', 'cara_bayar', 'id_kas_bank', 'nominal', 'keterangan'], 'required'],
-            [['tanggal_penerimaan_pembayaran'], 'safe'],
-            [['id_penjualan_harta_tetap', 'cara_bayar', 'id_kas_bank', 'nominal'], 'integer'],
+            [['tanggal_penerimaan_pembayaran', 'nominal'], 'safe'],
+            [['id_penjualan_harta_tetap', 'cara_bayar', 'id_kas_bank'], 'integer'],
             [['keterangan'], 'string'],
         ];
     }

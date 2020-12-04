@@ -33,8 +33,8 @@ class AktPenjualanDetail extends \yii\db\ActiveRecord
     {
         return [
             [['id_penjualan', 'id_item_stok', 'qty', 'harga', 'total', 'id_item_harga_jual'], 'required'],
-            [['id_penjualan', 'id_item_stok', 'total'], 'integer'],
-            [['diskon'], 'safe'],
+            [['id_penjualan', 'id_item_stok'], 'integer'],
+            [['diskon', 'total'], 'safe'],
             [['keterangan'], 'string'],
             [['qty'], 'integer', 'min' => 1],
         ];

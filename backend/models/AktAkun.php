@@ -35,7 +35,8 @@ class AktAkun extends \yii\db\ActiveRecord
     {
         return [
             [['kode_akun', 'nama_akun', 'saldo_akun', 'header', 'jenis', 'klasifikasi', 'status_aktif', 'saldo_normal'], 'required'],
-            [['saldo_akun', 'header', 'parent', 'jenis', 'klasifikasi', 'status_aktif', 'saldo_normal'], 'integer'],
+            [['saldo_akun', 'header', 'parent', 'jenis', 'klasifikasi', 'status_aktif'], 'integer'],
+            [['saldo_normal'], 'safe'],
             [['kode_akun', 'nama_akun'], 'string', 'max' => 200],
         ];
     }

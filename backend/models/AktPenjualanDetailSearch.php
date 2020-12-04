@@ -17,9 +17,9 @@ class AktPenjualanDetailSearch extends AktPenjualanDetail
     public function rules()
     {
         return [
-            [['id_penjualan_detail', 'id_penjualan', 'id_item_stok', 'qty', 'harga', 'total'], 'integer'],
+            [['id_penjualan_detail', 'id_penjualan', 'id_item_stok', 'qty'], 'integer'],
             [['diskon'], 'number'],
-            [['keterangan'], 'safe'],
+            [['keterangan', 'harga', 'total'], 'safe'],
         ];
     }
 

@@ -17,8 +17,8 @@ class AktPenjualanSearch extends AktPenjualan
     public function rules()
     {
         return [
-            [['id_penjualan', 'ongkir', 'pajak', 'total', 'jenis_bayar', 'jumlah_tempo', 'materai', 'status', 'diskon', 'uang_muka'], 'integer'],
-            [['no_order_penjualan', 'tanggal_order_penjualan', 'no_penjualan', 'tanggal_penjualan', 'no_faktur_penjualan', 'tanggal_faktur_penjualan', 'tanggal_tempo', 'id_customer', 'id_sales', 'id_mata_uang', 'no_spb', 'the_approver', 'the_approver_date', 'id_kas_bank', 'tanggal_estimasi'], 'safe'],
+            [['id_penjualan', 'pajak', 'jenis_bayar', 'jumlah_tempo', 'materai', 'status', 'diskon'], 'integer'],
+            [['no_order_penjualan', 'uang_muka', 'total', 'ongkir', 'tanggal_order_penjualan', 'no_penjualan', 'tanggal_penjualan', 'no_faktur_penjualan', 'tanggal_faktur_penjualan', 'tanggal_tempo', 'id_customer', 'id_sales', 'id_mata_uang', 'no_spb', 'the_approver', 'the_approver_date', 'id_kas_bank', 'tanggal_estimasi'], 'safe'],
         ];
     }
 
@@ -95,8 +95,8 @@ class AktPenjualanSearch extends AktPenjualan
         $query->joinWith("sales");
         $query->joinWith("mata_uang");
         $query->where(['>', 'akt_penjualan.status', 1])
-        ->andWhere(['!=', 'akt_penjualan.status', 5])
-        ->orderBy("id_penjualan DESC");
+            ->andWhere(['!=', 'akt_penjualan.status', 5])
+            ->orderBy("id_penjualan DESC");
 
         // add conditions that should always apply here
 

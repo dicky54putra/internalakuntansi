@@ -33,7 +33,8 @@ class ItemPembelianHartaTetap extends \yii\db\ActiveRecord
     {
         return [
             [['id_pembelian_harta_tetap'], 'required'],
-            [['id_pembelian_harta_tetap', 'id_harta_tetap', 'harga', 'diskon'], 'integer'],
+            [['id_pembelian_harta_tetap', 'id_harta_tetap', 'diskon'], 'integer'],
+            [['harga'], 'safe'],
             [['keterangan'], 'string'],
         ];
     }

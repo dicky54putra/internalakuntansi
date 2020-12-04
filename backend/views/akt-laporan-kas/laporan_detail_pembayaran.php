@@ -123,23 +123,23 @@ $this->title = 'Laporan Detail Pembayaran';
             <div class="box-body" style="overflow-x: auto;">
 
                 <table style="width: 100%;">
-                    <thead style="border-top: 1px solid #000000;border-bottom: 1px solid #000000; height: 30px;">
-                        <tr>
-                            <th style="width: 2%;">#</th>
-                            <th style="width: 15%;">Tanggal</th>
-                            <th style="width: 22%;">No. Pembayaran</th>
-                            <th>Vendor</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php
-                        $no = 0;
-                        $totalan_debit = 0;
-                        $totalan_kredit = 0;
-                        $query_pembayaran = Yii::$app->db->createCommand("SELECT * FROM akt_pembayaran_biaya WHERE tanggal_pembayaran_biaya BETWEEN '$tanggal_awal' AND '$tanggal_akhir'")->query();
-                        foreach ($query_pembayaran as $key => $val) {
-                            $no++;
-                        ?>
+                    <?php
+                    $no = 0;
+                    $totalan_debit = 0;
+                    $totalan_kredit = 0;
+                    $query_pembayaran = Yii::$app->db->createCommand("SELECT * FROM akt_pembayaran_biaya WHERE tanggal_pembayaran_biaya BETWEEN '$tanggal_awal' AND '$tanggal_akhir'")->query();
+                    foreach ($query_pembayaran as $key => $val) {
+                        $no++;
+                    ?>
+                        <thead style="border-top: 1px solid #000000;border-bottom: 1px solid #000000; height: 30px;">
+                            <tr>
+                                <th style="width: 2%;">#</th>
+                                <th style="width: 15%;">Tanggal</th>
+                                <th style="width: 22%;">No. Pembayaran</th>
+                                <th>Vendor</th>
+                            </tr>
+                        </thead>
+                        <tbody style="margin-bottom: 15px;">
                             <tr>
                                 <td><?= $no . '.' ?></td>
                                 <td><?= tanggal_indo($val['tanggal_pembayaran_biaya']) ?></td>
@@ -179,7 +179,7 @@ $this->title = 'Laporan Detail Pembayaran';
                                     </table>
                                 </td>
                             </tr>
-                            <tr>
+                            <tr style="margin-bottom: 15px;">
                                 <td colspan="4">
                                     <h4 style="color: blue;">Cara Bayar</h4>
                                     <table class="table2" style="width: 90%; margin-right: 20px; float: right;">
@@ -204,8 +204,8 @@ $this->title = 'Laporan Detail Pembayaran';
                                     </table>
                                 </td>
                             </tr>
-                        <?php } ?>
-                    </tbody>
+                        </tbody>
+                    <?php } ?>
                     <tfoot>
                         <tr>
                             <th colspan="4" style="text-align: left;">Total</th>

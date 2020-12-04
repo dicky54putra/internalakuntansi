@@ -17,8 +17,8 @@ class AktPenerimaanPembayaranSearch extends AktPenerimaanPembayaran
     public function rules()
     {
         return [
-            [['id_penerimaan_pembayaran_penjualan', 'id_penjualan', 'cara_bayar', 'id_kas_bank', 'nominal'], 'integer'],
-            [['tanggal_penerimaan_pembayaran', 'keterangan'], 'safe'],
+            [['id_penerimaan_pembayaran_penjualan', 'id_penjualan', 'cara_bayar', 'id_kas_bank'], 'integer'],
+            [['tanggal_penerimaan_pembayaran', 'keterangan', 'nominal'], 'safe'],
         ];
     }
 

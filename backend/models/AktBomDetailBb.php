@@ -32,7 +32,7 @@ class AktBomDetailBb extends \yii\db\ActiveRecord
         return [
             [['id_bom', 'id_item_stok', 'qty', 'harga'], 'required'],
             [['id_bom', 'id_item_stok', 'qty'], 'integer'],
-            [['harga'], 'number'],
+            [['harga'], 'safe'],
             [['keterangan'], 'string'],
         ];
     }

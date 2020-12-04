@@ -40,12 +40,26 @@ class AktLaporanAkuntansiController extends Controller
     public function actionLaporanDaftarAkun()
     {
         $searchModel = new AktAkunSearch();
-        $dataProvider = $searchModel->searchLaporanDaftarAkun(Yii::$app->request->queryParams);
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('laporan_daftar_akun', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
         ]);
+    }
+    public function actionCetakLaporanDaftarAkun()
+    {
+
+        $model = AktAkun::find()->all();
+
+        $print =  $this->renderPartial('_cetak_lap_daftar_akun', [
+            'model' => $model,
+        ]);
+        $mPDF = new mPDF(['orientation' => 'L']);
+        $mPDF->showImageErrors = true;
+        $mPDF->writeHTML($print);
+        $mPDF->Output();
+        exit();
     }
 
     public function actionLaporanBukuBesar()

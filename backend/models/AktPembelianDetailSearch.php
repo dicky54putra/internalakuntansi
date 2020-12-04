@@ -17,8 +17,8 @@ class AktPembelianDetailSearch extends AktPembelianDetail
     public function rules()
     {
         return [
-            [['id_pembelian_detail', 'id_pembelian', 'id_item_stok', 'qty', 'harga', 'diskon', 'total'], 'integer'],
-            [['keterangan'], 'safe'],
+            [['id_pembelian_detail', 'id_pembelian', 'id_item_stok', 'qty', 'diskon'], 'integer'],
+            [['keterangan', 'harga', 'total'], 'safe'],
         ];
     }
 

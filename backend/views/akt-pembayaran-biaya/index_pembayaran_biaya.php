@@ -1,5 +1,6 @@
 <?php
 
+use backend\models\AktPembelianHartaTetap;
 use yii\helpers\Html;
 use kartik\grid\GridView;
 use kartik\date\DatePicker;
@@ -223,14 +224,11 @@ $this->title = 'Data Pembayaran';
                                                 [
                                                     // 'attribute' => 'status',
                                                     'format' => 'raw',
-                                                    'filter' => array(
-                                                        1 => 'Lunas',
-                                                        2 => 'Belum Lunas',
-                                                    ),
                                                     'value' => function ($model) {
                                                         $query = (new \yii\db\Query())->from('akt_pembayaran_biaya_harta_tetap')->where(['id_pembelian_harta_tetap' => $model->id_pembelian_harta_tetap]);
                                                         $sum_nominal = $query->sum('nominal');
-                                                        $total = AktPembelianHartaTetapDetail::find()->where(['id_pembelian_harta_tetap' => $model->id_pembelian_harta_tetap])->sum('harga');
+                                                        $pembelian_harta_tetap = AktPembelianHartaTetap::findOne($model->id_pembelian_harta_tetap);
+                                                        $total = $pembelian_harta_tetap->total;
                                                         // return $sum_nominal;
                                                         if ($total == $sum_nominal) {
                                                             return "<span class='label label-success'>Lunas</span>";

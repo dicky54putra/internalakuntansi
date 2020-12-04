@@ -29,7 +29,8 @@ class AktLabaRugiDetail extends \yii\db\ActiveRecord
     {
         return [
             [['id_laba_rugi', 'id_akun', 'saldo_akun'], 'required'],
-            [['id_laba_rugi', 'id_akun', 'saldo_akun'], 'integer'],
+            [['id_laba_rugi', 'id_akun'], 'integer'],
+            [['saldo_akun'], 'safe'],
         ];
     }
 

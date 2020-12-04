@@ -17,8 +17,8 @@ class AktPenjualanHartaTetapSearch extends AktPenjualanHartaTetap
     public function rules()
     {
         return [
-            [['id_penjualan_harta_tetap', 'ongkir', 'pajak', 'uang_muka', 'total', 'diskon', 'jenis_bayar', 'jumlah_tempo', 'materai', 'status'], 'integer'],
-            [['no_penjualan_harta_tetap', 'tanggal_penjualan_harta_tetap', 'the_approver_date', 'no_faktur_penjualan_harta_tetap', 'tanggal_faktur_penjualan_harta_tetap', 'tanggal_tempo', 'id_customer', 'id_sales', 'id_mata_uang', 'the_approver', 'id_kas_bank'], 'safe'],
+            [['id_penjualan_harta_tetap', 'pajak', 'diskon', 'jenis_bayar', 'jumlah_tempo', 'materai', 'status'], 'integer'],
+            [['no_penjualan_harta_tetap', 'tanggal_penjualan_harta_tetap', 'the_approver_date', 'no_faktur_penjualan_harta_tetap', 'tanggal_faktur_penjualan_harta_tetap', 'tanggal_tempo', 'id_customer', 'id_sales', 'id_mata_uang', 'the_approver', 'id_kas_bank', 'uang_muka', 'total', 'ongkir'], 'safe'],
         ];
     }
 

@@ -1,10 +1,3 @@
-<?php
-
-use backend\models\AktPenjualanDetail;
-use backend\models\AktPenjualanPengirimanDetail;
-use backend\models\AktItemStok;
-use backend\models\AktItem;
-?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -49,7 +42,7 @@ use backend\models\AktItem;
     <br>
     <table>
         <tr>
-            <td colspan="6">
+            <td colspan="10">
                 <hr>
             </td>
         </tr>
@@ -57,36 +50,46 @@ use backend\models\AktItem;
             <td>No</td>
             <td>Kode Barang</td>
             <td>Nama Barang</td>
-            <td>Qty Dikirim</td>
+            <td>Qty</td>
             <td>Retur</td>
-            <td>Keterangan</td>
+            <td>Harga</td>
+            <td colspan="3">Keterangan</td>
+            <td>Total</td>
         </tr>
         <tr>
-            <td colspan="6">
+            <td colspan="10">
                 <hr>
             </td>
         </tr>
         <?php
         $no = 1;
-        foreach ($model_detail as $data) {
-            $penjualan_pengiriman_detail = AktPenjualanPengirimanDetail::findOne($data->id_penjualan_pengiriman_detail);
-            $penjualan_detail = AktPenjualanDetail::findOne($penjualan_pengiriman_detail->id_penjualan_detail);
-            $item_stok = AktItemStok::findOne($penjualan_detail->id_item_stok);
-            $item = AktItem::findOne($item_stok->id_item);
+        $grandtotal = 0;
+        foreach ($detail_retur as $data) {
+            $diskon = $data['harga'] * $data['diskon'] / 100;
+            $total = $data['harga'] -  $diskon;
+            $subTotal = $total * $data['retur'];
+            $grandtotal += $subTotal;
         ?>
             <tr>
-                <td><?= $no++ . '.' ?></td>
-                <td><?= $item->kode_item ?></td>
-                <td><?= $item->nama_item ?></td>
-                <td><?= $data->qty ?></td>
-                <td><?= $data->retur ?></td>
-                <td><?= $data->keterangan ?></td>
+                <td><?= $no++ ?></td>
+                <td><?= $data['kode_item'] ?></td>
+                <td><?= $data['nama_item'] ?></td>
+                <td><?= $data['qty_penjualan'] ?></td>
+                <td><?= $data['retur'] ?></td>
+                <td><?= ribuan($total) ?></td>
+                <td colspan="3"><?= $data['ket_retur'] ?></td>
+                <td align="right"> <?= ribuan($subTotal) ?> </td>
             </tr>
         <?php } ?>
         <tr>
-            <td colspan=6>
+            <td colspan="10">
                 <hr>
             </td>
+        </tr>
+        <tr>
+            <td colspan="8"></td>
+            <td>Subtotal</td>
+            <td align="right"><?= ribuan($grandtotal); ?></td>
         </tr>
     </table>
 </body>

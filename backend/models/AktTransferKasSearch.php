@@ -19,7 +19,7 @@ class AktTransferKasSearch extends AktTransferKas
         return [
             [['id_transfer_kas', 'no_transfer_kas'], 'integer'],
             [['tanggal', 'keterangan', 'id_asal_kas', 'id_tujuan_kas'], 'safe'],
-            [['jumlah1', 'jumlah2'], 'number'],
+            [['jumlah1', 'jumlah2'], 'safe'],
         ];
     }
 

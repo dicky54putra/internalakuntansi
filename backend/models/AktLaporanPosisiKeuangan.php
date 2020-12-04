@@ -29,7 +29,8 @@ class AktLaporanPosisiKeuangan extends \yii\db\ActiveRecord
     {
         return [
             [['id_laba_rugi', 'id_akun', 'nominal'], 'required'],
-            [['id_laba_rugi', 'id_akun', 'nominal'], 'integer'],
+            [['id_laba_rugi', 'id_akun'], 'integer'],
+            [['nominal'], 'safe'],
         ];
     }
 

@@ -445,13 +445,12 @@ class AktReturPenjualanController extends Controller
 
     public function actionPrintView($id)
     {
-        $model = $this->findModel($id);
-        $model_detail = AktReturPenjualanDetail::findAll(['id_retur_penjualan' => $model->id_retur_penjualan]);
+        $detail_retur = Yii::$app->db->createCommand("SELECT akt_item.*, akt_penjualan_detail.qty as qty_penjualan,akt_penjualan_detail.harga,akt_penjualan_detail.diskon, akt_retur_penjualan_detail.retur, akt_retur_penjualan_detail.keterangan as ket_retur FROM akt_retur_penjualan_detail LEFT JOIN akt_penjualan_detail ON akt_penjualan_detail.id_penjualan_detail = akt_retur_penjualan_detail.id_penjualan_detail LEFT JOIN akt_item_stok ON akt_item_stok.id_item_stok = akt_penjualan_detail.id_item_stok LEFT JOIN akt_item ON akt_item.id_item = akt_item_stok.id_item WHERE akt_retur_penjualan_detail.id_retur_penjualan = '$id' ORDER BY akt_item.kode_item ASC")->query();
         $setting = Setting::find()->one();
         $print =  $this->renderPartial('_print_view', [
-            'model' => $model,
+            'model' => $this->findModel($id),
             'setting' => $setting,
-            'model_detail' => $model_detail
+            'detail_retur' => $detail_retur
         ]);
         $mPDF = new mPDF([
             'orientation' => 'L',
