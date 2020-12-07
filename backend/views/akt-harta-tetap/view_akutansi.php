@@ -305,7 +305,7 @@ $this->title = 'Detail Harta Tetap : ' .  $model->kode_pembelian;
                             </div>
                             <div class="form-group field-aktpembelianhartatetapdetail-beban_tahun_ini">
                                 <label class="control-label" for="aktpembelianhartatetapdetail-beban_tahun_ini">Beban Tahun Ini</label>
-                                <input type="text" id="aktpembelianhartatetapdetail-beban_tahun_ini" class="form-control" readonly>
+                                <input type="text" id="aktpembelianhartatetapdetail-beban_tahun_ini" name="beban_tahun_ini" class="form-control" readonly>
                                 <div class="help-block"></div>
                             </div>
                             <div class="form-group field-aktpembelianhartatetapdetail-beban_per_bulan">

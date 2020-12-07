@@ -138,8 +138,8 @@ class AktPenjualanController extends Controller
         $all_state = array();
         $i = 0;
         foreach ($state as $value) {
-            $all_state[$i]['id'] = empty($value['id_item_harga_jual']) ? 0 : $value['id_item_harga_jual'];
-            $all_state[$i]['name'] = empty($value['keterangan']) ? 'Data Kosong' : $value['keterangan'];
+            $all_state[$i]['id'] = $value['id_item_harga_jual'];
+            $all_state[$i]['name'] = $value['keterangan'];
             $i++;
         }
 
@@ -175,8 +175,11 @@ class AktPenjualanController extends Controller
         $model->id_mata_uang = 1;
 
         $no_order_penjualan = Utils::getNomorTransaksi($model, 'OP', 'no_order_penjualan', 'no_order_penjualan');
-
+        $no_penjualan = Utils::getNomorTransaksi($model, 'PJ', 'no_penjualan', 'no_penjualan');
         $model->no_order_penjualan = $no_order_penjualan;
+        $model->no_penjualan = $no_penjualan;
+
+
         $data_customer =  AktPenjualan::dataCustomer();
         $data_sales = AktPenjualan::dataSales();
         $data_mata_uang = AktPenjualan::dataMataUang();

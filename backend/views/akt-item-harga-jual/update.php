@@ -5,7 +5,7 @@ use yii\helpers\Html;
 /* @var $this yii\web\View */
 /* @var $model backend\models\AktItemHargaJual */
 
-$this->title = 'Ubah Harga Jual Barang';
+$this->title = 'Ubah Level Harga Barang';
 ?>
 <div class="akt-item-harga-jual-update">
 

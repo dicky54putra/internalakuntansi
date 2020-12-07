@@ -142,7 +142,7 @@ $this->title = 'Detail Daftar Barang : ' . $model->kode_item;
                                 <li class="active"><a data-toggle="tab" href="#stok">Stok Gudang</a></li>
                                 <!-- <li><a data-toggle="tab" href="#pajak-pembelian">Pajak Pembelian</a></li>
                                 <li><a data-toggle="tab" href="#pajak-penjualan">Pajak Penjualan</a></li> -->
-                                <li><a data-toggle="tab" href="#harga-jual">Harga Jual</a></li>
+                                <li><a data-toggle="tab" href="#harga-jual">Level Harga</a></li>
                             </ul>
 
                             <div class="tab-content">
@@ -193,7 +193,7 @@ $this->title = 'Detail Daftar Barang : ' . $model->kode_item;
                                 </div>
                                 <div id="harga-jual" class="tab-pane fade" style="margin-top:20px;">
                                     <p>
-                                        <?= Html::a('<span class="glyphicon glyphicon-plus"></span> Tambah Harga Jual', ['akt-item-harga-jual/create', 'id' => $model->id_item], ['class' => 'btn btn-success']) ?>
+                                        <?= Html::a('<span class="glyphicon glyphicon-plus"></span> Tambah Level Harga', ['akt-item-harga-jual/create', 'id' => $model->id_item], ['class' => 'btn btn-success']) ?>
                                     </p>
                                     <table class="table" style="width:100%;">
                                         <thead>

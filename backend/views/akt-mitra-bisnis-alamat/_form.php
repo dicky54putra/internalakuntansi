@@ -48,11 +48,11 @@ use yii\helpers\ArrayHelper;
                             ?>
                         </div>
                         <div class="col-md-6">
-                            <?= $form->field($model, 'telephone')->textInput(['maxlength' => true]) ?>
+                            <?= $form->field($model, 'telephone')->widget(\yii\widgets\MaskedInput::className(), ['mask' => '999-999-9999',]) ?>
 
-                            <?= $form->field($model, 'fax')->textInput(['maxlength' => true]) ?>
+                            <?= $form->field($model, 'fax')->widget(\yii\widgets\MaskedInput::className(), ['mask' => '999-999-9999',]) ?>
 
-                            <?= $form->field($model, 'kode_pos')->textInput(['maxlength' => true]) ?>
+                            <?= $form->field($model, 'kode_pos')->widget(\yii\widgets\MaskedInput::className(), ['mask' => '99999',]) ?>
 
                             <?= $form->field($model, 'alamat_pengiriman_penagihan')->dropDownList(array(1 => "Pengiriman", 2 => "Penagihan", 3 => "Pengiriman & Penagihan")) ?>
                         </div>

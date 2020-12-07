@@ -72,7 +72,11 @@ $this->title = $model->kode;
                                     'label' => 'Akun Harta',
                                     'format' => 'html',
                                     'value' => function ($model) {
-                                        return $model->akun_harta->nama_akun;
+                                        if (!empty($model->akun_harta->nama_akun)) {
+                                            return $model->akun_harta->nama_akun;
+                                        } else {
+                                            return null;
+                                        }
                                     }
                                 ],
                                 [

@@ -150,7 +150,7 @@ use backend\models\AktSatuan;
                 <th class="titik2" colspan="2">: &nbsp;</th>
             </tr>
             <tr>
-                <th class="kiri_nomor_tanggal"><?= (!empty($model->mitra_bisnis_alamat->kota->nama_kota)) ? $model->mitra_bisnis_alamat->kota->nama_kota : '' ?></th>
+                <th class="kiri_nomor_tanggal"><?= (!empty($model->mitra_bisnis_alamat->alamat_lengkap)) ? $model->mitra_bisnis_alamat->alamat_lengkap : '' ?></th>
                 <th class="nomor_tanggal" style="text-align: left;">No. Unit</th>
                 <th class="titik2" colspan="2">: &nbsp;</th>
             </tr>
@@ -193,18 +193,6 @@ use backend\models\AktSatuan;
                     <td><?= (!empty($item->nama_item)) ? $item->nama_item : '' ?></td>
                     <td style="text-align: center;"><?= $dataa->qty_dikirim ?></td>
                     <td style="text-align: center;border-right: 1px solid #000000;"><?= (!empty($item->satuan->nama_satuan)) ? $item->satuan->nama_satuan : '' ?></td>
-                </tr>
-            <?php } ?>
-            <?php
-            for ($i = $count_penjualan_pengiriman_detail; $i < 10; $i++) {
-                # code...
-            ?>
-                <tr>
-                    <td style="border-left: 1px solid #000000;">&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td style="border-right: 1px solid #000000;">&nbsp;</td>
                 </tr>
             <?php } ?>
         </tbody>

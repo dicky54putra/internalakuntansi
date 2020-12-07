@@ -51,7 +51,7 @@ class AktPenjualanDetail extends \yii\db\ActiveRecord
             'id_item_stok' => 'Barang',
             'qty' => 'Qty',
             'harga' => 'Harga',
-            'id_item_harga_jual' => 'Jenis',
+            'id_item_harga_jual' => 'Level Harga',
             'diskon' => 'Diskon %',
             'total' => 'Total',
             'keterangan' => 'Keterangan',

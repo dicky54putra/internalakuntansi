@@ -57,6 +57,7 @@ $this->title = 'Data Penjualan';
             ],
             [
                 'attribute' => 'tanggal_estimasi',
+                'label' => 'Tanggal Estimasi Barang Dikirim',
                 'headerOptions' => ['style' => 'color:#337ab7'],
                 'filterType' => GridView::FILTER_DATE,
                 'filterWidgetOptions' => [

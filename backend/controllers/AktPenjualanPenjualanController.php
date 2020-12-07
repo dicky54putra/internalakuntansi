@@ -162,8 +162,8 @@ class AktPenjualanPenjualanController extends Controller
         $all_state = array();
         $i = 0;
         foreach ($state as $value) {
-            $all_state[$i]['id'] = empty($value['id_item_harga_jual']) ? 0 : $value['id_item_harga_jual'];
-            $all_state[$i]['name'] = empty($value['keterangan']) ? 'Data Kosong' : $value['keterangan'];
+            $all_state[$i]['id'] =  $value['id_item_harga_jual'];
+            $all_state[$i]['name'] =  $value['keterangan'];
             $i++;
         }
 
@@ -224,7 +224,10 @@ class AktPenjualanPenjualanController extends Controller
                 $model->ongkir = $model_ongkir;
                 $model->materai = $model_materai;
                 $model->uang_muka = $model_uang_muka;
-
+                if ($model->uang_muka > 0 && $model->id_kas_bank == '') {
+                    Yii::$app->session->setFlash('danger', [['Perhatian !', 'Jika ada uang muka, kas bank tidak boleh kosong!']]);
+                    return $this->redirect(['view', 'id' => $model->id_penjualan]);
+                }
                 if ($model->jenis_bayar == 1) {
                     # code...
                     $model->jenis_bayar = 1;

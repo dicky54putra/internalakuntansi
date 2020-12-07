@@ -137,7 +137,7 @@ $count_query_detail = AktPembelianDetail::find()->where(['id_pembelian' => $mode
                                     ],
                                     [
                                         'attribute' => 'tanggal_estimasi',
-                                        'label' => 'Tanggal Estimasi',
+                                        'label' => 'Tanggal Estimasi Barang Diterima',
                                         'value' => function ($model) {
                                             if (!empty($model->tanggal_estimasi)) {
                                                 # code...

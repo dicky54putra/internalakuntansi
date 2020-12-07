@@ -281,13 +281,13 @@ $count_query_detail = AktPenjualanDetail::find()->where(['id_penjualan' => $mode
                                                     <div class="col-md-3">
                                                         <?= $form->field($model_penjualan_detail_baru, 'id_item_harga_jual')->widget(DepDrop::classname(), [
                                                             'type' => DepDrop::TYPE_SELECT2,
-                                                            'options' => ['id' => 'id-harga-jual', 'placeholder' => 'Pilih Jenis...'],
+                                                            'options' => ['id' => 'id-harga-jual', 'placeholder' => 'Pilih Level Harga...'],
                                                             'select2Options' => ['pluginOptions' => ['allowClear' => true]],
                                                             'pluginOptions' => [
                                                                 'depends' => ['id_item_stok'],
                                                                 'url' => Url::to(['/akt-penjualan/level-harga'])
                                                             ]
-                                                        ])->label('Jenis');
+                                                        ])->label('Level Harga');
                                                         ?>
                                                     </div>
                                                     <div class="col-md-2">
@@ -505,6 +505,7 @@ $count_query_detail = AktPenjualanDetail::find()->where(['id_penjualan' => $mode
                                                         ],
                                                         [
                                                             'attribute' => 'tanggal_estimasi',
+                                                            'label' => 'Tanggal Estimasi Barang Dikirim',
                                                             'value' => function ($model) {
                                                                 if (!empty($model->tanggal_estimasi)) {
                                                                     # code...
@@ -578,8 +579,8 @@ $count_query_detail = AktPenjualanDetail::find()->where(['id_penjualan' => $mode
                                         <?= Html::beginForm(['faktur', 'id' => $model->id_penjualan], 'post') ?>
 
                                         <div class="form-group">
-                                            <label for="no_faktur_penjualan">No. Faktur Pajak</label>
-                                            <input type="text" id="no_faktur_penjualan" name="no_faktur_penjualan" placeholder="No. Faktur" value="<?= $model->no_faktur_penjualan ?>" class="form-control" autocomplete="off" required <?= ($model->status == 2) ? '' : 'readonly' ?>>
+                                            <label for="no_faktur_penjualan">Nomor Invoice Pajak</label>
+                                            <input type="text" id="no_faktur_penjualan" name="no_faktur_penjualan" placeholder="Nomor Invoice" value="<?= $model->no_faktur_penjualan ?>" class="form-control" autocomplete="off" required <?= ($model->status == 2) ? '' : 'readonly' ?>>
                                         </div>
 
                                         <div class="form-group">
@@ -705,7 +706,7 @@ $count_query_detail = AktPenjualanDetail::find()->where(['id_penjualan' => $mode
                                 ],
                                 'dateFormat' => 'yyyy-MM-dd',
                                 'options' => ['class' => 'form-control']
-                            ]) ?>
+                            ])->label('Tanggal Estimasi Barang Dikirim') ?>
 
                         </div>
                     </div>

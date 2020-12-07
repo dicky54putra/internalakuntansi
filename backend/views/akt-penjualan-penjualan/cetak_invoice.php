@@ -4,6 +4,7 @@ use backend\models\AktPenjualanDetail;
 use backend\models\AktItemStok;
 use backend\models\AktItem;
 use backend\models\AktGudang;
+use backend\models\AktMitraBisnisBankPajak;
 use backend\models\AktSatuan;
 ?>
 <style>
@@ -79,21 +80,14 @@ use backend\models\AktSatuan;
 <table class="table1">
     <thead>
         <tr>
-            <th class="header_kiri" style="font-size: 15px; font-weight: bold;" style="width: ;">
-                <img width="150px" src="upload/<?= $data_setting->foto ?>" alt="">
-                <!-- <?= $data_setting->nama ?> -->
-            </th>
-            <th></th>
-            <th></th>
-        </tr>
-        <tr>
             <th class="header_kiri" style="font-size: 13px; font-weight: bold;">
-                <?= $data_setting->alamat . '<br>' . $data_setting->kota->nama_kota . ', Telp ' . $data_setting->telepon ?>
+                <?= $data_setting->nama_usaha ?><br><?= $data_setting->alamat ?><br>
+                <?= $retVal = (!empty($data_setting->kota->nama_kota)) ? $data_setting->kota->nama_kota . ', Telp ' . $data_setting->telepon  : 'Telp ' . $data_setting->telepon; ?><br>
+                Npwp: <?= $data_setting->npwp ?>
                 <br>
-
             </th>
             <th colspan="2" style="font-size: 15px; font-weight: bold;">FAKTUR PENJUALAN</th>
-            <th class="header_kiri">No. Faktur</th>
+            <th class="header_kiri">Nomor Invoice</th>
             <th class="header_kiri">: <?= $model->no_faktur_penjualan ?></th>
         </tr>
         <tr>
@@ -127,7 +121,11 @@ use backend\models\AktSatuan;
             <th class="header_kiri">
                 <?= (!empty($model->customer->nama_mitra_bisnis)) ? $model->customer->nama_mitra_bisnis : '' ?>
                 <br>
+                <?php
+                $npwp = AktMitraBisnisBankPajak::find()->where(['id_mitra_bisnis' => $model->customer->id_mitra_bisnis])->one();
+                echo (!empty($npwp->npwp)) ? 'Npwp: ' . $npwp->npwp . '<br>' : '' ?>
                 <?= (!empty($model->customer->alamat->alamat_lengkap)) ? $model->customer->alamat->alamat_lengkap : '' ?>
+
             </th>
             <th class="header_kiri"></th>
             <th class="header_kiri"></th>
@@ -183,55 +181,102 @@ use backend\models\AktSatuan;
 <table class="table3" border="0">
     <thead>
         <tr>
-            <th colspan="3" style="text-align: left; font-size: 13px;">Terbilang:</th>
-            <th style="text-align: center;"></th>
-            <th>DPP</th>
-            <th><?= ribuan($total_penjualan_barang) ?></th>
-        </tr>
-        <tr>
-            <th colspan="4" style="text-align: left; font-size: 13px;"><?= terbilang($model->total) ?> </th>
-            <!-- <th rowspan="5" colspan="4 "></th> -->
-            <th>Diskon <?= $model->diskon ?>%</th>
             <th>
-                <?php
-                $diskon = ($model->diskon > 0) ? ($total_penjualan_barang * $model->diskon) / 100 : 0;
-                echo ribuan($diskon);
-                ?>
+                <table class="table3">
+                    <tr>
+                        <th colspan="3" style="text-align: left; font-size: 13px;">Terbilang:</th>
+                    </tr>
+                    <tr>
+                        <th colspan="4" style="text-align: left; font-size: 13px;"><?= terbilang($model->total) ?> </th>
+                    </tr>
+                    <tr>
+                        <th>
+                            <br><br><br><br><br><br>
+                        </th>
+                    </tr>
+                    <tr>
+                        <th style="text-align: center; font-size: 15px;">Keuangan</th>
+                        <th style="text-align: center; font-size: 15px;"></th>
+                        <th style="text-align: center; font-size: 15px;">Penagihan</th>
+                        <th style="text-align: center; font-size: 15px;"></th>
+                    </tr>
+                </table>
             </th>
-        </tr>
-        <tr>
-            <th rowspan="4" colspan="4"></th>
-            <th>PPN 10%</th>
             <th>
-                <?php
-                $pajak = ($model->pajak > 0) ? $pajak = (($total_penjualan_barang - $diskon) * 10) / 100 : 0;
-                echo ribuan($pajak);
-                ?>
+                <table class="table3">
+                    <tr>
+                        <th>DPP</th>
+                        <th><?= ribuan($total_penjualan_barang) ?></th>
+                    </tr>
+                    <?php if ($model->diskon) { ?>
+                        <tr>
+                            <th>Diskon <?= $model->diskon ?>%</th>
+                            <th>
+                                <?php
+                                $diskon = ($model->diskon > 0) ? ($total_penjualan_barang * $model->diskon) / 100 : 0;
+                                echo ribuan($diskon);
+                                ?>
+                            </th>
+                        </tr>
+                    <?php } else {
+                        $brd = '<tr><td><br></td></tr>';
+                        $diskon = 0;
+                    } ?>
+                    <?php if ($model->pajak) { ?>
+                        <tr>
+                            <th>PPN 10%</th>
+                            <th>
+                                <?php
+                                $pajak = ($model->pajak > 0) ? $pajak = (($total_penjualan_barang - $diskon) * 10) / 100 : 0;
+                                echo ribuan($pajak);
+                                ?>
+                            </th>
+                        </tr>
+                    <?php } else {
+                        $brp = '<tr><td><br></td></tr>';
+                        $pajak = 0;
+                    } ?>
+                    <?php if ($model->ongkir) { ?>
+                        <tr>
+                            <th>Ongkir</th>
+                            <th><?= ribuan($model->ongkir) ?></th>
+                        </tr>
+                    <?php } else {
+                        $bro = '<tr><td><br></td></tr>';
+                    } ?>
+                    <?php if ($model->materai) { ?>
+                        <tr>
+                            <th>Materai</th>
+                            <th><?= ribuan($model->materai) ?></th>
+                        </tr>
+                    <?php } else {
+                        $brm = '<tr><td><br></td></tr>';
+                    } ?>
+                    <?php if ($model->uang_muka) { ?>
+                        <tr>
+                            <th>Uang Muka</th>
+                            <th><?= ribuan($model->uang_muka) ?></th>
+                        </tr>
+                    <?php } else {
+                        $bru = '<tr><td><br></td></tr>';
+                    } ?>
+                    <?php if (!empty($brd) || !empty($brp) || !empty($bro) || !empty($brm) || !empty($bru)) {
+                        echo !empty($brd) ? $brd : '';
+                        echo !empty($brp) ? $brp : '';
+                        echo !empty($bro) ? $bro : '';
+                        echo !empty($brm) ? $brm : '';
+                        echo !empty($bru) ? $bru : '';
+                    } ?>
+                    <tr>
+                        <th style="font-weight: bold; font-size: 15px;">Tagihan</th>
+                        <th style="font-weight: bold; font-size: 15px;"><?= ribuan($model->total) ?></th>
+                    </tr>
+                </table>
             </th>
-        </tr>
-        <tr>
-            <th>Ongkir</th>
-            <th><?= ribuan($model->ongkir) ?></th>
-        </tr>
-        <tr>
-            <th>Materai</th>
-            <th><?= ribuan($model->materai) ?></th>
-        </tr>
-        <tr>
-            <th>Uang Muka</th>
-            <th><?= ribuan($model->uang_muka) ?></th>
-        </tr>
-        <tr>
-            <th style="text-align: center; font-size: 15px;">Keuangan</th>
-            <th style="text-align: center; font-size: 15px;"></th>
-            <th style="text-align: center; font-size: 15px;">Penagihan</th>
-            <th style="text-align: center; font-size: 15px;"></th>
-            <th style="font-weight: bold; font-size: 15px;">Tagihan</th>
-            <th style="font-weight: bold; font-size: 15px;"><?= ribuan($model->total) ?></th>
         </tr>
     </thead>
 </table>
 <script type="text/javascript">
-    window.print();
+    // window.print();
     // setTimeout(window.close, 500);
 </script>

@@ -140,6 +140,7 @@ $this->title = 'Detail Data Order Penjualan : ' . $model->no_order_penjualan;
                                     ],
                                     [
                                         'attribute' => 'tanggal_estimasi',
+                                        'label' => 'Tanggal Estimasi Barang Dikirim',
                                         'value' => function ($model) {
                                             if (!empty($model->tanggal_estimasi)) {
                                                 # code...
@@ -284,13 +285,13 @@ $this->title = 'Detail Data Order Penjualan : ' . $model->no_order_penjualan;
                                                 <div class="col-md-3">
                                                     <?= $form->field($model_penjualan_detail_baru, 'id_item_harga_jual')->widget(DepDrop::classname(), [
                                                         'type' => DepDrop::TYPE_SELECT2,
-                                                        'options' => ['id' => 'id-harga-jual', 'placeholder' => 'Pilih Jenis...'],
+                                                        'options' => ['id' => 'id-harga-jual', 'placeholder' => 'Pilih Level Harga...'],
                                                         'select2Options' => ['pluginOptions' => ['allowClear' => true]],
                                                         'pluginOptions' => [
                                                             'depends' => ['id_item_stok'],
                                                             'url' => Url::to(['/akt-penjualan/level-harga'])
                                                         ]
-                                                    ])->label('Jenis');
+                                                    ])->label('Level Harga');
                                                     ?>
                                                 </div>
                                                 <div class="col-md-2">
@@ -610,7 +611,7 @@ $this->title = 'Detail Data Order Penjualan : ' . $model->no_order_penjualan;
                             ],
                             'dateFormat' => 'yyyy-MM-dd',
                             'options' => ['class' => 'form-control']
-                        ]) ?>
+                        ])->label('Tanggal Estimasi Barang Dikirim') ?>
 
                     </div>
                 </div>

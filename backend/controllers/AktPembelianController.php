@@ -200,9 +200,12 @@ class AktPembelianController extends Controller
         $model = new AktPembelian();
 
         $kode =  Utils::getNomorTransaksi($model, 'PO', 'no_order_pembelian', 'no_order_pembelian');
+        $kode_pembelian =  Utils::getNomorTransaksi($model, 'PE', 'no_pembelian', 'no_pembelian');
+        $kode_penerimaan =  Utils::getNomorTransaksi($model, 'PQ', 'no_penerimaan', 'no_penerimaan');
+
         $model->no_order_pembelian = $kode;
-        $model->no_pembelian = substr_replace($kode, "PE", 0, 2);
-        $model->no_penerimaan = substr_replace($kode, "PQ", 0, 2);
+        $model->no_pembelian = $kode_pembelian;
+        $model->no_penerimaan =  $kode_penerimaan;
 
         $data_customer = AktPembelian::dataCustomer();
         $data_mata_uang = AktPembelian::dataMataUang();

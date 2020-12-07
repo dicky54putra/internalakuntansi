@@ -107,13 +107,15 @@ class AktHartaTetapController extends Controller
     {
         $model = AktPembelianHartaTetapDetail::findOne($id);
 
-        // echo $id;
-        // die;
         if ($model->load(Yii::$app->request->post())) {
 
             $_beban_per_bulan = Yii::$app->request->post('beban_per_bulan');
             $beban_per_bulan = preg_replace("/[^0-9,]+/", "", $_beban_per_bulan);
+
+            $_beban_tahun_ini = Yii::$app->request->post('beban_tahun_ini');
+            $beban_tahun_ini = preg_replace("/[^0-9,]+/", "", $_beban_tahun_ini);
             $model->beban_per_bulan = $beban_per_bulan;
+
             $tanggal_ekonomis = date("Y-m-d", strtotime("$model->tanggal_pakai +$model->umur_ekonomis year"));
 
             $month = strtotime($model->tanggal_pakai);
@@ -151,24 +153,7 @@ class AktHartaTetapController extends Controller
 
             // Create Jurnal Umum
             $jurnal_umum = new AktJurnalUmum();
-            $akt_jurnal_umum = AktJurnalUmum::find()->select(["no_jurnal_umum"])->orderBy("id_jurnal_umum DESC")->limit(1)->one();
-            if (!empty($akt_jurnal_umum->no_jurnal_umum)) {
-                # code...
-                $no_bulan = substr($akt_jurnal_umum->no_jurnal_umum, 2, 4);
-                if ($no_bulan == date('ym')) {
-                    # code...
-                    $noUrut = substr($akt_jurnal_umum->no_jurnal_umum, -3);
-                    $noUrut++;
-                    $noUrut_2 = sprintf("%03s", $noUrut);
-                    $no_jurnal_umum = 'JU' . date('ym') . $noUrut_2;
-                } else {
-                    # code...
-                    $no_jurnal_umum = 'JU' . date('ym') . '001';
-                }
-            } else {
-                # code...
-                $no_jurnal_umum = 'JU' . date('ym') . '001';
-            }
+            $no_jurnal_umum = AktJurnalUmum::getKodeJurnalUmum();
 
             $jurnal_umum->no_jurnal_umum = $no_jurnal_umum;
             $jurnal_umum->tipe = 1;
@@ -177,15 +162,13 @@ class AktHartaTetapController extends Controller
             $jurnal_umum->save(false);
 
 
-            $model->save();
+            $model->save(false);
 
 
             $kelompok_harta_tetap = AktKelompokHartaTetap::find()->where(['id_kelompok_harta_tetap' => $model->id_kelompok_aset_tetap])->one();
             $akun_akumulasi = AktAkun::find()->where(['id_akun' => $kelompok_harta_tetap->id_akun_akumulasi])->one();
             $akun_depresiasi = AktAkun::find()->where(['id_akun' => $kelompok_harta_tetap->id_akun_depresiasi])->one();
-            // echo intval($beban_per_bulan);
-            // die;
-
+            $akun_harta = AktAkun::find()->where(['id_akun' => $kelompok_harta_tetap->id_akun_harta])->one();
 
             $jurnal_umum_detail_akumulasi = new AktJurnalUmumDetail();
             $jurnal_umum_detail_akumulasi->id_jurnal_umum = $jurnal_umum->id_jurnal_umum;
@@ -219,6 +202,24 @@ class AktHartaTetapController extends Controller
 
             $akun_depresiasi->saldo_akun = $akun_depresiasi->saldo_akun + intval($beban_per_bulan);
             $akun_depresiasi->save(false);
+
+
+
+            $jurnal_umum_detail_harta = new AktJurnalUmumDetail();
+            $jurnal_umum_detail_harta->id_jurnal_umum = $jurnal_umum->id_jurnal_umum;
+            $jurnal_umum_detail_harta->id_akun = $akun_harta->id_akun;
+            if ($akun_harta->saldo_normal == 2) {
+                $jurnal_umum_detail_harta->kredit = intval($beban_tahun_ini);
+                $jurnal_umum_detail_harta->debit = 0;
+            } else if ($akun_harta->saldo_normal == 1) {
+                $jurnal_umum_detail_harta->debit = intval($beban_tahun_ini);
+                $jurnal_umum_detail_harta->kredit = 0;
+            }
+            $jurnal_umum_detail_harta->keterangan = 'Setting Depresiasi : ' .  $model->kode_pembelian;
+            $jurnal_umum_detail_harta->save(false);
+
+            $akun_harta->saldo_akun = $akun_harta->saldo_akun + intval($beban_tahun_ini);
+            $akun_harta->save(false);
 
 
             $history_transaksi = new AktHistoryTransaksi();
