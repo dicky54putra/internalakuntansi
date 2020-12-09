@@ -29,18 +29,9 @@ $this->title = 'Daftar Laporan Akuntansi';
                             <tr>
                                 <td><?= Html::a('<span class="fa fa-file-text"></span> Laporan Buku Besar', ['laporan-buku-besar']) ?></td>
                             </tr>
-                            <!-- <tr>
-                                <td><?php // Html::a('<span class="fa fa-file-text"></span> Laporan Neraca Saldo Sebelum Penyesuaian (rumah V)', ['laporan-neraca-saldo-sebelum-penyesuaian']) 
-                                    ?></td>
-                            </tr>
                             <tr>
-                                <td><?php // Html::a('<span class="fa fa-file-text"></span> Laporan Jurnal Penyesuaian', ['laporan-jurnal-penyesuaian']) 
-                                    ?></td>
+                                <td><?= Html::a('<span class="fa fa-file-text"></span> Laporan Neraca Saldo', ['laporan-neraca-saldo']) ?></td>
                             </tr>
-                            <tr>
-                                <td><?php // Html::a('<span class="fa fa-file-text"></span> Laporan Neraca Saldo Setelah Penyesuaian (Rumah X)', ['laporan-neraca-saldo-setelah-penyesuaian']) 
-                                    ?></td>
-                            </tr> -->
                             <tr>
                                 <td><?= Html::a('<span class="fa fa-file-text"></span> Laporan Neraca Lajur', ['laporan-neraca-lajur']) ?></td>
                             </tr>
@@ -50,19 +41,9 @@ $this->title = 'Daftar Laporan Akuntansi';
                             <tr>
                                 <td><?= Html::a('<span class="fa fa-file-text"></span> Laporan Perubahan Ekuitas + Posisi Keuangan', ['akt-laba-rugi/']) ?></td>
                             </tr>
-                            <!-- <tr>
-                                <td>// Html::a('<span class="fa fa-file-text"></span> Laporan Perubahan Ekuitas (rumah V)', ['laporan-perubahan-ekuitas']) ?></td>
-                            </tr> -->
-                            <!-- <tr>
-                                <td>// Html::a('<span class="fa fa-file-text"></span> Laporan Posisi Keuangan (rumah X)', ['laporan-posisi-keuangan']) ?></td>
-                            </tr> -->
                             <tr>
                                 <td><?= Html::a('<span class="fa fa-file-text"></span> Laporan Arus Kas', ['laporan-arus-kas']) ?></td>
                             </tr>
-                            <!-- <tr>
-                                <td><?php // Html::a('<span class="fa fa-file-text"></span> Laporan Daftar Harta Tetap (rumah V)', ['laporan-daftar-harta-tetap']) 
-                                    ?></td>
-                            </tr> -->
                             <tr>
                                 <td><?= Html::a('<span class="fa fa-file-text"></span> Laporan Pajak PPN ', ['laporan-pajak-ppn'])
                                     ?></td>
@@ -71,18 +52,6 @@ $this->title = 'Daftar Laporan Akuntansi';
                                 <td><?= Html::a('<span class="fa fa-file-text"></span> Laporan Rekonsiliasi PPN ', ['laporan-rekonsiliasi-ppn'])
                                     ?></td>
                             </tr>
-                            <!-- <tr>
-                                <td><?= Html::a('<span class="fa fa-file-text"></span> Laporan Pajak PPH', ['laporan-pajak-pph'])
-                                    ?></td>
-                            </tr> -->
-                            <!-- <tr>
-                                <td><?= Html::a('<span class="fa fa-file-text"></span> Laporan Rekonsiliasi Pajak PPN (rumah V)', ['laporan-rekonsiliasi-pajak-ppn'])
-                                    ?></td>
-                            </tr> -->
-                            <!-- <tr>
-                                <td><?php // Html::a('<span class="fa fa-file-text"></span> Laporan Anggaran vs Realisasi (rumah V)', ['laporan-anggaran-vs-realisasi']) 
-                                    ?></td>
-                            </tr> -->
                         </table>
                     </div>
                 </div>

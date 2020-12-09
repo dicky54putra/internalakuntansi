@@ -123,6 +123,15 @@ class AktLaporanAkuntansiController extends Controller
         ]);
     }
 
+    public function actionLaporanNeracaSaldoExcel($tanggal_awal, $tanggal_akhir)
+    {
+
+        return $this->renderPartial('laporan_neraca_saldo_excel', [
+            'tanggal_awal' => $tanggal_awal,
+            'tanggal_akhir' => $tanggal_akhir,
+        ]);
+    }
+
     public function actionLaporanJurnalUmum()
     {
         # sementara tipe jurnal tidak di gunakan terlebih dahulu
@@ -206,6 +215,17 @@ class AktLaporanAkuntansiController extends Controller
         $tanggal_akhir = Yii::$app->request->post('tanggal_akhir');
 
         return $this->render('laporan_neraca_saldo_sebelum_penyesuaian', [
+            'tanggal_awal' => $tanggal_awal,
+            'tanggal_akhir' => $tanggal_akhir,
+        ]);
+    }
+
+    public function actionLaporanNeracaSaldo()
+    {
+        $tanggal_awal = Yii::$app->request->post('tanggal_awal');
+        $tanggal_akhir = Yii::$app->request->post('tanggal_akhir');
+
+        return $this->render('laporan_neraca_saldo', [
             'tanggal_awal' => $tanggal_awal,
             'tanggal_akhir' => $tanggal_akhir,
         ]);
