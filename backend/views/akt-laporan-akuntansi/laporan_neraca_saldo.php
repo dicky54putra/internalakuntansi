@@ -3,9 +3,11 @@
 use yii\helpers\Html;
 use kartik\select2\Select2;
 use backend\models\AktAkun;
+use backend\models\AktJurnalUmum;
 use backend\models\AktJurnalUmumDetail;
 use backend\models\AktKlasifikasi;
 use backend\models\AktSaldoAwalAkunDetail;
+use yii\helpers\Utils;
 
 $this->title = 'Laporan Neraca Saldo';
 ?>
@@ -256,11 +258,61 @@ $this->title = 'Laporan Neraca Saldo';
                     </div>
                 </div>
             <?php } ?>
+            <?php
+            $akun_aktiva = AktAkun::find()->where("jenis in(1,2,3)")->all();
+            $a_ak = '';
+            foreach ($akun_aktiva as $aa) {
+                $a_ak .= $aa->id_akun . ',';
+            }
+            $aktiva = substr($a_ak, 0, -1);
+
+            $akun_pasiva = AktAkun::find()->where("jenis in(5,6,7)")->all();
+            $a_ps = '';
+            foreach ($akun_pasiva as $aa) {
+                $a_ps .= $aa->id_akun . ',';
+            }
+            $pasiva = substr($a_ps, 0, -1);
+
+            $sum_aktiva_kredit1 = Utils::getSumAktivaPasiva($tanggal_awal, $tanggal_akhir, $aktiva, '1', 'kredit');
+            $sum_aktiva_debit1 = Utils::getSumAktivaPasiva($tanggal_awal, $tanggal_akhir, $aktiva, '1', 'debit');
+            $sum_aktiva_kredit2 = Utils::getSumAktivaPasiva($tanggal_awal, $tanggal_akhir, $aktiva, '2', 'kredit');
+            $sum_aktiva_debit2 = Utils::getSumAktivaPasiva($tanggal_awal, $tanggal_akhir, $aktiva, '2', 'debit');
+
+            $sum_pasiva_kredit1 = Utils::getSumAktivaPasiva($tanggal_awal, $tanggal_akhir, $pasiva, '1', 'kredit');
+            $sum_pasiva_debit1 = Utils::getSumAktivaPasiva($tanggal_awal, $tanggal_akhir, $pasiva, '1', 'debit');
+            $sum_pasiva_kredit2 = Utils::getSumAktivaPasiva($tanggal_awal, $tanggal_akhir, $pasiva, '2', 'kredit');
+            $sum_pasiva_debit2 = Utils::getSumAktivaPasiva($tanggal_awal, $tanggal_akhir, $pasiva, '2', 'debit');
+
+            $total_sum_aktiva1 = $sum_aktiva_debit1 - $sum_aktiva_kredit1;
+            $total_sum_aktiva2 = $sum_aktiva_debit2 - $sum_aktiva_kredit2;
+            $total_sum_pasiva1 = $sum_pasiva_kredit1 - $sum_pasiva_debit1;
+            $total_sum_pasiva2 = $sum_pasiva_kredit2 - $sum_pasiva_debit2;
+            ?>
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <table class="table" style="margin-bottom: -5px; border-bottom: solid 1px #fff;">
+                        <tr>
+                            <th>Total Aktiva Pasiva</th>
+                            <th style="width: 15%;text-align: right;">Debet</th>
+                            <th style="width: 15%;text-align: right;">Kredit</th>
+                        </tr>
+                        <tr>
+                            <td>Total Activa</td>
+                            <td align="right"><?= ribuan(abs($total_sum_aktiva1)) ?></td>
+                            <td align="right"><?= ribuan(abs($total_sum_aktiva2)) ?></td>
+                        </tr>
+                        <tr>
+                            <td>Total Pasiva</td>
+                            <td align="right"><?= ribuan(abs($total_sum_pasiva1)) ?></td>
+                            <td align="right"><?= ribuan(abs($total_sum_pasiva2)) ?></td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
 
         </div>
 </div>
 <?php } ?>
-</div>
 
 <script>
     const element = document.getElementById("panel");
