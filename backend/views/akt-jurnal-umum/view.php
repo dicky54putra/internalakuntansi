@@ -166,7 +166,7 @@ $this->title = 'Detail Data Jurnal Umum : ' . $model->no_jurnal_umum;
                                                 $no = 1;
                                                 $totalan_debit = 0;
                                                 $totalan_kredit = 0;
-                                                $jurnal_umum_detail = AktJurnalUmumDetail::find()->where(['id_jurnal_umum' => $model->id_jurnal_umum])->all();
+                                                $jurnal_umum_detail = AktJurnalUmumDetail::find()->where(['id_jurnal_umum' => $model->id_jurnal_umum])->andWhere("debit > 0 OR kredit > 0")->all();
                                                 foreach ($jurnal_umum_detail as $key => $d) {
                                                     $akun = AktAkun::find()->where(['id_akun' => $d->id_akun])->one();
                                                     $totalan_debit += $d['debit'];
