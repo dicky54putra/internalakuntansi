@@ -401,6 +401,40 @@ class AktPenjualanPenjualanController extends Controller
         ]);
     }
 
+
+    public function actionCetakInvoiceNonPpn($id)
+    {
+        $model = $this->findModel($id);
+
+        $data_setting = Setting::find()->one();
+
+        $query = (new \yii\db\Query())->from('akt_penjualan_detail')->where(['id_penjualan' => $model->id_penjualan]);
+        $total_penjualan_barang = $query->sum('total');
+
+        return $this->renderPartial('cetak_invoice_non_ppn', [
+            'model' => $model,
+            'data_setting' => $data_setting,
+            'total_penjualan_barang' => $total_penjualan_barang,
+        ]);
+    }
+
+
+    public function actionCetakInvoicePpn($id)
+    {
+        $model = $this->findModel($id);
+
+        $data_setting = Setting::find()->one();
+
+        $query = (new \yii\db\Query())->from('akt_penjualan_detail')->where(['id_penjualan' => $model->id_penjualan]);
+        $total_penjualan_barang = $query->sum('total');
+
+        return $this->renderPartial('cetak_invoice_ppn', [
+            'model' => $model,
+            'data_setting' => $data_setting,
+            'total_penjualan_barang' => $total_penjualan_barang,
+        ]);
+    }
+
     public function actionCetakSuratPesanan($id)
     {
         $model = $this->findModel($id);

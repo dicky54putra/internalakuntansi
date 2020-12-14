@@ -85,7 +85,13 @@ class SiteController extends Controller
      */
     public function actionIndex()
     {
-        $sum_omzet = Yii::$app->db->createCommand("SELECT SUM(total) FROM akt_penjualan WHERE akt_penjualan.status = 3 OR akt_penjualan.status = 4")->queryScalar();
+
+
+        $month = date('m');
+        $year = date('Y');
+
+
+        $sum_omzet = Yii::$app->db->createCommand("SELECT SUM(total + uang_muka) as total FROM akt_penjualan WHERE akt_penjualan.status != 5 AND akt_penjualan.status != 1 AND MONTH(tanggal_penjualan) = '$month'")->queryScalar();
 
         $saldo_kas = Yii::$app->db->createCommand("SELECT SUM(saldo) from akt_kas_bank")->queryScalar();
         if (!empty($saldo_kas)) {
@@ -93,77 +99,31 @@ class SiteController extends Controller
         } else {
             $saldo_kas = 0;
         }
-        $saldo_piutang = Yii::$app->db->createCommand("SELECT SUM(saldo_akun) as saldo FROM `akt_akun` WHERE nama_akun LIKE '%piutang%'")->queryScalar();
-        // $saldo_hutang = Yii::$app->db->createCommand("SELECT SUM(saldo_akun) as saldo FROM `akt_akun` WHERE nama_akun LIKE '%hutang%'")->queryScalar();
 
-        #perhitungan pembelian yang belum di bayar
-        $saldo_hutang_pembelian_barang = 0;
-        $queryAktPembelian = AktPembelian::find()->where(['!=', 'akt_pembelian.status', '1'])->andWhere(['!=', 'akt_pembelian.total', 0])->orderBy("id_pembelian desc")->all();
-        foreach ($queryAktPembelian as $key => $value) {
-            # code...
-            $query = (new \yii\db\Query())->from('akt_pembayaran_biaya')->where(['id_pembelian' => $value->id_pembelian]);
-            $sum_nominal = $query->sum('nominal');
+        $saldo_hutang_pembelian = Yii::$app->db->createCommand("SELECT SUM(total - IF(akt_pembayaran_biaya.nominal IS NULL, 0, akt_pembayaran_biaya.nominal) + IF(akt_pembayaran_biaya.nominal IS NULL, 0, uang_muka)) as total
+        FROM akt_pembelian 
+        LEFT JOIN akt_pembayaran_biaya ON akt_pembayaran_biaya.id_pembelian = akt_pembelian.id_pembelian
+        WHERE akt_pembelian.status != 6 AND akt_pembelian.status != 1 ")->queryScalar();
 
-            $kekurangan_pembayaran = 0;
-            $total =  $value->total;
+        $saldo_hutang_pembelian_harta_tetap = Yii::$app->db->createCommand("SELECT SUM(total - IF(akt_pembayaran_biaya_harta_tetap.nominal IS NULL, 0, akt_pembayaran_biaya_harta_tetap.nominal)) as total
+        FROM akt_pembelian_harta_tetap 
+        LEFT JOIN akt_pembayaran_biaya_harta_tetap ON akt_pembayaran_biaya_harta_tetap.id_pembelian_harta_tetap = akt_pembelian_harta_tetap.id_pembelian_harta_tetap
+        WHERE akt_pembelian_harta_tetap.status = 2")->queryScalar();
 
-            $totalan_belum_dibayar = 0;
-            if ($sum_nominal != 0) {
-                $total = $value->total + $value->uang_muka;
-                $total_belum_dibayar = $total - $sum_nominal;
+        $saldo_hutang = $saldo_hutang_pembelian + $saldo_hutang_pembelian_harta_tetap;
 
-                if ($sum_nominal > $total) {
-                    $kelebihan = $sum_nominal - $total;
-                    // return 'Kelebihan : ' . ribuan($kelebihan);
-                }
-                $a = ($total_belum_dibayar) . ' (1)';
-                $totalan_belum_dibayar += $total_belum_dibayar;
-                // echo $a;
-            } else {
-                $b = ($total) . ' (2)<br>';
-                $totalan_belum_dibayar += $total;
-                // echo $b;
-            }
+        $saldo_piutang_pembelian = Yii::$app->db->createCommand("SELECT SUM(total - IF(akt_penerimaan_pembayaran.nominal IS NULL, 0, akt_penerimaan_pembayaran.nominal) + IF(akt_penerimaan_pembayaran.nominal IS NULL, 0, uang_muka)) as total
+        FROM akt_penjualan 
+        LEFT JOIN akt_penerimaan_pembayaran ON akt_penerimaan_pembayaran.id_penjualan = akt_penjualan.id_penjualan
+        WHERE akt_penjualan.status != 5 AND akt_penjualan.status != 1 ")->queryScalar();
 
-            $saldo_hutang_pembelian_barang += $totalan_belum_dibayar;
-        }
+        $saldo_piutang_pembelian_harta_tetap = Yii::$app->db->createCommand("SELECT SUM(total - IF(akt_penerimaan_pembayaran_harta_tetap.nominal IS NULL, 0, akt_penerimaan_pembayaran_harta_tetap.nominal)) as total
+        FROM akt_penjualan_harta_tetap 
+        LEFT JOIN akt_penerimaan_pembayaran_harta_tetap ON akt_penerimaan_pembayaran_harta_tetap.id_penjualan_harta_tetap = akt_penjualan_harta_tetap.id_penjualan_harta_tetap
+        WHERE akt_penjualan_harta_tetap.status = 2")->queryScalar();
 
-        #perhitungan pembelian harta tetap
-        $saldo_hutang_pembelian_harta_tetap = 0;
-        $queryAktPembelianHartaTetap = AktPembelianHartaTetap::find()->where(['status' => '2'])->orderBy('id_pembelian_harta_tetap desc')->all();
-        foreach ($queryAktPembelianHartaTetap as $key => $value) {
-            # code...
-            $query = (new \yii\db\Query())->from('akt_pembayaran_biaya_harta_tetap')->where(['id_pembelian_harta_tetap' => $value->id_pembelian_harta_tetap]);
-            $sum_nominal = $query->sum('nominal');
+        $saldo_piutang = $saldo_piutang_pembelian + $saldo_piutang_pembelian_harta_tetap;
 
-            $kekurangan_pembayaran = 0;
-
-            $total_ = AktPembelianHartaTetapDetail::find()->where(['id_pembelian_harta_tetap' => $value->id_pembelian_harta_tetap])->sum('harga');
-
-            $total = 0;
-            $totalan_belum_dibayar_pembelian_harta_tetap = 0;
-            if ($sum_nominal != 0) {
-                $total = $total_;
-                $total_belum_dibayar = $total - $sum_nominal;
-
-                if ($sum_nominal > $total) {
-                    $kelebihan = $sum_nominal - $total;
-                    // return 'Kelebihan : ' . ribuan($kelebihan);
-                }
-                $a = $total_belum_dibayar;
-                $totalan_belum_dibayar_pembelian_harta_tetap += $a;
-            } else {
-                $b = $total_;
-                $totalan_belum_dibayar_pembelian_harta_tetap += $b;
-            }
-
-            $saldo_hutang_pembelian_harta_tetap += $totalan_belum_dibayar_pembelian_harta_tetap;
-        }
-
-        $saldo_hutang = $saldo_hutang_pembelian_barang + $saldo_hutang_pembelian_harta_tetap;
-
-        $month = date('m');
-        $year = date('Y');
 
 
         $tanggal_labels = Setting::getTanggal('tanggal_penjualan', 'akt_penjualan');

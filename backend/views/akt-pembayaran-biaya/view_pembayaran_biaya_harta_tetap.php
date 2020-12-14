@@ -312,8 +312,8 @@ $this->title = 'Detail Data Pembayaran : ' . $model->no_pembelian_harta_tetap;
                                                     echo $form->field($model_pembayaran_biaya, 'nominal')->widget(
                                                         \yii\widgets\MaskedInput::className(),
                                                         [
-                                                            'options' => ['autocomplete' => 'off', 'readonly' => true, 'value' => $total],
-                                                            'clientOptions' => ['alias' => 'decimal', 'groupSeparator' => '.', 'autoGroup' => true, 'removeMaskOnSubmit' => true, 'rightAlign' => false, 'min' => 0]
+                                                            'options' => ['autocomplete' => 'off', 'readonly' => true, 'value' => $model->total],
+                                                            'clientOptions' => ['alias' => 'decimal', 'groupSeparator' => '.', 'autoGroup' => true, 'removeMaskOnSubmit' => true, 'rightAlign' => false]
                                                         ]
                                                     );
                                                 } else {
@@ -321,22 +321,12 @@ $this->title = 'Detail Data Pembayaran : ' . $model->no_pembelian_harta_tetap;
                                                         \yii\widgets\MaskedInput::className(),
                                                         [
                                                             'options' => ['autocomplete' => 'off'],
-                                                            'clientOptions' => ['alias' => 'decimal', 'groupSeparator' => '.', 'autoGroup' => true, 'removeMaskOnSubmit' => true, 'rightAlign' => false, 'min' => 0]
+                                                            'clientOptions' => ['alias' => 'decimal', 'groupSeparator' => '.', 'autoGroup' => true, 'removeMaskOnSubmit' => true, 'rightAlign' => false]
                                                         ]
                                                     );
                                                 }
 
                                                 ?>
-                                                <?php
-                                                //  $form->field($model_pembayaran_biaya, 'nominal')->widget(
-                                                //     \yii\widgets\MaskedInput::className(),
-                                                //     [
-                                                //         'options' => ['autocomplete' => 'off'],
-                                                //         'clientOptions' => ['alias' => 'decimal', 'groupSeparator' => '.', 'autoGroup' => true, 'removeMaskOnSubmit' => true, 'rightAlign' => false, 'min' => 0]
-                                                //     ]
-                                                // ); 
-                                                ?>
-
                                                 <?= $form->field($model_pembayaran_biaya, 'keterangan')->textarea(['rows' => 4]) ?>
 
                                             </div>

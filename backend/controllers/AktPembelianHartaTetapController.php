@@ -173,9 +173,10 @@ class AktPembelianHartaTetapController extends Controller
         }
         $pembelian_barang = $pembelian_detail - $diskon;
         $grand_total = $pembelian_barang + $pajak + $model->ongkir + $model->materai;
+        $hutang_usaha = $grand_total - $model->uang_muka;
 
         $data_jurnal_umum = array(
-            'grand_total' => $grand_total,
+            'grand_total' => $hutang_usaha,
             'pembelian_barang' => $pembelian_barang,
             'pajak' => $pajak,
             'uang_muka' => $model->uang_muka,

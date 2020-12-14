@@ -135,12 +135,18 @@ class AktPenjualanSearch extends AktPenjualan
 
     public function searchPiutang($params)
     {
-        $query = AktPenjualan::find();
+        $subQuery = AktPenerimaanPembayaran::find()->select(['id_penjualan']);
+        $query = AktPenjualan::find()
+            ->select(['akt_penjualan.no_penjualan', 'akt_penjualan.id_penjualan', 'akt_penjualan.total', 'akt_penjualan.uang_muka', 'akt_penjualan.tanggal_penjualan', 'akt_penjualan.id_customer', 'akt_penjualan.jumlah_tempo', 'akt_penjualan.tanggal_tempo']);;
         $query->joinWith("customer");
         $query->joinWith("sales");
         $query->joinWith("mata_uang");
+        $query->joinWith("penerimaan_pembayaran");
         $query->where(['akt_penjualan.jenis_bayar' => 2, 'akt_penjualan.status' => 4]);
+        $query->andWhere('(akt_penjualan.total + akt_penjualan.uang_muka - akt_penerimaan_pembayaran.nominal) != 0');
+        $query->orWhere(['NOT IN', 'akt_penjualan.id_penjualan', $subQuery]);
         $query->andWhere(['!=', 'akt_penjualan.total', 0]);
+        $query->orderBy("akt_penjualan.id_penjualan desc");
 
         // add conditions that should always apply here
 

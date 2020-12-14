@@ -55,7 +55,7 @@ $this->title = 'Home';
             <!-- small box -->
             <div class="small-box bg-yellow">
                 <div class="inner">
-                    <h3>Rp. <?= !empty($saldo_piutang) ?  pretty_money_minus($saldo_piutang) : 0 ?> </h3>
+                    <h3>Rp. <?= !empty($saldo_piutang) ?  pretty_money($saldo_piutang) : 0 ?> </h3>
                     <p>Total Piutang</p>
                 </div>
                 <div class="icon">
@@ -68,7 +68,7 @@ $this->title = 'Home';
             <!-- small box -->
             <div class="small-box bg-red">
                 <div class="inner">
-                    <h3>Rp. <?= !empty($saldo_hutang) ?  pretty_money_minus($saldo_hutang) : 0  ?> </h3>
+                    <h3>Rp. <?= !empty($saldo_hutang) ?  pretty_money($saldo_hutang) : 0  ?> </h3>
                     <p>Total Hutang</p>
                 </div>
                 <div class="icon">
@@ -245,8 +245,8 @@ $this->title = 'Home';
             tooltips: {
                 callbacks: {
                     title: function(tooltipItem, data) {
-                        console.log(tooltipItem[0].datasetIndex);
-                        return `${data.datasets[tooltipItem[0].datasetIndex].label} ${nameMonth(tooltipItem[0].xLabel)}`;
+                        // return ` ${data.datasets[tooltipItem[0].datasetIndex].label} Pada Tanggal ${nameMonth(tooltipItem[0].xLabel)}`;
+                        return ` ${data.datasets[tooltipItem[0].datasetIndex].label}`;
                     },
 
                     label: function(tooltipItem, data) {

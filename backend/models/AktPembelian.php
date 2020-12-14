@@ -90,6 +90,11 @@ class AktPembelian extends \yii\db\ActiveRecord
         return $this->hasOne(AktMataUang::className(), ['id_mata_uang' => 'id_mata_uang']);
     }
 
+    public function getpembayaran_biaya()
+    {
+        return $this->hasOne(AktPembayaranBiaya::className(), ['id_pembelian' => 'id_pembelian']);
+    }
+
     public function getkas_bank()
     {
         return $this->hasOne(AktKasBank::className(), ['id_kas_bank' => 'id_kas_bank']);

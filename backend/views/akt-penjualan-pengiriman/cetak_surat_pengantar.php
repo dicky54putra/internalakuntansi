@@ -138,21 +138,24 @@ use backend\models\AktSatuan;
             </tr>
         </thead>
     </table>
-    <table class="table3">
+    <table class="table1" style="margin-top: 30px;">
         <thead>
-            <tr>
-                <th colspan="4">Dikirim Ke :</th>
+            <tr align="left">
+                <th style="width: 30%;white-space: nowrap;">Dikirim Ke : </th>
+                <th rowspan="4" style="vertical-align: middle;text-align: center;"></th>
+                <th style="width: 15%;white-space: nowrap;">Pengemudi </th>
+                <th style="width: 10%;white-space: nowrap;">: </th>
             </tr>
             <tr>
-                <th class="kiri_nomor_tanggal"><?= $model_penjualan->customer->nama_mitra_bisnis ?></th>
-                <th rowspan="2">&nbsp;</th>
-                <th class="nomor_tanggal" style="text-align: left;">Pengemudi</th>
-                <th class="titik2" colspan="2">: &nbsp;</th>
+                <?php $alamat = Yii::$app->db->createCommand("SELECT akt_mitra_bisnis_alamat.alamat_lengkap FROM akt_mitra_bisnis_alamat WHERE id_mitra_bisnis_alamat = '$model->id_mitra_bisnis_alamat'")->queryScalar(); ?>
+                <th style="white-space: nowrap;"><?= $model_penjualan->customer->nama_mitra_bisnis ?>
+                    <br />
+                    <span style="max-width: 100px;"> <?= $alamat ?> </span>
+                </th>
+                <th style="white-space: nowrap;">No. Unit</th>
+                <th style="white-space: nowrap;">: </th>
             </tr>
             <tr>
-                <th class="kiri_nomor_tanggal"><?= (!empty($model->mitra_bisnis_alamat->alamat_lengkap)) ? $model->mitra_bisnis_alamat->alamat_lengkap : '' ?></th>
-                <th class="nomor_tanggal" style="text-align: left;">No. Unit</th>
-                <th class="titik2" colspan="2">: &nbsp;</th>
             </tr>
         </thead>
     </table>
@@ -197,8 +200,9 @@ use backend\models\AktSatuan;
             <?php } ?>
         </tbody>
         <tfoot>
-            <tr>
-                <td colspan="3" style="border-left: 1px solid #000000;border-bottom: 1px solid #000000;"><b>Jumlah Barang</b></td>
+            <tr style="border-left: 1px solid #000000;border-bottom: 1px solid #000000;">
+                <td colspan="2"></td>
+                <td style="float: right;"><b>Jumlah Barang</b></td>
                 <td style="text-align: center;border-bottom: 1px solid #000000;"><b><?= number_format($totalan_qty_dikirim) ?></b></td>
                 <td style="text-align: center;border-bottom: 1px solid #000000;border-right: 1px solid #000000;"></td>
             </tr>

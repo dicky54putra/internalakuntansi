@@ -159,41 +159,39 @@ use backend\models\AktSatuan;
 <hr>
 <table class="table3">
     <tr>
-        <th colspan="3" style="text-align: left; font-size: 13px;">Terbilang: <br /> <br /> <?= terbilang($model->total) ?></th>
+        <th style="text-align: left; font-size: 13px;" colspan="3"> Terbilang<br /><br /><span style="max-width:200px;"> <?= terbilang($model->total) ?> </span></th>
         <?php
-        $model->diskon != 0 ?    $diskon = $total_penjualan_barang - ($model->diskon / 100 * $total_penjualan_barang) : $diskon = 0;
+        $model->diskon != 0 ?   $diskon = $total_penjualan_barang - ($model->diskon / 100 * $total_penjualan_barang) : $diskon = 0;
         ?>
-        <th>
+        <th style="">
             <table class="table3">
                 <tr>
                     <th>DPP</th>
-                    <th><?= number_format($total_penjualan_barang, 2, ",", "."); ?></th>
+                    <th><?= ribuan($total_penjualan_barang) ?></th>
                 </tr>
                 <?php if ($model->diskon != 0) { ?>
                     <tr>
                         <th>Diskon <?= $model->diskon ?>%</th>
                         <th>
                             <?php
-                            echo  number_format($diskon, 2, ",", ".");
+                            echo ribuan($diskon);
                             ?>
                         </th>
                     </tr>
                 <?php } ?>
-                <?php if ($model->pajak == 1) { ?>
-                    <tr>
-                        <th>Pajak 10% </th>
-                        <th>
-                            <?php
-                            $pajak = ($total_penjualan_barang - $diskon)  * 0.1;
-                            echo  number_format($pajak, 0, ",", ".");
-                            ?>
-                        </th>
-                    </tr>
-                <?php } ?>
+                <tr>
+                    <th>Pajak 10% </th>
+                    <th>
+                        <?php
+                        $pajak = ($total_penjualan_barang - $diskon)  * 0.1;
+                        echo ribuan($pajak);
+                        ?>
+                    </th>
+                </tr>
                 <?php if ($model->ongkir != 0) { ?>
                     <tr>
                         <th>Ongkir </th>
-                        <th> <?= number_format($model->ongkir, 2, ",", "."); ?></th>
+                        <th> <?= ribuan($model->ongkir) ?></th>
                     </tr>
                 <?php } ?>
                 <?php if ($model->materai != 0) { ?>
@@ -205,22 +203,16 @@ use backend\models\AktSatuan;
                 <?php if ($model->uang_muka != 0) { ?>
                     <tr>
                         <th>Uang Muka </th>
-                        <th> <?= number_format($model->uang_muka, 2, ",", ".");  ?></th>
-                    </tr>
-                <?php } ?>
-                <?php if ($sum_retur != 0) { ?>
-                    <tr>
-                        <th>Total Retur </th>
-                        <th> <?= ribuan($sum_retur) ?></th>
+                        <th> <?= ribuan($model->uang_muka) ?></th>
                     </tr>
                 <?php } ?>
                 <tr>
                     <th style="font-weight: bold; font-size: 15px;">Tagihan</th>
                     <?php
                     $_pajak = empty($pajak) ? 0 : $pajak;
-                    $tagihan = $total_penjualan_barang + $_pajak +  $model->ongkir - $diskon - $model->uang_muka - $sum_retur;
+                    $tagihan = $total_penjualan_barang + $_pajak + $model->ongkir - $diskon - $model->uang_muka;
                     ?>
-                    <th style="font-weight: bold; font-size: 15px;"><?= number_format($tagihan, 2, ",", ".") ?></th>
+                    <th style="font-weight: bold; font-size: 15px;"><?= ribuan($tagihan) ?></th>
                 </tr>
             </table>
         </th>

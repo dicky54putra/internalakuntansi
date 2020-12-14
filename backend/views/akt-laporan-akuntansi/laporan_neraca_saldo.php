@@ -266,7 +266,7 @@ $this->title = 'Laporan Neraca Saldo';
             }
             $aktiva = substr($a_ak, 0, -1);
 
-            $akun_pasiva = AktAkun::find()->where("jenis in(5,6,7)")->all();
+            $akun_pasiva = AktAkun::find()->where("jenis in(5,6)")->all();
             $a_ps = '';
             foreach ($akun_pasiva as $aa) {
                 $a_ps .= $aa->id_akun . ',';
@@ -297,7 +297,7 @@ $this->title = 'Laporan Neraca Saldo';
                             <th style="width: 15%;text-align: right;">Kredit</th>
                         </tr>
                         <tr>
-                            <td>Total Aktiva</td>
+                            <td>Total Activa</td>
                             <td align="right"><?= ribuan(abs($total_sum_aktiva1)) ?></td>
                             <td align="right"><?= ribuan(abs($total_sum_aktiva2)) ?></td>
                         </tr>

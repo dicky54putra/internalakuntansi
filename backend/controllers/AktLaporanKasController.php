@@ -50,7 +50,7 @@ class AktLaporanKasController extends Controller
         ]);
     }
 
-    public function actionLaporanTransferKas()
+    public function actionLaporanRekapTransferKas()
     {
         $tanggal_awal = Yii::$app->request->post('tanggal_awal');
         $tanggal_akhir = Yii::$app->request->post('tanggal_akhir');
@@ -58,6 +58,21 @@ class AktLaporanKasController extends Controller
         $kasbank_tujuan = Yii::$app->request->post('kasbank_tujuan');
 
         return $this->render('laporan_transfer_kas', [
+            'tanggal_awal' => $tanggal_awal,
+            'tanggal_akhir' => $tanggal_akhir,
+            'kasbank_asal' => $kasbank_asal,
+            'kasbank_tujuan' => $kasbank_tujuan,
+        ]);
+    }
+
+    public function actionLaporanTransferKas()
+    {
+        $tanggal_awal = Yii::$app->request->post('tanggal_awal');
+        $tanggal_akhir = Yii::$app->request->post('tanggal_akhir');
+        $kasbank_asal = Yii::$app->request->post('kasbank_asal');
+        $kasbank_tujuan = Yii::$app->request->post('kasbank_tujuan');
+
+        return $this->render('laporan_rekap_transfer_kas', [
             'tanggal_awal' => $tanggal_awal,
             'tanggal_akhir' => $tanggal_akhir,
             'kasbank_asal' => $kasbank_asal,

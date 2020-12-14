@@ -82,8 +82,7 @@ class AktPenjualanHartaTetapController extends Controller
         $count_detail = AktPenjualanHartaTetapDetail::find()->where(['id_penjualan_harta_tetap' => $model->id_penjualan_harta_tetap])->count();
         $cek_detail = ($count_detail > 0) ? 0 : 1;
         $cek_update_jenis_bayar = ($model->jenis_bayar == 1) ? 0 : $retVal = ($model->jenis_bayar == 2 && $model->jumlah_tempo != NULL) ? 0 : 1;
-        $cek_update_kas_bank = ($model->id_kas_bank == NULL) ? 1 : 0;
-        $total_cek = $cek_update_jenis_bayar + $cek_update_kas_bank + $cek_detail;
+        $total_cek = $cek_update_jenis_bayar +  $cek_detail;
 
         #model untuk penjualan harta tetap detail
         $model_penjualan_harta_tetap_detail_baru = new AktPenjualanHartaTetapDetail();
@@ -237,31 +236,33 @@ class AktPenjualanHartaTetapController extends Controller
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
-        $cek_detail = AktPenjualanHartaTetapDetail::find()
-            ->where(['id_penjualan_harta_tetap' => $model->id_penjualan_harta_tetap])
-            ->count();
+        $query = AktPenjualanHartaTetapDetail::find()
+            ->where(['id_penjualan_harta_tetap' => $model->id_penjualan_harta_tetap]);
+        $cek_detail = $query->count();
+        $sum_detail = $query->sum('total');
 
         if ($model->load(Yii::$app->request->post())) {
 
 
             if ($cek_detail > 0) {
-                $model->ongkir = preg_replace("/[^0-9,]+/", '',  Yii::$app->request->post('AktPenjualanHartaTetap')['ongkir']);
-                $model->uang_muka = preg_replace("/[^0-9,]+/", '', Yii::$app->request->post('AktPenjualanHartaTetap')['uang_muka']);
-                $model->materai = preg_replace("/[^0-9,]+/", '', Yii::$app->request->post('AktPenjualanHartaTetap')['materai']);
+                $model_ongkir = Yii::$app->request->post('AktPenjualanHartaTetap')['ongkir'];
+                $model_materai = Yii::$app->request->post('AktPenjualanHartaTetap')['materai'];
+                $model_uang_muka = Yii::$app->request->post('AktPenjualanHartaTetap')['uang_muka'];
+
+                $model->ongkir = empty($model_ongkir) ? '0' :  preg_replace("/[^0-9,]+/", "", $model_ongkir);
+                $model->materai = empty($model_materai) ? '0' : preg_replace("/[^0-9,]+/", "", $model_materai);
+                $model->uang_muka = empty($model_uang_muka) ? '0' : preg_replace("/[^0-9,]+/", "", $model_uang_muka);
 
                 if ($model->uang_muka > 0 && $model->id_kas_bank == '') {
                     Yii::$app->session->setFlash('danger', [['Perhatian !', 'Jika ada uang muka, kas bank tidak boleh kosong!']]);
                     return $this->redirect(['view', 'id' => $id]);
                 }
 
-                $total_penjualan_harta_tetap_detail_post = Yii::$app->request->post('AktPenjualanHartaTetap')['total'];
-                $total_penjualan_harta_tetap_detail = preg_replace("/[^0-9,]+/", '', $total_penjualan_harta_tetap_detail_post);
+                $diskon = ($model->diskon > 0) ? ($model->diskon * $sum_detail) / 100 : 0;
+                $pajak = ($model->pajak == 1) ? (($sum_detail - $diskon) * 10) / 100 : 0;
 
-                $diskon = ($model->diskon > 0) ? ($model->diskon * $total_penjualan_harta_tetap_detail) / 100 : 0;
-                $pajak = ($model->pajak == 1) ? (($total_penjualan_harta_tetap_detail - $diskon) * 10) / 100 : 0;
-                $model_total_sementara = (($total_penjualan_harta_tetap_detail - $diskon) + $pajak) + $model->ongkir;
+                $model_total_sementara = (($sum_detail - $diskon) + $pajak) + $model->ongkir;
                 $model->total = $model_total_sementara - $model->uang_muka;
-                
 
 
                 if ($model->jenis_bayar == 1) {
@@ -389,8 +390,9 @@ class AktPenjualanHartaTetapController extends Controller
         }
         $penjualan_barang = $penjualan_detail - $diskon;
         $grand_total = $penjualan_barang + $pajak + $model->ongkir - $model->materai;
+        $piutang_usaha = $grand_total - $model->uang_muka;
         $data_jurnal_umum = array(
-            'grand_total' => $grand_total,
+            'grand_total' => $piutang_usaha,
             'penjualan_barang' => $penjualan_barang,
             'pajak' => $pajak,
             'uang_muka' => $model->uang_muka,

@@ -91,17 +91,33 @@ class AktPenjualanDetailController extends Controller
         $model_qty = Yii::$app->request->post('AktPenjualanDetail')['qty'];
         $_model_harga = Yii::$app->request->post('AktPenjualanDetail')['harga'];
         $model_harga = preg_replace('/\D/', '', $_model_harga);
-        $model_diskon = Yii::$app->request->post('AktPenjualanDetail')['diskon'];
         $model_id_item_harga_jual = Yii::$app->request->post('AktPenjualanDetail')['id_item_harga_jual'];
 
-        $model_diskon_a = ($model_diskon > 0) ? (($model_qty * $model_harga) * $model_diskon) / 100 : 0;
+        $model_jenis_diskon = Yii::$app->request->post('AktPenjualanDetail')['jenis_diskon'];
+        $model_diskon = Yii::$app->request->post('AktPenjualanDetail')['diskon'];
 
-        $model_total = ($model_qty * $model_harga) - $model_diskon_a;
+
+        // Persen
+        if ($model_jenis_diskon == 1) {
+            $model_diskon_a = ($model_diskon > 0) ? (($model_qty * $model_harga) * $model_diskon) / 100 : 0;
+        }
+        // Rupiah
+        elseif ($model_jenis_diskon == 2) {
+            $model_diskon_a = ($model_diskon > 0) ? $model_diskon : 0;
+        }
+
+        $model_diskon_akhir = empty($model_diskon_a) ? 0 : $model_diskon_a;
+        $model_total = ($model_qty * $model_harga) - $model_diskon_akhir;
+
+        if ($model_diskon > 0  && $model_jenis_diskon == null) {
+            return  Yii::$app->session->setFlash('danger', [['Perhatian!', 'Jika ada diskon, jenis diskon tidak boleh kosong']]);
+        }
 
         $model = new AktPenjualanDetail();
         $model->id_penjualan = $model_id_penjualan;
         $model->id_item_stok = $model_id_item_stok;
         $model->qty = $model_qty;
+        $model->jenis_diskon = $model_jenis_diskon;
         $model->harga = $model_harga;
         $model->diskon = $model_diskon;
         $model->total = $model_total;
@@ -115,20 +131,7 @@ class AktPenjualanDetailController extends Controller
 
         if ($count_barang == 0) {
             # code...
-            $model->save();
-
-            # total penjualan barang termasuk yang barusan di add, makanya di taruh di bawah model->save
-            $query = (new \yii\db\Query())->from('akt_penjualan_detail')->where(['id_penjualan' => $model_id_penjualan]);
-            $total_penjualan_barang = $query->sum('total');
-
-            # get data penjualan, 
-            $data_penjualan = AktPenjualan::find()->where(['id_penjualan' => $model_id_penjualan])->one();
-            $diskon = ($data_penjualan->diskon > 0) ? ($data_penjualan->diskon * $total_penjualan_barang) / 100 : 0;
-            $pajak = ($data_penjualan->pajak == 1) ? (($total_penjualan_barang - $diskon) * 10) / 100 : 0;
-            $total_sementara = (($total_penjualan_barang - $diskon) + $pajak) + $data_penjualan->ongkir + $data_penjualan->materai;
-            $total_sebenarnya = $total_sementara - $data_penjualan->uang_muka;
-            $data_penjualan->total = $total_sebenarnya;
-            $data_penjualan->save(FALSE);
+            $model->save(false);
 
             Yii::$app->session->setFlash('success', [['Perhatian!', '' . $item->nama_item . ' Berhasil di Tambahkan ke Data Barang Penjualan']]);
         } else {
@@ -152,10 +155,7 @@ class AktPenjualanDetailController extends Controller
         $akt_penjualan = AktPenjualan::findOne($model->id_penjualan);
         $akt_item_harga_jual = AktItemHargaJual::findOne($model->id_item_harga_jual);
         $data_item_stok = AktPenjualan::data_item_stok($akt_penjualan);
-
         $data_level = AktPenjualan::dataLevel($akt_item_harga_jual->id_item);
-
-
 
         if ($model->load(Yii::$app->request->post())) {
 
@@ -167,45 +167,36 @@ class AktPenjualanDetailController extends Controller
             $item_stok = AktItemStok::findOne($model->id_item_stok);
             $item = AktItem::findOne($item_stok->id_item);
 
-            $model_diskon_a = ($model->diskon > 0) ? (($model->qty * $model->harga) * $model->diskon) / 100 : 0;
-            $model->total = ($model->qty * $model->harga) - $model_diskon_a;
+            $model_jenis_diskon = Yii::$app->request->post('AktPenjualanDetail')['jenis_diskon'];
+            $model_diskon = Yii::$app->request->post('AktPenjualanDetail')['diskon'];
+            // Persen
+            if ($model_jenis_diskon == 1) {
+                $model_diskon_a = ($model_diskon > 0) ? (($model->qty * $model_harga) * $model_diskon) / 100 : 0;
+            }
+            // Rupiah
+            elseif ($model_jenis_diskon == 2) {
+                $model_diskon_a = ($model_diskon > 0) ? $model_diskon : 0;
+            }
+
+            $model_diskon_akhir = empty($model_diskon_a) ? 0 : $model_diskon_a;
+            $model_total = ($model->qty * $model->harga) - $model_diskon_akhir;
+            $model->jenis_diskon = $model_jenis_diskon;
+
+            $model->total = $model_total;
+
+            if ($model_diskon > 0  && $model_jenis_diskon == null) {
+                return  Yii::$app->session->setFlash('danger', [['Perhatian!', 'Jika ada diskon, jenis diskon tidak boleh kosong']]);
+            }
 
             if ($model->id_item_stok == $model_sebelumnya->id_item_stok) {
                 # code...
-                $model->save();
-
-                # total penjualan barang termasuk yang barusan di add, makanya di taruh di bawah model->save
-                $query = (new \yii\db\Query())->from('akt_penjualan_detail')->where(['id_penjualan' => $model->id_penjualan]);
-                $total_penjualan_barang = $query->sum('total');
-
-                # get data penjualan, 
-                $data_penjualan = AktPenjualan::find()->where(['id_penjualan' => $model->id_penjualan])->one();
-                $diskon = ($data_penjualan->diskon > 0) ? ($data_penjualan->diskon * $total_penjualan_barang) / 100 : 0;
-                $pajak = ($data_penjualan->pajak == 1) ? (($total_penjualan_barang - $diskon) * 10) / 100 : 0;
-                $total_sementara = (($total_penjualan_barang - $diskon) + $pajak) + $data_penjualan->ongkir + $data_penjualan->materai;
-                $total_sebenarnya = $total_sementara - $data_penjualan->uang_muka;
-                $data_penjualan->total = $total_sebenarnya;
-                $data_penjualan->save(FALSE);
-
+                $model->save(false);
                 Yii::$app->session->setFlash('success', [['Perhatian!', 'Perubahan ' . $item->nama_item . ' Berhasil di Simpan ke Data Barang Penjualan']]);
             } else {
                 # code...
                 if ($count_barang == 0) {
                     # code...
-                    $model->save();
-
-                    # total penjualan barang termasuk yang barusan di add, makanya di taruh di bawah model->save
-                    $query = (new \yii\db\Query())->from('akt_penjualan_detail')->where(['id_penjualan' => $model->id_penjualan]);
-                    $total_penjualan_barang = $query->sum('total');
-
-                    # get data penjualan, 
-                    $data_penjualan = AktPenjualan::find()->where(['id_penjualan' => $model->id_penjualan])->one();
-                    $diskon = ($data_penjualan->diskon > 0) ? ($data_penjualan->diskon * $total_penjualan_barang) / 100 : 0;
-                    $pajak = ($data_penjualan->pajak == 1) ? (($total_penjualan_barang - $diskon) * 10) / 100 : 0;
-                    $total_sementara = (($total_penjualan_barang - $diskon) + $pajak) + $data_penjualan->ongkir + $data_penjualan->materai;
-                    $total_sebenarnya = $total_sementara - $data_penjualan->uang_muka;
-                    $data_penjualan->total = $total_sebenarnya;
-                    $data_penjualan->save(FALSE);
+                    $model->save(false);
 
                     Yii::$app->session->setFlash('success', [['Perhatian!', '' . $item->nama_item . ' Berhasil di Simpan ke Data Barang Penjualan']]);
                 } else {
@@ -248,46 +239,35 @@ class AktPenjualanDetailController extends Controller
             $item_stok = AktItemStok::findOne($model->id_item_stok);
             $item = AktItem::findOne($item_stok->id_item);
 
-            $model_diskon_a = ($model->diskon > 0) ? (($model->qty * $model->harga) * $model->diskon) / 100 : 0;
-            $model->total = ($model->qty * $model->harga) - $model_diskon_a;
+            $model_jenis_diskon = Yii::$app->request->post('AktPenjualanDetail')['jenis_diskon'];
+            $model_diskon = Yii::$app->request->post('AktPenjualanDetail')['diskon'];
+            // Persen
+            if ($model_jenis_diskon == 1) {
+                $model_diskon_a = ($model_diskon > 0) ? (($model->qty * $model_harga) * $model_diskon) / 100 : 0;
+            }
+            // Rupiah
+            elseif ($model_jenis_diskon == 2) {
+                $model_diskon_a = ($model_diskon > 0) ? $model_diskon : 0;
+            }
+
+            $model_diskon_akhir = empty($model_diskon_a) ? 0 : $model_diskon_a;
+            $model_total = ($model->qty * $model->harga) - $model_diskon_akhir;
+            $model->jenis_diskon = $model_jenis_diskon;
+
+            $model->total = $model_total;
+            if ($model_diskon > 0  && $model_jenis_diskon == null) {
+                return  Yii::$app->session->setFlash('danger', [['Perhatian!', 'Jika ada diskon, jenis diskon tidak boleh kosong']]);
+            }
 
             if ($model->id_item_stok == $model_sebelumnya->id_item_stok) {
                 # code...
-                $model->save();
-
-                # total penjualan barang termasuk yang barusan di add, makanya di taruh di bawah model->save
-                $query = (new \yii\db\Query())->from('akt_penjualan_detail')->where(['id_penjualan' => $model->id_penjualan]);
-                $total_penjualan_barang = $query->sum('total');
-
-                # get data penjualan, 
-                $data_penjualan = AktPenjualan::find()->where(['id_penjualan' => $model->id_penjualan])->one();
-                $diskon = ($data_penjualan->diskon > 0) ? ($data_penjualan->diskon * $total_penjualan_barang) / 100 : 0;
-                $pajak = ($data_penjualan->pajak == 1) ? (($total_penjualan_barang - $diskon) * 10) / 100 : 0;
-                $total_sementara = (($total_penjualan_barang - $diskon) + $pajak) + $data_penjualan->ongkir + $data_penjualan->materai;
-                $total_sebenarnya = $total_sementara - $data_penjualan->uang_muka;
-                $data_penjualan->total = $total_sebenarnya;
-                $data_penjualan->save(FALSE);
-
+                $model->save(false);
                 Yii::$app->session->setFlash('success', [['Perhatian!', 'Perubahan ' . $item->nama_item . ' Berhasil di Simpan ke Data Barang Penjualan']]);
             } else {
                 # code...
                 if ($count_barang == 0) {
                     # code...
-                    $model->save();
-
-                    # total penjualan barang termasuk yang barusan di add, makanya di taruh di bawah model->save
-                    $query = (new \yii\db\Query())->from('akt_penjualan_detail')->where(['id_penjualan' => $model->id_penjualan]);
-                    $total_penjualan_barang = $query->sum('total');
-
-                    # get data penjualan, 
-                    $data_penjualan = AktPenjualan::find()->where(['id_penjualan' => $model->id_penjualan])->one();
-                    $diskon = ($data_penjualan->diskon > 0) ? ($data_penjualan->diskon * $total_penjualan_barang) / 100 : 0;
-                    $pajak = ($data_penjualan->pajak == 1) ? (($total_penjualan_barang - $diskon) * 10) / 100 : 0;
-                    $total_sementara = (($total_penjualan_barang - $diskon) + $pajak) + $data_penjualan->ongkir + $data_penjualan->materai;
-                    $total_sebenarnya = $total_sementara - $data_penjualan->uang_muka;
-                    $data_penjualan->total = $total_sebenarnya;
-                    $data_penjualan->save(FALSE);
-
+                    $model->save(false);
                     Yii::$app->session->setFlash('success', [['Perhatian!', '' . $item->nama_item . ' Berhasil di Simpan ke Data Barang Penjualan']]);
                 } else {
                     # code...
@@ -305,8 +285,6 @@ class AktPenjualanDetailController extends Controller
             'data_level' => $data_level,
         ]);
     }
-
-
 
     public function actionGetHargaItem($id)
     {

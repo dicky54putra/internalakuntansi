@@ -21,6 +21,8 @@ $this->title = 'Detail Data Pembayaran : ' . $model->no_pembelian;
 // $this->params['breadcrumbs'][] = ['label' => 'Akt pembelians', 'url' => ['index']];
 // $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
+$label = $model->total < 0 ? 'Total Yang Perlu Dikembalikan' : "Total Yang Belum Dibayar";
+
 ?>
 <div class="akt-pembelian-pembelian-view">
 
@@ -88,7 +90,7 @@ $this->title = 'Detail Data Pembayaran : ' . $model->no_pembelian;
                                         }
                                     ],
                                     [
-                                        'label' => 'Total Yang Belum di Bayar',
+                                        'label' => $label,
                                         'value' => function ($model) {
                                             $query = (new \yii\db\Query())->from('akt_pembayaran_biaya')->where(['id_pembelian' => $model->id_pembelian]);
                                             $sum_nominal = $query->sum('nominal');
@@ -99,15 +101,13 @@ $this->title = 'Detail Data Pembayaran : ' . $model->no_pembelian;
                                             if ($sum_nominal != 0) {
                                                 $total = $model->total + $model->uang_muka;
                                                 $total_belum_dibayar = $total - $sum_nominal;
-
                                                 if ($sum_nominal > $total) {
                                                     $kelebihan = $sum_nominal - $total;
                                                     return 'Kelebihan : ' . ribuan($kelebihan);
                                                 }
                                                 return ribuan($total_belum_dibayar);
                                             } else {
-
-                                                return ribuan($total);
+                                                return ribuan(abs($total));
                                             }
                                         }
                                     ],
@@ -296,7 +296,7 @@ $this->title = 'Detail Data Pembayaran : ' . $model->no_pembelian;
                                                         \yii\widgets\MaskedInput::className(),
                                                         [
                                                             'options' => ['autocomplete' => 'off', 'readonly' => true, 'value' => $model->total],
-                                                            'clientOptions' => ['alias' => 'decimal', 'groupSeparator' => '.', 'autoGroup' => true, 'removeMaskOnSubmit' => true, 'rightAlign' => false, 'min' => 0]
+                                                            'clientOptions' => ['alias' => 'decimal', 'groupSeparator' => '.', 'autoGroup' => true, 'removeMaskOnSubmit' => true, 'rightAlign' => false]
                                                         ]
                                                     );
                                                 } else {
@@ -304,20 +304,11 @@ $this->title = 'Detail Data Pembayaran : ' . $model->no_pembelian;
                                                         \yii\widgets\MaskedInput::className(),
                                                         [
                                                             'options' => ['autocomplete' => 'off'],
-                                                            'clientOptions' => ['alias' => 'decimal', 'groupSeparator' => '.', 'autoGroup' => true, 'removeMaskOnSubmit' => true, 'rightAlign' => false, 'min' => 0]
+                                                            'clientOptions' => ['alias' => 'decimal', 'groupSeparator' => '.', 'autoGroup' => true, 'removeMaskOnSubmit' => true, 'rightAlign' => false]
                                                         ]
                                                     );
                                                 }
 
-                                                ?>
-                                                <?php
-                                                //  $form->field($model_pembayaran_biaya, 'nominal')->widget(
-                                                //     \yii\widgets\MaskedInput::className(),
-                                                //     [
-                                                //         'options' => ['autocomplete' => 'off'],
-                                                //         'clientOptions' => ['alias' => 'decimal', 'groupSeparator' => '.', 'autoGroup' => true, 'removeMaskOnSubmit' => true, 'rightAlign' => false, 'min' => 0]
-                                                //     ]
-                                                // ); 
                                                 ?>
 
                                                 <?= $form->field($model_pembayaran_biaya, 'keterangan')->textarea(['rows' => 4]) ?>

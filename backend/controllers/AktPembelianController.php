@@ -74,6 +74,7 @@ class AktPembelianController extends Controller
         $model = $this->findModel($id);
         $query = (new \yii\db\Query())->from('akt_pembelian_detail')->where(['id_pembelian' => $model->id_pembelian]);
         $model_pembelian_detail = $query->sum('total');
+        $count = $query->count();
 
         $data_customer = AktPembelian::dataCustomer();
         $data_mata_uang = AktPembelian::dataMataUang();
@@ -88,33 +89,34 @@ class AktPembelianController extends Controller
 
             if ($model->load(Yii::$app->request->post())) {
 
-                // $model_ongkir = Yii::$app->request->post('AktPembelian')['ongkir'];
-                $model_ongkir = preg_replace("/[^0-9,]+/", "", Yii::$app->request->post('AktPembelian')['ongkir']);
-                // echo $model_ongkir; die;
-                $model_materai = preg_replace("/[^0-9,]+/", "", Yii::$app->request->post('AktPembelian')['materai']);
-                $model_uang_muka = preg_replace("/[^0-9,]+/", "", Yii::$app->request->post('AktPembelian')['uang_muka']);
-                if ($model->uang_muka > 0 && $model->id_kas_bank == '') {
-                    Yii::$app->session->setFlash('danger', [['Perhatian !', 'Jika ada uang muka, kas bank tidak boleh kosong!']]);
-                    return $this->redirect(['view', 'id' => $model->id_pembelian]);
+                if ($count > 0) {
+                    // $model_ongkir = Yii::$app->request->post('AktPembelian')['ongkir'];
+                    $model_ongkir = preg_replace("/[^0-9,]+/", "", Yii::$app->request->post('AktPembelian')['ongkir']);
+                    // echo $model_ongkir; die;
+                    $model_materai = preg_replace("/[^0-9,]+/", "", Yii::$app->request->post('AktPembelian')['materai']);
+                    $model_uang_muka = preg_replace("/[^0-9,]+/", "", Yii::$app->request->post('AktPembelian')['uang_muka']);
+                    if ($model->uang_muka > 0 && $model->id_kas_bank == '') {
+                        Yii::$app->session->setFlash('danger', [['Perhatian !', 'Jika ada uang muka, kas bank tidak boleh kosong!']]);
+                        return $this->redirect(['view', 'id' => $model->id_pembelian]);
+                    }
+
+                    $diskon = ($model->diskon > 0) ? ($model->diskon * $model_pembelian_detail) / 100 : 0;
+                    $pajak = ($model->pajak == 1) ? (($model_pembelian_detail - $diskon) * 10) / 100 : 0;
+                    $model_total = (($model_pembelian_detail - $diskon) + $pajak) + $model_ongkir + $model_materai - $model_uang_muka;
+
+                    $model->total = $model_total;
+                    $model->ongkir = $model_ongkir;
+                    $model->materai = $model_materai;
+                    $model->uang_muka = $model_uang_muka;
+
+                    if ($model->jenis_bayar == 1) {
+                        # code...
+                        $model->jatuh_tempo = NULL;
+                        $model->tanggal_tempo = NULL;
+                    } else {
+                        $model->tanggal_tempo = date('Y-m-d', strtotime('+' . $model->jatuh_tempo . ' days', strtotime($model->tanggal_order_pembelian)));
+                    }
                 }
-
-                $diskon = ($model->diskon > 0) ? ($model->diskon * $model_pembelian_detail) / 100 : 0;
-                $pajak = ($model->pajak == 1) ? (($model_pembelian_detail - $diskon) * 10) / 100 : 0;
-                $model_total = (($model_pembelian_detail - $diskon) + $pajak) + $model_ongkir + $model_materai - $model_uang_muka;
-
-                $model->total = $model_total;
-                $model->ongkir = $model_ongkir;
-                $model->materai = $model_materai;
-                $model->uang_muka = $model_uang_muka;
-
-                if ($model->jenis_bayar == 1) {
-                    # code...
-                    $model->jatuh_tempo = NULL;
-                    $model->tanggal_tempo = NULL;
-                } else {
-                    $model->tanggal_tempo = date('Y-m-d', strtotime('+' . $model->jatuh_tempo . ' days', strtotime($model->tanggal_order_pembelian)));
-                }
-
                 $model->save(FALSE);
 
 

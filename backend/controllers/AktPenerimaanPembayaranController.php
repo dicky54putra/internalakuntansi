@@ -566,8 +566,6 @@ class AktPenerimaanPembayaranController extends Controller
 
     public function actionCetakInvoice($id)
     {
-        // echo 'ok';
-        // die;
         $model = AktPenjualan::findOne($id);
 
         $data_setting = Setting::find()->one();
@@ -578,6 +576,44 @@ class AktPenerimaanPembayaranController extends Controller
         $total_penjualan_barang = $query->sum('total');
 
         return $this->renderPartial('cetak_invoice', [
+            'model' => $model,
+            'data_setting' => $data_setting,
+            'total_penjualan_barang' => $total_penjualan_barang,
+            'sum_retur' => $sum_retur,
+        ]);
+    }
+
+    public function actionCetakInvoiceNonPpn($id)
+    {
+        $model = AktPenjualan::findOne($id);
+
+        $data_setting = Setting::find()->one();
+
+
+        $sum_retur = Yii::$app->db->createCommand("SELECT SUM(total) from akt_retur_penjualan WHERE id_penjualan = '$id'")->queryScalar();
+        $query = (new \yii\db\Query())->from('akt_penjualan_detail')->where(['id_penjualan' => $model->id_penjualan]);
+        $total_penjualan_barang = $query->sum('total');
+
+        return $this->renderPartial('cetak_invoice_non_ppn', [
+            'model' => $model,
+            'data_setting' => $data_setting,
+            'total_penjualan_barang' => $total_penjualan_barang,
+            'sum_retur' => $sum_retur,
+        ]);
+    }
+
+    public function actionCetakInvoicePpn($id)
+    {
+        $model = AktPenjualan::findOne($id);
+
+        $data_setting = Setting::find()->one();
+
+
+        $sum_retur = Yii::$app->db->createCommand("SELECT SUM(total) from akt_retur_penjualan WHERE id_penjualan = '$id'")->queryScalar();
+        $query = (new \yii\db\Query())->from('akt_penjualan_detail')->where(['id_penjualan' => $model->id_penjualan]);
+        $total_penjualan_barang = $query->sum('total');
+
+        return $this->renderPartial('cetak_invoice_ppn', [
             'model' => $model,
             'data_setting' => $data_setting,
             'total_penjualan_barang' => $total_penjualan_barang,

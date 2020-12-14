@@ -168,6 +168,24 @@ $count_query_detail = AktPembelianDetail::find()->where(['id_pembelian' => $mode
                                                 }
                                             }
                                         ],
+                                        [
+                                            'attribute' => 'tanggal_estimasi',
+                                            'label' => 'Tanggal Estimasi Barang Diterima',
+                                            'filterWidgetOptions' => [
+                                                'pluginOptions' => [
+                                                    'format' => 'dd-mm-yyyy',
+                                                    'autoclose' => true,
+                                                    'todayHighlight' => true,
+                                                ]
+                                            ],
+                                            'value' => function ($model) {
+                                                if ($model->tanggal_estimasi != null) {
+                                                    return tanggal_indo($model->tanggal_estimasi, true);
+                                                } else {
+                                                    return null;
+                                                }
+                                            }
+                                        ],
                                     ],
                                 ]) ?>
                             </div>

@@ -250,6 +250,8 @@ class AktPenjualanController extends Controller
             # code...
             $no_penjualan = 'PJ' . date('ym') . '001';
         }
+
+
         $model->status = 2;
         $model->the_approver = $id_login;
         $model->the_approver_date = date('Y-m-d H:i:s');
@@ -269,7 +271,15 @@ class AktPenjualanController extends Controller
         // End Create Jurnal Umum
         $penjualan_detail = Yii::$app->db->createCommand("SELECT SUM(total) FROM akt_penjualan_detail WHERE id_penjualan = '$model->id_penjualan'")->queryScalar();
         $pajak = 0;
-        $diskon = $model->diskon / 100 * $penjualan_detail;
+
+        if ($jenis_diskon = 1) {
+            $diskon = $model->diskon / 100 * $penjualan_detail;
+        } else if ($jenis_diskon == 2) {
+            $diskon = $model->diskon;
+        } else {
+            $diskon = 0;
+        }
+
         if ($model->pajak == 1) {
             $total_pembelian = $penjualan_detail - $diskon;
             $pajak = 0.1 * $total_pembelian;
@@ -487,8 +497,6 @@ class AktPenjualanController extends Controller
 
         if ($model->load(Yii::$app->request->post())) {
 
-
-
             if ($model->uang_muka > 0 && $model->id_kas_bank == '') {
                 Yii::$app->session->setFlash('danger', [['Perhatian !', 'Jika ada uang muka, kas bank tidak boleh kosong!']]);
                 return $this->redirect(['view', 'id' => $model->id_penjualan]);
@@ -496,16 +504,33 @@ class AktPenjualanController extends Controller
 
             if ($count_penjualan_detail > 0) {
 
-                // $post_total_penjualan_detail = Yii::$app->request->post('total_penjualan_detail');
-                // $total_penjualan_detail = preg_replace('/\D/', '', $post_total_penjualan_detail);
-
                 $model_ongkir = preg_replace("/[^0-9,]+/", "", Yii::$app->request->post('AktPenjualan')['ongkir']);
                 $model_materai = preg_replace("/[^0-9,]+/", "", Yii::$app->request->post('AktPenjualan')['materai']);
                 $model_uang_muka = preg_replace("/[^a-zA-Z0-9]/", "", Yii::$app->request->post('AktPenjualan')['uang_muka']);
 
-                $diskon = ($model->diskon > 0) ? ($model->diskon * $model_penjualan_detail) / 100 : 0;
+                // $diskon = ($model->diskon > 0) ? ($model->diskon * $model_penjualan_detail) / 100 : 0;
+
+                $model_jenis_diskon = Yii::$app->request->post('AktPenjualan')['jenis_diskon'];
+                $model_diskon = Yii::$app->request->post('AktPenjualan')['diskon'];
+
+                // Persen
+                if ($model_jenis_diskon == 1) {
+                    $diskon = ($model_diskon > 0) ? ($model->diskon * $model_penjualan_detail) / 100 : 0;
+                }
+                // Rupiah
+                elseif ($model_jenis_diskon == 2) {
+                    $diskon = ($model_diskon > 0) ? $model_diskon : 0;
+                }
+
+                $diskon_akhir = empty($diskon) ? 0 : $diskon;
+
+                if ($model_diskon > 0  && $model_jenis_diskon == null) {
+                    return  Yii::$app->session->setFlash('danger', [['Perhatian!', 'Jika ada diskon, jenis diskon tidak boleh kosong']]);
+                }
+
+
                 $pajak = ($model->pajak == 1) ? (($model_penjualan_detail - $diskon) * 10) / 100 : 0;
-                $model_total_sementara = (($model_penjualan_detail - $diskon) + $pajak) + $model_ongkir;
+                $model_total_sementara = (($model_penjualan_detail - $diskon_akhir) + $pajak) + $model_ongkir;
                 $model_total = $model_total_sementara - $model_uang_muka;
 
                 $model->ongkir = $model_ongkir;

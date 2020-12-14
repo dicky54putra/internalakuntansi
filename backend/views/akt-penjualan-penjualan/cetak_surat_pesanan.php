@@ -75,11 +75,11 @@ use backend\models\AktMitraBisnisAlamat;
         </tr>
         <tr>
             <th style="text-align: right;">Tanggal</th>
-            <th style="text-align: left;width: 15%;white-space: nowrap;">: <?= tanggal_indo($model->tanggal_order_penjualan, false) ?></th>
+            <th style="text-align: left;width: 15%;white-space: nowrap;">: <?= !empty($model->tanggal_order_penjualan) ? tanggal_indo($model->tanggal_order_penjualan, false) : tanggal_indo($model->tanggal_penjualan, false) ?></th>
         </tr>
         <tr>
             <th style="text-align: right;">No. PO</th>
-            <th style="text-align: left;width: 15%;white-space: nowrap;">: <?= $model->no_order_penjualan ?></th>
+            <th style="text-align: left;width: 15%;white-space: nowrap;">: <?= !empty($model->no_order_penjualan) ? $model->no_order_penjualan : $model->no_penjualan ?></th>
         </tr>
     </thead>
 </table>

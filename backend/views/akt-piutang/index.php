@@ -1,5 +1,6 @@
 <?php
 
+use backend\models\AktPenerimaanPembayaran;
 use yii\helpers\Html;
 // use yii\grid\GridView;
 use kartik\grid\GridView;
@@ -56,7 +57,11 @@ $this->title = 'Data Piutang';
                 'label' => 'Jumlah Tempo',
                 'format' => 'raw',
                 'value' => function ($model) {
-                    return $model->jumlah_tempo . ' hari';
+                    if ($model->jenis_bayar == 2) {
+                        return $model->jumlah_tempo . ' hari';
+                    } else {
+                        return null;
+                    }
                 }
             ],
             [
@@ -73,7 +78,7 @@ $this->title = 'Data Piutang';
                 ],
                 'format' => 'raw',
                 'value' => function ($model) {
-                    if(!empty($model->tanggal_tempo)) {
+                    if (!empty($model->tanggal_tempo)) {
                         return tanggal_indo($model->tanggal_tempo);
                     } else {
                         return null;
@@ -85,12 +90,9 @@ $this->title = 'Data Piutang';
                 'label' => 'Total',
                 'format' => 'raw',
                 'value' => function ($model) {
-                    $sum_nominal_penerimaan = Yii::$app->db->createCommand("SELECT SUM(nominal) from akt_penerimaan_pembayaran WHERE id_penjualan = '$model->id_penjualan'")->queryScalar();
-                    if ($sum_nominal_penerimaan == null) {
-                        return ribuan($model->total);
-                    } else {
-                        return ribuan($model->total - $sum_nominal_penerimaan);
-                    }
+                    $penerimaan_pembayaran = AktPenerimaanPembayaran::find()->select(['nominal'])->where(['id_penjualan' => $model->id_penjualan])->one();
+                    $kekurangan_pembayaran = empty($penerimaan_pembayaran) ? $model->total - $penerimaan_pembayaran['nominal'] : $model->total - $penerimaan_pembayaran['nominal'] + $model->uang_muka;
+                    return ribuan(abs($kekurangan_pembayaran));
                 }
             ],
         ],

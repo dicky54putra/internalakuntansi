@@ -117,7 +117,9 @@ $count_query_detail = AktPenjualanDetail::find()->where(['id_penjualan' => $mode
         if ($model->status >= 2 && $model->status != 5) {
             # code...
         ?>
-            <?= Html::a('<span class="glyphicon glyphicon-print"></span> Cetak Invoice', ['cetak-invoice', 'id' => $model->id_penjualan], ['class' => 'btn btn-default', 'target' => '_blank']) ?>
+            <?= Html::a('<span class="glyphicon glyphicon-print"></span> Cetak Non PPN', ['cetak-invoice-non-ppn', 'id' => $model->id_penjualan], ['class' => 'btn btn-default', 'target' => '_blank']) ?>
+            <?= Html::a('<span class="glyphicon glyphicon-print"></span> Cetak PPN', ['cetak-invoice-ppn', 'id' => $model->id_penjualan], ['class' => 'btn btn-default', 'target' => '_blank']) ?>
+            <?= Html::a('<span class="glyphicon glyphicon-print"></span> Cetak Standar', ['cetak-invoice', 'id' => $model->id_penjualan], ['class' => 'btn btn-default', 'target' => '_blank']) ?>
             <?= Html::a('<span class="glyphicon glyphicon-print"></span> Cetak Surat Pesanan', ['cetak-surat-pesanan', 'id' => $model->id_penjualan], ['class' => 'btn btn-default', 'target' => '_blank']) ?>
         <?php } ?>
     </p>
@@ -246,7 +248,7 @@ $count_query_detail = AktPenjualanDetail::find()->where(['id_penjualan' => $mode
                             <li class="active"><a data-toggle="tab" href="#data-barang"><span class="fa fa-box"></span> Data Barang Penjualan</a></li>
                             <li><a data-toggle="tab" href="#isi-data-penjualan"> <span class="glyphicon glyphicon-shopping-cart"></span> Data Order Penjualan</a></li>
                             <li><a data-toggle="tab" href="#unggah-dokumen"><span class="fa fa-file-text"></span> Unggah Dokumen</a></li>
-                            <li><a data-toggle="tab" href="#faktur"><span class="glyphicon glyphicon-list-alt"></span> Faktur</a></li>
+                            <li><a data-toggle="tab" href="#faktur"><span class="glyphicon glyphicon-list-alt"></span> Faktur Pajak</a></li>
                         </ul>
                         <div class="tab-content">
 
@@ -579,7 +581,7 @@ $count_query_detail = AktPenjualanDetail::find()->where(['id_penjualan' => $mode
                                         <?= Html::beginForm(['faktur', 'id' => $model->id_penjualan], 'post') ?>
 
                                         <div class="form-group">
-                                            <label for="no_faktur_penjualan">Nomor Invoice Pajak</label>
+                                            <label for="no_faktur_penjualan">No. Faktur</label>
                                             <input type="text" id="no_faktur_penjualan" name="no_faktur_penjualan" placeholder="Nomor Invoice" value="<?= $model->no_faktur_penjualan ?>" class="form-control" autocomplete="off" required <?= ($model->status == 2) ? '' : 'readonly' ?>>
                                         </div>
 

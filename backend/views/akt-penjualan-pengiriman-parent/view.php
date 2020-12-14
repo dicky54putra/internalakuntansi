@@ -319,7 +319,7 @@ $this->title = 'Detail Data Pengiriman Penjualan : ' . $model->no_penjualan;
                                                                 <?php } ?>
                                                         <?php }
                                                         } ?>
-                                                        <?= Html::a('<span class="glyphicon glyphicon-print"></span> Surat Pengantar', ['akt-penjualan-pengiriman/cetak-surat-pengantar', 'id' => $data->id_penjualan_pengiriman], [
+                                                        <?= Html::a('<span class="glyphicon glyphicon-print"></span> Surat Jalan', ['akt-penjualan-pengiriman/cetak-surat-pengantar', 'id' => $data->id_penjualan_pengiriman], [
                                                             'class' => 'btn btn-default',
                                                             'style' => [
                                                                 'float' => 'right',

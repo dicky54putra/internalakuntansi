@@ -178,7 +178,7 @@ $this->title = 'Laporan Transfer Kas';
                         </tr>
                         <tr>
                             <th style="text-align: center;">
-                                <h3 style="margin-top: -5px;margin-bottom: -5px;">Mutasi Kas</h3>
+                                <h3 style="margin-top: -5px;margin-bottom: -5px;">Rekap Mutasi Kas</h3>
                             </th>
                         </tr>
                         <tr>
@@ -211,8 +211,6 @@ $this->title = 'Laporan Transfer Kas';
                             ?>
                                 <tr>
                                     <td><?= $no ?></td>
-                                    <td><?= $value['tanggal'] ?></td>
-                                    <td><?= $value['no_transfer_kas'] ?></td>
                                     <td><?= $kas_asal['keterangan'] ?></td>
                                     <td><?= $kas_tujuan['keterangan'] ?></td>
                                     <td style="text-align: right;"><?= ribuan($value['jumlah1']) ?></td>

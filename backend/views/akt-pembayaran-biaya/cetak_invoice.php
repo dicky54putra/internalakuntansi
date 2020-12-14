@@ -93,8 +93,8 @@ use backend\models\AktSatuan;
 
             </th>
             <th colspan="2" style="font-size: 15px; font-weight: bold;">FAKTUR PEMBELIAN</th>
-            <th class="header_kiri">No. Faktur</th>
-            <th class="header_kiri">: <?= $model->no_faktur_pembelian ?></th>
+            <th class="header_kiri">No. Invoice</th>
+            <th class="header_kiri">: <?= $model->no_pembelian ?></th>
         </tr>
         <tr>
             <th class="header_kiri"></th>

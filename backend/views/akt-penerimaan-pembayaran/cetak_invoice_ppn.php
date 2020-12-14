@@ -25,7 +25,6 @@ use backend\models\AktSatuan;
 
     .header_kiri {
         text-align: left;
-        white-space: nowrap;
     }
 
     hr {
@@ -84,7 +83,7 @@ use backend\models\AktSatuan;
             <th align="left" rowspan="3"> <?= $data_setting->nama_usaha ?><br><?= $data_setting->alamat ?><br>
                 <?= $retVal = (!empty($data_setting->kota->nama_kota)) ? $data_setting->kota->nama_kota . ', Telp ' . $data_setting->telepon  : 'Telp ' . $data_setting->telepon; ?><br>
                 NPWP: <?= $data_setting->npwp ?></th>
-            <th align="center" rowspan="3" style="vertical-align: middle; width:60%;">FAKTUR PENJUALAN</th>
+            <th align="center" rowspan="3" style="vertical-align: middle; width:50%;">FAKTUR PENJUALAN</th>
             <th class="header_kiri">Nomor Invoice</th>
             <th class="header_kiri">: <?= $model->no_penjualan ?></th>
         </tr>
@@ -137,6 +136,7 @@ use backend\models\AktSatuan;
         <?php
         $no = 1;
         $query_penjualan_detail = AktPenjualanDetail::find()->where(['id_penjualan' => $model->id_penjualan])->all();
+        $dpp = 0;
         foreach ($query_penjualan_detail as $key => $data) {
             # code...
             $item_stok = AktItemStok::findOne($data['id_item_stok']);
@@ -149,97 +149,91 @@ use backend\models\AktSatuan;
                 <td><?= (!empty($item->kode_item)) ? $item->kode_item : '' ?></td>
                 <td><?= (!empty($item->nama_item)) ? $item->nama_item : '' ?></td>
                 <td><?= (!empty($satuan->nama_satuan)) ? $data['qty'] . ' ' . $satuan->nama_satuan : $data['qty'] ?></td>
-                <td style="text-align: right;"><?= number_format($data['harga'], 2, ",", "."); ?></td>
+                <td style="text-align: right;">
+                    <?php
+                    $pajak_harga = $data['harga'] + (0.1 * $data['harga']);
+                    $diskon_per_barang = $data['diskon'] / 100 * $pajak_harga;
+                    $total_per_barang =  ($pajak_harga - $diskon_per_barang) * $data['qty'];
+                    $dpp += $total_per_barang;
+                    echo ribuan($pajak_harga)
+                    ?>
+                </td>
                 <td style="text-align: center;"><?= $data['diskon'] ?></td>
-                <td style="text-align: right;"><?= number_format($data['total'], 2, ",", ".");  ?></td>
+                <td style="text-align: right;"><?= ribuan($total_per_barang) ?></td>
             </tr>
         <?php } ?>
     </tbody>
 </table>
 <hr>
-<table class="table3">
-    <tr>
-        <th colspan="3" style="text-align: left; font-size: 13px;">Terbilang: <br /> <br /> <?= terbilang($model->total) ?></th>
-        <?php
-        $model->diskon != 0 ?    $diskon = $total_penjualan_barang - ($model->diskon / 100 * $total_penjualan_barang) : $diskon = 0;
-        ?>
-        <th>
-            <table class="table3">
-                <tr>
-                    <th>DPP</th>
-                    <th><?= number_format($total_penjualan_barang, 2, ",", "."); ?></th>
-                </tr>
-                <?php if ($model->diskon != 0) { ?>
+<table class="table3" border="0">
+    <thead>
+        <tr>
+            <th style="text-align: left; font-size: 13px;" colspan="3"> Terbilang<br /><br /><span style="max-width:200px;"> <?= terbilang($model->total) ?> </span></th>
+            <?php
+            $model->diskon != 0 ?    $diskon = $total_penjualan_barang - ($model->diskon / 100 * $total_penjualan_barang) : $diskon = 0;
+            ?>
+            <th>
+                <table class="table3">
                     <tr>
-                        <th>Diskon <?= $model->diskon ?>%</th>
-                        <th>
-                            <?php
-                            echo  number_format($diskon, 2, ",", ".");
-                            ?>
-                        </th>
+                        <th>DPP</th>
+                        <th><?= ribuan($dpp) ?></th>
                     </tr>
-                <?php } ?>
-                <?php if ($model->pajak == 1) { ?>
+                    <?php if ($model->diskon != 0) { ?>
+                        <tr>
+                            <th>Diskon <?= $model->diskon ?>%</th>
+                            <th>
+                                <?php
+                                echo ribuan($diskon);
+                                ?>
+                            </th>
+                        </tr>
+                    <?php } ?>
+                    <?php if ($model->ongkir != 0) { ?>
+                        <tr>
+                            <th>Ongkir </th>
+                            <th> <?= ribuan($model->ongkir) ?></th>
+                        </tr>
+                    <?php } ?>
+                    <?php if ($model->materai != 0) { ?>
+                        <tr>
+                            <th>Materai </th>
+                            <th> <?= ribuan($model->materai) ?></th>
+                        </tr>
+                    <?php } ?>
+                    <?php if ($model->uang_muka != 0) { ?>
+                        <tr>
+                            <th>Uang Muka </th>
+                            <th> <?= ribuan($model->uang_muka) ?></th>
+                        </tr>
+                    <?php } ?>
+                    <?php if ($sum_retur != 0) { ?>
+                        <tr>
+                            <th>Total Retur </th>
+                            <th> <?= ribuan($sum_retur) ?></th>
+                        </tr>
+                    <?php } ?>
                     <tr>
-                        <th>Pajak 10% </th>
-                        <th>
-                            <?php
-                            $pajak = ($total_penjualan_barang - $diskon)  * 0.1;
-                            echo  number_format($pajak, 0, ",", ".");
-                            ?>
-                        </th>
+                        <th style="font-weight: bold; font-size: 15px;">Tagihan</th>
+                        <th style="font-weight: bold; font-size: 15px;"><?= ribuan($dpp  + $model->ongkir - $diskon - $model->uang_muka - $sum_retur) ?></th>
                     </tr>
-                <?php } ?>
-                <?php if ($model->ongkir != 0) { ?>
-                    <tr>
-                        <th>Ongkir </th>
-                        <th> <?= number_format($model->ongkir, 2, ",", "."); ?></th>
-                    </tr>
-                <?php } ?>
-                <?php if ($model->materai != 0) { ?>
-                    <tr>
-                        <th>Materai </th>
-                        <th> <?= ribuan($model->materai) ?></th>
-                    </tr>
-                <?php } ?>
-                <?php if ($model->uang_muka != 0) { ?>
-                    <tr>
-                        <th>Uang Muka </th>
-                        <th> <?= number_format($model->uang_muka, 2, ",", ".");  ?></th>
-                    </tr>
-                <?php } ?>
-                <?php if ($sum_retur != 0) { ?>
-                    <tr>
-                        <th>Total Retur </th>
-                        <th> <?= ribuan($sum_retur) ?></th>
-                    </tr>
-                <?php } ?>
-                <tr>
-                    <th style="font-weight: bold; font-size: 15px;">Tagihan</th>
-                    <?php
-                    $_pajak = empty($pajak) ? 0 : $pajak;
-                    $tagihan = $total_penjualan_barang + $_pajak +  $model->ongkir - $diskon - $model->uang_muka - $sum_retur;
-                    ?>
-                    <th style="font-weight: bold; font-size: 15px;"><?= number_format($tagihan, 2, ",", ".") ?></th>
-                </tr>
-            </table>
-        </th>
-    </tr>
-    <tr style="padding-top: 30px;">
-        <td colspan="3"></td>
-        <th style="text-align: center; font-size: 15px;">Hormat Kami</th>
-    </tr>
-    <tr>
-        <td><br /> <br /> <br /> <br /><br /> <br /></td>
-    </tr>
-    <tr>
-        <th style="text-align: center; font-size: 15px;">PENERIMA</th>
-        <th style="text-align: center; font-size: 15px;">BAG. GUDANG</th>
-        <th style="text-align: center; font-size: 15px;">EKSPEDISI</th>
-        <th style="text-align: center; font-size: 15px;">DIREKTUR</th>
-    </tr>
+                </table>
+            </th>
+        </tr>
+        <tr style="padding-top: 30px;">
+            <td colspan="3"></td>
+            <th style="text-align: center; font-size: 15px;">Hormat Kami</th>
+        </tr>
+        <tr>
+            <td><br /> <br /> <br /> <br /><br /> <br /></td>
+        </tr>
+        <tr>
+            <th style="text-align: center; font-size: 15px;">PENERIMA</th>
+            <th style="text-align: center; font-size: 15px;">BAG. GUDANG</th>
+            <th style="text-align: center; font-size: 15px;">EKSPEDISI</th>
+            <th style="text-align: center; font-size: 15px;">DIREKTUR</th>
+        </tr>
+    </thead>
 </table>
-
 <script type="text/javascript">
     window.print();
     // setTimeout(window.close, 500);

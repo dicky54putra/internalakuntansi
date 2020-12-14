@@ -1,5 +1,6 @@
 <?php
 
+use backend\models\AktPembayaranBiaya;
 use yii\helpers\Html;
 use kartik\grid\GridView;
 use kartik\date\DatePicker;
@@ -62,7 +63,11 @@ $this->title = 'Daftar Hutang';
                 'label' => 'Jumlah Tempo',
                 'format' => 'raw',
                 'value' => function ($model) {
-                    return $model->jatuh_tempo . ' hari';
+                    if ($model->jenis_bayar == 2) {
+                        return $model->jatuh_tempo . ' hari';
+                    } else {
+                        return null;
+                    }
                 }
             ],
             [
@@ -92,109 +97,11 @@ $this->title = 'Daftar Hutang';
                 'label' => 'Total',
                 'format' => 'raw',
                 'value' => function ($model) {
-                    $sum_nominal_pembayaran  = Yii::$app->db->createCommand("SELECT SUM(nominal) from akt_pembayaran_biaya WHERE id_pembelian = '$model->id_pembelian'")->queryScalar();
-                    if ($sum_nominal_pembayaran  == null) {
-                        return ribuan($model->total);
-                    } else {
-                        return ribuan($model->total - $sum_nominal_pembayaran);
-                    }
+                    $pembayaran_biaya = AktPembayaranBiaya::find()->select(['nominal'])->where(['id_pembelian' => $model->id_pembelian])->one();
+                    $kekurangan_pembayaran = empty($pembayaran_biaya) ? $model->total - $pembayaran_biaya['nominal'] : $model->total - $pembayaran_biaya['nominal'] + $model->uang_muka;
+                    return ribuan(abs($kekurangan_pembayaran));
                 }
             ],
-            // [
-            //     'attribute' => 'id_sales',
-            //     'label' => 'Sales',
-            //     'value' => function ($model) {
-            //         if (!empty($model->sales->nama_sales)) {
-            //             # code...
-            //             return $model->sales->nama_sales;
-            //         } else {
-            //             # code...
-            //         }
-            //     }
-            // ],
-            // [
-            //     'attribute' => 'id_mata_uang',
-            //     'label' => 'Mata Uang',
-            //     'value' => function ($model) {
-            //         if (!empty($model->mata_uang->mata_uang)) {
-            //             # code...
-            //             return $model->mata_uang->mata_uang;
-            //         } else {
-            //             # code...
-            //         }
-            //     }
-            // ],
-            // [
-            //     'attribute' => 'status',
-            //     'format' => 'raw',
-            //     'filter' => array(
-            //         // 1 => 'Order pembelian',
-            //         // 2 => 'pembelian',
-            //         // 3 => 'Pengiriman',
-            //         4 => 'Completed',
-            //     ),
-            //     'value' => function ($model) {
-            //         if ($model->status == 1) {
-            //             # code...
-            //             return "<span class='label label-default'>Order pembelian</span>";
-            //         } elseif ($model->status == 2) {
-            //             # code...
-            //             return "<span class='label label-warning'>pembelian</span>";
-            //         } elseif ($model->status == 3) {
-            //             # code...
-            //             return "<span class='label label-primary'>Pengiriman</span>";
-            //         } elseif ($model->status == 4) {
-            //             # code...
-            //             return "<span class='label label-success'>Completed</span>";
-            //         }
-            //     }
-            // ],
-
-            // [
-            //     'class' => 'yii\grid\ActionColumn',
-            //     'header' => 'Actions',
-            //     'headerOptions' => ['style' => 'color:#337ab7'],
-            //     'template' => "{view}",
-            //     'buttons' => [
-            //         'view' => function ($url, $model) {
-            //             return Html::a('<button class = "btn btn-info"><span class="glyphicon glyphicon-eye-open"></span> Detail</button>', $url, [
-            //                 'title' => Yii::t('app', 'lead-view'),
-            //             ]);
-            //         },
-
-            //         'update' => function ($url, $model) {
-            //             return Html::a('<button class = "btn btn-primary"><span class="glyphicon glyphicon-edit"></span> Ubah</button>', $url, [
-            //                 'title' => Yii::t('app', 'lead-update'),
-            //             ]);
-            //         },
-            //         'delete' => function ($url, $model) {
-            //             return Html::a('<button class = "btn btn-danger"><span class="glyphicon glyphicon-trash"></span> Hapus</button>', $url, [
-            //                 'title' => Yii::t('app', 'lead-delete'),
-            //                 'data' => [
-            //                     'confirm' => 'Anda yakin ingin menghapus data?',
-            //                     'method' => 'post',
-            //                 ],
-            //             ]);
-            //         },
-
-            //     ],
-            //     'urlCreator' => function ($action, $model, $key, $index) {
-            //         if ($action === 'view') {
-            //             $url = 'index.php?r=akt-pembelian/view&id=' . $model->id_pembelian;
-            //             return $url;
-            //         }
-
-            //         if ($action === 'update') {
-            //             $url = 'index.php?r=akt-pembelian/update&id=' . $model->id_pembelian;
-            //             return $url;
-            //         }
-
-            //         if ($action === 'delete') {
-            //             $url = 'index.php?r=akt-pembelian/delete&id=' . $model->id_pembelian;
-            //             return $url;
-            //         }
-            //     }
-            // ],
 
         ],
         'containerOptions' => ['style' => 'overflow: auto'], // only set when $responsive = false

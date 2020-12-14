@@ -166,11 +166,16 @@ class AktPembelianSearch extends AktPembelian
 
     public function searchHutang($params)
     {
-        $query = AktPembelian::find();
+        $subQuery = AktPembayaranBiaya::find()->select(['id_pembelian']);
+        $query = AktPembelian::find()
+            ->select(['akt_pembelian.no_pembelian', 'akt_pembelian.id_pembelian', 'akt_pembelian.total', 'akt_pembelian.uang_muka', 'akt_pembelian.tanggal_pembelian', 'akt_pembelian.id_customer', 'akt_pembelian.jatuh_tempo', 'akt_pembelian.tanggal_tempo']);
         $query->joinWith("customer");
+        $query->joinWith("pembayaran_biaya");
         $query->where(['!=', 'akt_pembelian.status', '1']);
-        $query->andWhere(['!=', 'akt_pembelian.total', 0]);
-        $query->orderBy("id_pembelian desc");
+        $query->andWhere(['!=', '(akt_pembelian.total + akt_pembelian.uang_muka - akt_pembayaran_biaya.nominal)', 0]);
+        $query->orWhere(['NOT IN', 'akt_pembelian.id_pembelian', $subQuery]);
+        $query->andWhere('akt_pembelian.total != 0 ');
+        $query->orderBy("akt_pembelian.id_pembelian desc");
 
         // add conditions that should always apply here
 

@@ -32,7 +32,9 @@ $this->title = 'Detail Data Penerimaan : ' . $model->no_penjualan;
 
     <p>
         <?= Html::a('<span class="glyphicon glyphicon-circle-arrow-left"></span> Kembali', ['index'], ['class' => 'btn btn-warning']) ?>
-        <?= Html::a('<span class="glyphicon glyphicon-print"></span> Cetak Invoice', ['cetak-invoice', 'id' => $model->id_penjualan], ['class' => 'btn btn-default', 'target' => '_blank']) ?>
+        <?= Html::a('<span class="glyphicon glyphicon-print"></span> Cetak Non PPN', ['cetak-invoice-non-ppn', 'id' => $model->id_penjualan], ['class' => 'btn btn-default', 'target' => '_blank']) ?>
+        <?= Html::a('<span class="glyphicon glyphicon-print"></span> Cetak PPN', ['cetak-invoice-ppn', 'id' => $model->id_penjualan], ['class' => 'btn btn-default', 'target' => '_blank']) ?>
+        <?= Html::a('<span class="glyphicon glyphicon-print"></span> Cetak Standar', ['cetak-invoice', 'id' => $model->id_penjualan], ['class' => 'btn btn-default', 'target' => '_blank']) ?>
     </p>
 
     <div class="panel panel-primary">

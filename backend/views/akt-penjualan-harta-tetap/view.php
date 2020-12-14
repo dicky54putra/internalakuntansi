@@ -22,6 +22,12 @@ $cek_detail = AktPenjualanHartaTetapDetail::find()
     ->where(['id_penjualan_harta_tetap' => $model->id_penjualan_harta_tetap])
     ->count();
 ?>
+
+<style>
+    .style-kas-bank {
+        display: none;
+    }
+</style>
 <div class="akt-penjualan-harta-tetap-view">
 
     <h1><?= Html::encode($this->title) ?></h1>
@@ -570,7 +576,7 @@ $cek_detail = AktPenjualanHartaTetapDetail::find()
 
                             <div class="form-group" style="margin-top:20px;">
                                 <label for="total_perhitungan">Kekurangan Pembayaran</label>
-                                <input id="total_perhitungan" readonly class="form-control">
+                                <input id="total_perhitungan" value="<?= ribuan($model->total) ?>" readonly class="form-control">
                             </div>
                         </div>
                     </div>
@@ -714,9 +720,7 @@ $this->registerJs($script);
     const uangMuka = document.querySelector('#aktpenjualanhartatetap-uang_muka');
     const idKasBank = document.querySelector('#id_kas_bank');
 
-    if (uangMuka.value != 0) {
-        kasBank.classList.remove('style-kas-bank')
-    }
+
 
     function formatRupiah(angka, prefix) {
         var number_string = angka.replace(/[^,\d]/g, '').toString(),
@@ -741,23 +745,20 @@ $this->registerJs($script);
         ongkir = 0,
         diskon = 0,
         uang_muka = 0,
-        pajak = false,
-        materai = 0
+        pajak = false
     ) {
 
-        let total = total_pembelian_detail.value.split('.').join("");
+        let total = parseFloat(total_pembelian_detail.value.split('.').join(""));
         let hilang_titik = uang_muka.split('.').join("")
 
 
         if (ongkir == '' || ongkir == " " || ongkir == null ||
             diskon == '' || diskon == " " || diskon == null ||
-            materai == '' || materai == " " || materai == null ||
             uang_muka == '' || uang_muka == " " || uang_muka == null
         ) {
 
             ongkir = 0;
             diskon = 0;
-            materai = 0;
             uang_muka = 0;
         }
 
@@ -773,19 +774,23 @@ $this->registerJs($script);
 
         let perhitungan = document.querySelector("#total_perhitungan");
 
-        hitung = parseInt(total) + parseInt(ongkir) + pajak  - parseInt(diskonRupiah) - parseInt(hilang_titik);
+        hitung = parseFloat(total) + parseInt(ongkir) + parseFloat(pajak) - parseFloat(diskonRupiah) - parseFloat(hilang_titik);
         let hitung2 = Math.floor(hitung);
-        perhitungan.value = formatRupiah(String(hitung2));
+        perhitungan.value = formatRupiah(String(hitung2))
     }
 
-    const materai = document.querySelector('.materai-pembelian');
     const diskon = document.querySelector('.diskon-pembelian');
     const ongkir = document.querySelector('.ongkir_pembelian');
     const pajak = document.querySelector('.pajak_pembelian');
 
     diskon.addEventListener("input", (e) => {
-        setValueDataPerhitungan(ongkir.value.split('.').join(""), diskon.value, uangMuka.value, pajak.checked, materai.value.split('.').join(""));
+        setValueDataPerhitungan(ongkir.value.split('.').join(""), diskon.value, uangMuka.value, pajak.checked);
     })
+
+    console.log(uangMuka.value);
+    if (uangMuka.value != 0) {
+        kasBank.classList.remove('style-kas-bank')
+    }
 
     uangMuka.addEventListener("input", (e) => {
         let val = e.target.value;
@@ -795,20 +800,16 @@ $this->registerJs($script);
         } else(
             kasBank.classList.remove('style-kas-bank')
         )
-        setValueDataPerhitungan(ongkir.value.split('.').join(""), diskon.value, uangMuka.value, pajak.checked, materai.value.split('.').join(""));
+        setValueDataPerhitungan(ongkir.value.split('.').join(""), diskon.value, uangMuka.value, pajak.checked);
     })
 
-    materai.addEventListener("input", (e) => {
-        materai.value = formatRupiah(e.target.value);
-        // setValueDataPerhitungan(ongkir.value.split('.').join(""), diskon.value, uangMuka.value, pajak.checked, materai.value.split('.').join(""));
-    })
 
     ongkir.addEventListener("input", (e) => {
         ongkir.value = formatRupiah(e.target.value);
-        setValueDataPerhitungan(ongkir.value.split('.').join(""), diskon.value, uangMuka.value, pajak.checked, materai.value.split('.').join(""));
+        setValueDataPerhitungan(ongkir.value.split('.').join(""), diskon.value, uangMuka.value, pajak.checked);
     })
 
     pajak.addEventListener("change", (e) => {
-        setValueDataPerhitungan(ongkir.value.split('.').join(""), diskon.value, uangMuka.value, pajak.checked, materai.value.split('.').join(""));
+        setValueDataPerhitungan(ongkir.value.split('.').join(""), diskon.value, uangMuka.value, pajak.checked);
     })
 </script>
