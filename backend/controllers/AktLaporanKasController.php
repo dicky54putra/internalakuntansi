@@ -100,6 +100,15 @@ class AktLaporanKasController extends Controller
         ]);
     }
 
+    public function actionLaporanDetailPembayaranExport($tanggal_awal, $tanggal_akhir, $supplier = null)
+    {
+        return $this->renderPartial('laporan_detail_pembayaran_export', [
+            'tanggal_awal' => $tanggal_awal,
+            'tanggal_akhir' => $tanggal_akhir,
+            'supplier' => $supplier,
+        ]);
+    }
+
     public function actionLaporanDetailPenerimaanPembayaran()
     {
         $tanggal_awal = Yii::$app->request->post('tanggal_awal');

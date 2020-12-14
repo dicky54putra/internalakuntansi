@@ -297,7 +297,7 @@ $this->title = 'Laporan Neraca Saldo';
                             <th style="width: 15%;text-align: right;">Kredit</th>
                         </tr>
                         <tr>
-                            <td>Total Activa</td>
+                            <td>Total Aktiva</td>
                             <td align="right"><?= ribuan(abs($total_sum_aktiva1)) ?></td>
                             <td align="right"><?= ribuan(abs($total_sum_aktiva2)) ?></td>
                         </tr>

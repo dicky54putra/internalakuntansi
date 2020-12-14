@@ -141,8 +141,8 @@ $this->title = 'Laporan Transfer Kas';
                     <th>No Transaksi</th>
                     <th>Kas Asal</th>
                     <th>Kas Tujuan</th>
-                    <th>Jumlah Kas Asal</th>
-                    <th>Jumlah Kas Tujuan</th>
+                    <th style="text-align: right;">Jumlah Kas Asal</th>
+                    <th style="text-align: right;">Jumlah Kas Tujuan</th>
                 </tr>
             </thead>
             <tbody>
