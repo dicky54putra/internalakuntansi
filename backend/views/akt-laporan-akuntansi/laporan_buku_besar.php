@@ -45,7 +45,7 @@ $this->title = 'Laporan Buku Besar';
                                 </td>
                                 <td width="30%">
                                     <div class="form-group">
-                                        <input type="date" name="tanggal_awal" class="form-control" required>
+                                        <input type="date" name="tanggal_awal" class="form-control" value="<?= (!empty($tanggal_awal)) ? $tanggal_awal : date('Y-m-d', strtotime('-30 days', strtotime(date('Y-m-d')))) ?>" required>
                                     </div>
                                 </td>
                                 <td width="5%"></td>
@@ -61,6 +61,7 @@ $this->title = 'Laporan Buku Besar';
                                             'name' => 'jenis',
                                             'hideSearch' => false,
                                             'data' => $data_jenis,
+                                            'value' => !empty($jenis) ? $jenis : '',
                                             'options' => ['placeholder' => 'Pilih Jenis'],
                                             'pluginOptions' => [
                                                 'allowClear' => true
@@ -78,7 +79,7 @@ $this->title = 'Laporan Buku Besar';
                                 </td>
                                 <td width="30%">
                                     <div class="form-group">
-                                        <input type="date" name="tanggal_akhir" class="form-control" required>
+                                        <input type="date" name="tanggal_akhir" class="form-control" value="<?= (!empty($tanggal_akhir)) ? $tanggal_akhir : date('Y-m-d') ?>" required>
                                     </div>
                                 </td>
                                 <td width="5%"></td>
@@ -93,6 +94,7 @@ $this->title = 'Laporan Buku Besar';
                                         <?= Select2::widget([
                                             'name' => 'klasifikasi',
                                             'hideSearch' => false,
+                                            'value' => !empty($klasifikasi) ? $klasifikasi : '',
                                             'data' => $data_klasifikasi,
                                             'options' => ['placeholder' => 'Pilih Klasifikasi'],
                                             'pluginOptions' => [

@@ -136,7 +136,7 @@ class AktPenerimaanPembayaranController extends Controller
             }
 
             $jurnal_umum->no_jurnal_umum = $no_jurnal_umum;
-            $jurnal_umum->tanggal = date('Y-m-d');
+            $jurnal_umum->tanggal = $model->tanggal_penerimaan_pembayaran;
             $jurnal_umum->tipe = 1;
             $jurnal_umum->keterangan = 'Penerimaan Biaya : ' . $model2->no_penjualan;
             $jurnal_umum->save(false);

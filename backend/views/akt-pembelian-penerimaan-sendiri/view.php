@@ -556,7 +556,7 @@ $this->title = 'Detail Data Penerimaan. No Pembelian : ' . $model->no_pembelian;
                     <div class="col-md-6">
                         <?= $form->field($model2, 'no_penerimaan')->textInput(['maxlength' => true, 'readonly' => true]) ?>
 
-                        <?= $form->field($model2, 'tanggal_penerimaan')->textInput(['type' => 'date', 'value' => date('Y-m-d')]) ?>
+                        <?= $form->field($model2, 'tanggal_penerimaan')->textInput(['type' => 'date']) ?>
 
                         <?= $form->field($model2, 'penerima')->textInput(['maxlength' => true,]) ?>
 
@@ -684,6 +684,7 @@ $script = <<< JS
                 //  $('#aktpembelianpenerimaandetail-id_pembelian_detail').val(data.);
                  $('#aktpembelianpenerimaan-penerima').val(data.penerima);
                  $('#aktpembelianpenerimaan-pengantar').val(data.pengantar);
+                 $('#aktpembelianpenerimaan-tanggal_penerimaan').val(data.tanggal_penerimaan);
                  $('#aktpembelianpenerimaan-keterangan_pengantar').val(data.keterangan_pengantar);
                  $('#aktpembelianpenerimaan-id_pembelian_penerimaan').val(data.id_pembelian_penerimaan);
                 //  $('#id').val(data.id);

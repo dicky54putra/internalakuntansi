@@ -126,9 +126,9 @@ class AktPengajuanBiayaController extends Controller
         $id_login = Yii::$app->user->id;
 
         // if($data_approver1 != null  || $data_approver2 != null  || $data_approver3 != null  ) {
-            $model->approver1 = null;
-            $model->approver2 = null;
-            $model->approver3 = null;
+        $model->approver1 = null;
+        $model->approver2 = null;
+        $model->approver3 = null;
         // } 
         $model->approver1_date = '0000-00-00 00:00:00';
         $model->approver2_date = '0000-00-00 00:00:00';
@@ -236,14 +236,14 @@ class AktPengajuanBiayaController extends Controller
         LEFT JOIN akt_jenis_approver ON akt_jenis_approver.id_jenis_approver = akt_approver.id_jenis_approver
         WHERE id_login = '$id_login'
         AND akt_jenis_approver.nama_jenis_approver = 'Pengajuan Biaya'")->queryScalar();
-        
-        if($akt_approver == 1 ) {
+
+        if ($akt_approver == 1) {
             $model->approver1 = $id_login;
             $model->approver1_date = date("Y-m-d H:i:s");
-        } else if($akt_approver == 2 ) {
+        } else if ($akt_approver == 2) {
             $model->approver2 = $id_login;
             $model->approver2_date = date("Y-m-d H:i:s");
-        } else if($akt_approver == 3 ) {
+        } else if ($akt_approver == 3) {
             $model->approver3 = $id_login;
             $model->approver3_date = date("Y-m-d H:i:s");
         }
@@ -277,16 +277,16 @@ class AktPengajuanBiayaController extends Controller
             LEFT JOIN akt_jenis_approver ON akt_jenis_approver.id_jenis_approver = akt_approver.id_jenis_approver
             WHERE id_login = '$id_login'
             AND akt_jenis_approver.nama_jenis_approver = 'Pengajuan Biaya'")->queryScalar();
-            
-            if($akt_approver == 1 ) {
+
+            if ($akt_approver == 1) {
                 $model->status = 1;
                 $model->approver1 = $id_login;
                 $model->approver1_date = date("Y-m-d H:i:s");
-            } else if($akt_approver == 2 ) {
+            } else if ($akt_approver == 2) {
                 $model->status = 2;
                 $model->approver2 = $id_login;
                 $model->approver2_date = date("Y-m-d H:i:s");
-            } else if($akt_approver == 3 ) {
+            } else if ($akt_approver == 3) {
                 $model->status = 3;
                 $model->approver3 = $id_login;
                 $model->approver3_date = date("Y-m-d H:i:s");
@@ -341,25 +341,25 @@ class AktPengajuanBiayaController extends Controller
         }
 
         $jurnal_umum->no_jurnal_umum = $no_jurnal_umum;
-        $jurnal_umum->tanggal = date('Y-m-d');
+        $jurnal_umum->tanggal = $model->tanggal_pengajuan;
         $jurnal_umum->tipe = 1;
         $jurnal_umum->save(false);
-        
+
         $akt_pengajuan_biaya_detail = AktPengajuanBiayaDetail::find()->where(['id_pengajuan_biaya' => $id])->all();
 
-        foreach ($akt_pengajuan_biaya_detail as $detail ) {
+        foreach ($akt_pengajuan_biaya_detail as $detail) {
             $akt_jurnal_umum_detail = new AktJurnalUmumDetail();
             $akt_jurnal_umum_detail->id_jurnal_umum = $jurnal_umum->id_jurnal_umum;
             $akt_jurnal_umum_detail->id_akun = $detail->id_akun;
             $akt_akun = AktAkun::find()->where(['id_akun' => $detail->id_akun])->one();
-            
-            if($akt_akun->nama_akun != 'kas') {
-                if($akt_akun->saldo_normal == 1 ) {
+
+            if ($akt_akun->nama_akun != 'kas') {
+                if ($akt_akun->saldo_normal == 1) {
                     $akt_akun->saldo_akun = $akt_akun->saldo_akun + $detail->debit - $detail->kredit;
-                } else if ($akt_akun->saldo_normal == 2 ) {
+                } else if ($akt_akun->saldo_normal == 2) {
                     $akt_akun->saldo_akun = $akt_akun->saldo_akun + $detail->kredit - $detail->debit;
-                } 
-            } 
+                }
+            }
 
             $akt_jurnal_umum_detail->debit = $detail->debit;
             $akt_jurnal_umum_detail->kredit = $detail->kredit;

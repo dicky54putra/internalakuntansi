@@ -199,13 +199,13 @@ $this->title = 'Laporan Neraca Saldo';
                                                             <?php
                                                             if ($count_query_jurnal_umum_detail == 0) {
                                                                 if ($data['saldo_normal'] == 1) {
-                                                                    echo ribuan(abs($saldo_awal));
-                                                                    $t_debet += abs($saldo_awal);
+                                                                    echo ribuan($saldo_awal);
+                                                                    $t_debet += $saldo_awal;
                                                                 }
                                                             } else {
                                                                 if ($saldo_debit >= $sum_kredit) {
-                                                                    echo ribuan(abs($change_saldo));
-                                                                    $t_debet += abs($change_saldo);
+                                                                    echo ribuan($change_saldo);
+                                                                    $t_debet += $change_saldo;
                                                                 }
                                                             }
                                                             ?>
@@ -214,13 +214,13 @@ $this->title = 'Laporan Neraca Saldo';
                                                             <?php
                                                             if ($count_query_jurnal_umum_detail == 0) {
                                                                 if ($data['saldo_normal'] == 2) {
-                                                                    echo ribuan(abs($saldo_awal));
-                                                                    $t_kredit += abs($saldo_awal);
+                                                                    echo ribuan($saldo_awal);
+                                                                    $t_kredit += $saldo_awal;
                                                                 }
                                                             } else {
                                                                 if ($saldo_debit <= $sum_kredit) {
-                                                                    echo ribuan(abs($change_saldo));
-                                                                    $t_kredit += abs($change_saldo);
+                                                                    echo ribuan($change_saldo);
+                                                                    $t_kredit += $change_saldo;
                                                                 }
                                                             }
                                                             ?>
@@ -231,13 +231,13 @@ $this->title = 'Laporan Neraca Saldo';
                                                     <td align="right" colspan="3">Total <?= $klasname->klasifikasi ?></td>
                                                     <td align="right">
                                                         <?php
-                                                        echo ribuan(abs($t_debet));
+                                                        echo ribuan($t_debet);
                                                         $sum_by_jenis_debet += $t_debet;
                                                         ?>
                                                     </td>
                                                     <td align="right">
                                                         <?php
-                                                        echo ribuan(abs($t_kredit));
+                                                        echo ribuan($t_kredit);
                                                         $sum_by_jenis_kredit += $t_kredit;
                                                         ?>
                                                     </td>
@@ -249,8 +249,8 @@ $this->title = 'Laporan Neraca Saldo';
                                 <table class="table" style="margin-top: 20px;">
                                     <tr style="background-color: rgba(0,0,0,0.1);">
                                         <th>Total <?= $data_jenis[$jen->jenis]; ?></th>
-                                        <th style="width: 15%; text-align: right;"><?= ribuan(abs($sum_by_jenis_debet)) ?></th>
-                                        <th style="width: 15%; text-align: right;"><?= ribuan(abs($sum_by_jenis_kredit)) ?></th>
+                                        <th style="width: 15%; text-align: right;"><?= ribuan($sum_by_jenis_debet) ?></th>
+                                        <th style="width: 15%; text-align: right;"><?= ribuan($sum_by_jenis_kredit) ?></th>
                                     </tr>
                                 </table>
                             </div>
@@ -284,9 +284,11 @@ $this->title = 'Laporan Neraca Saldo';
             $sum_pasiva_debit2 = Utils::getSumAktivaPasiva($tanggal_awal, $tanggal_akhir, $pasiva, '2', 'debit');
 
             $total_sum_aktiva1 = $sum_aktiva_debit1 - $sum_aktiva_kredit1;
+            // $total_sum_aktiva1 = $sum_aktiva_debit1;
             $total_sum_aktiva2 = $sum_aktiva_debit2 - $sum_aktiva_kredit2;
             $total_sum_pasiva1 = $sum_pasiva_kredit1 - $sum_pasiva_debit1;
             $total_sum_pasiva2 = $sum_pasiva_kredit2 - $sum_pasiva_debit2;
+            // $total_sum_pasiva2 = $sum_pasiva_kredit2;
             ?>
             <div class="panel panel-primary">
                 <div class="panel-heading">
@@ -298,13 +300,13 @@ $this->title = 'Laporan Neraca Saldo';
                         </tr>
                         <tr>
                             <td>Total Activa</td>
-                            <td align="right"><?= ribuan(abs($total_sum_aktiva1)) ?></td>
-                            <td align="right"><?= ribuan(abs($total_sum_aktiva2)) ?></td>
+                            <td align="right"><?= ribuan($total_sum_aktiva1) ?></td>
+                            <td align="right"><?= ribuan($total_sum_aktiva2) ?></td>
                         </tr>
                         <tr>
                             <td>Total Pasiva</td>
-                            <td align="right"><?= ribuan(abs($total_sum_pasiva1)) ?></td>
-                            <td align="right"><?= ribuan(abs($total_sum_pasiva2)) ?></td>
+                            <td align="right"><?= ribuan($total_sum_pasiva1) ?></td>
+                            <td align="right"><?= ribuan($total_sum_pasiva2) ?></td>
                         </tr>
                     </table>
                 </div>

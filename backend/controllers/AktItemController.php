@@ -2,15 +2,19 @@
 
 namespace backend\controllers;
 
+use backend\models\AktGudang;
 use Yii;
 use backend\models\AktItem;
+use backend\models\AktItemHargaJual;
 use backend\models\AktItemSearch;
+use backend\models\AktItemStok;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 
 use backend\models\AktMerk;
 use backend\models\AktItemTipe;
+use backend\models\AktLevelHarga;
 use backend\models\AktMitraBisnis;
 use backend\models\AktSatuan;
 
@@ -80,7 +84,27 @@ class AktItemController extends Controller
         $model_satuan = new AktSatuan();
 
         $model_mitra_bisnis = new AktMitraBisnis();
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+        if ($model->load(Yii::$app->request->post())) {
+            $model->save();
+            $gudang = AktGudang::find()->all();
+            foreach ($gudang as $gudang) {
+                $stok = new AktItemStok();
+                $stok->id_item = $model->id_item;
+                $stok->id_gudang = $gudang->id_gudang;
+                $stok->qty = 0;
+                $stok->hpp = 0;
+                $stok->min = 0;
+                $stok->save(false);
+            }
+            $lh = AktLevelHarga::find()->all();
+            foreach ($lh as $lh) {
+                $harga_jual = new AktItemHargaJual();
+                $harga_jual->id_item = $model->id_item;
+                $harga_jual->id_level_harga = $lh->id_level_harga;
+                $harga_jual->id_mata_uang = 1;
+                $harga_jual->harga_satuan = 0;
+                $harga_jual->save();
+            }
             return $this->redirect(['view', 'id' => $model->id_item]);
         }
 

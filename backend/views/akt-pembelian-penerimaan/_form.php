@@ -22,7 +22,7 @@ use yii\widgets\ActiveForm;
         <div class="col-md-6">
             <?= $form->field($model, 'no_penerimaan')->textInput(['maxlength' => true, 'readonly' => true]) ?>
 
-            <?= $form->field($model, 'tanggal_penerimaan')->textInput(['type' => 'date', 'value' => date('Y-m-d')]) ?>
+            <?= $form->field($model, 'tanggal_penerimaan')->textInput(['type' => 'date', 'value' => $model->tanggal_penerimaan == null ? date('Y-m-d') : $model->tanggal_penerimaan]) ?>
 
             <?= $form->field($model, 'penerima')->textInput(['maxlength' => true,]) ?>
 

@@ -152,27 +152,27 @@ $this->title = 'Laporan Transfer Kas';
                 $sum_tujuan = 0;
                 foreach ($query_transfer_kasbank as $key => $value) {
                     $no++;
-                    $sum_asal += $value->jumlah1;
-                    $sum_tujuan += $value->jumlah2;
-                    $kas_asal = AktKasBank::find()->where(['id_kas_bank' => 'id_asal_kas'])->one();
-                    $kas_tujuan = AktKasBank::find()->where(['id_kas_bank' => 'id_tujuan_kas'])->one();
+                    $sum_asal += $value['jumlah1'];
+                    $sum_tujuan += $value['jumlah1'];
+                    $kas_asal = AktKasBank::find()->where(['id_kas_bank' =>  $value['id_asal_kas']])->asArray()->one();
+                    $kas_tujuan = AktKasBank::find()->where(['id_kas_bank' =>  $value['id_tujuan_kas']])->asArray()->one();
                 ?>
                     <tr>
                         <td><?= $no ?></td>
-                        <td><?= $value->tanggal ?></td>
-                        <td><?= $value->no_transfer_kas ?></td>
-                        <td><?= $kas_asal->keterangan ?></td>
-                        <td><?= $kas_tujuan->keterangan ?></td>
-                        <td>Rp. <?= ribuan($value->jumlah1) ?></td>
-                        <td>Rp. <?= ribuan($value->jumlah2) ?></td>
+                        <td><?= $value['tanggal'] ?></td>
+                        <td><?= $value['no_transfer_kas'] ?></td>
+                        <td><?= $kas_asal['keterangan'] ?></td>
+                        <td><?= $kas_tujuan['keterangan'] ?></td>
+                        <td style="text-align: right;"><?= ribuan($value['jumlah1']) ?></td>
+                        <td style="text-align: right;"><?= ribuan($value['jumlah1']) ?></td>
                     </tr>
                 <?php } ?>
             </tbody>
             <tfoot>
                 <tr>
                     <th colspan="5" style="text-align: left;">Total</th>
-                    <th style="text-align: right;">Rp. <?= ribuan($sum_asal) ?></th>
-                    <th style="text-align: right;">Rp. <?= ribuan($sum_tujuan) ?></th>
+                    <th style="text-align: right;"><?= ribuan($sum_asal) ?></th>
+                    <th style="text-align: right;"><?= ribuan($sum_tujuan) ?></th>
                 </tr>
             </tfoot>
         </table>

@@ -236,7 +236,7 @@ class AktPembayaranBiayaController extends Controller
                 }
 
                 $jurnal_umum->no_jurnal_umum = $no_jurnal_umum;
-                $jurnal_umum->tanggal = date('Y-m-d');
+                $jurnal_umum->tanggal = $model_tanggal_pembayaran_biaya;
                 $jurnal_umum->tipe = 1;
                 $jurnal_umum->keterangan = 'Pembayaran Biaya : ' . $akt_pembelian->no_pembelian;
                 $jurnal_umum->save(false);
@@ -437,7 +437,7 @@ class AktPembayaranBiayaController extends Controller
                     }
 
                     $jurnal_umum->no_jurnal_umum = $no_jurnal_umum;
-                    $jurnal_umum->tanggal = date('Y-m-d');
+                    $jurnal_umum->tanggal = $model->tanggal_pembayaran_biaya;
                     $jurnal_umum->tipe = 1;
                     $jurnal_umum->keterangan = 'Pembayaran Biaya : ' . $harta_tetap->no_pembelian_harta_tetap;
 

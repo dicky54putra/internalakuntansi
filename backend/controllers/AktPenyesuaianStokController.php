@@ -167,7 +167,7 @@ class AktPenyesuaianStokController extends Controller
 
             $jurnal_umum->no_jurnal_umum = $no_jurnal_umum;
             $jurnal_umum->tipe = 1;
-            $jurnal_umum->tanggal = date('Y-m-d');
+            $jurnal_umum->tanggal = $model->tanggal_penyesuaian;
             $jurnal_umum->keterangan = 'Penyesuaian Stok : ' . $kode;
             $jurnal_umum->save(false);
 

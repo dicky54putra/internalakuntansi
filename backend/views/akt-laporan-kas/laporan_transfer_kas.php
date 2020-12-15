@@ -228,7 +228,6 @@ $this->title = 'Laporan Transfer Kas';
                             </tr>
                         </tfoot>
                     </table>
-
                 </div>
             </div>
         </div>

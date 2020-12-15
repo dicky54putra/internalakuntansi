@@ -370,7 +370,7 @@ class AktPenjualanHartaTetapController extends Controller
         $no_jurnal_umum = AktJurnalUmum::getKodeJurnalUmum();
         $jurnal_umum->no_jurnal_umum = $no_jurnal_umum;
         $jurnal_umum->tipe = 1;
-        $jurnal_umum->tanggal = date('Y-m-d');
+        $jurnal_umum->tanggal = $model->the_approver_date;
         $jurnal_umum->keterangan = 'Penjualan Harta Tetap : ' .  $model->no_penjualan_harta_tetap;
         $jurnal_umum->save(false);
 

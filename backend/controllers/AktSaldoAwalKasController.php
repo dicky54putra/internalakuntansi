@@ -75,7 +75,7 @@ class AktSaldoAwalKasController extends Controller
     {
         $model = new AktSaldoAwalKas();
         $model->tanggal_transaksi = date('Y-m-d');
-$no_transaksi = Utils::getNomorTransaksi($model, 'SW', 'no_transaksi', 'no_transaksi');
+        $no_transaksi = Utils::getNomorTransaksi($model, 'SW', 'no_transaksi', 'no_transaksi');
         $model->no_transaksi = $no_transaksi;
 
         $data_kas_bank = ArrayHelper::map(
@@ -117,7 +117,7 @@ $no_transaksi = Utils::getNomorTransaksi($model, 'SW', 'no_transaksi', 'no_trans
             }
 
             $jurnal_umum->no_jurnal_umum = $no_jurnal_umum;
-            $jurnal_umum->tanggal = date('Y-m-d');
+            $jurnal_umum->tanggal = $model->tanggal_transaksi;
             $jurnal_umum->keterangan = 'Set saldo awal kas : ' . $no_transaksi;
             $jurnal_umum->tipe = 1;
 

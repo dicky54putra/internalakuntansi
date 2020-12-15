@@ -76,15 +76,13 @@ class AktPembelianPembelianController extends Controller
     public function actionDelete($id)
     {
         $model =  $this->findModel($id);
-        $cek_detail = AKtPembelianDetail::find()->where(['id_pembelian' => $id])->count();
+        $model_detail = AKtPembelianDetail::find()->where(['id_pembelian' => $id])->one();
 
-        if ($cek_detail > 0) {
-            Yii::$app->session->setFlash('danger', [['Perhatian!', 'Silahkan hapus detail pembelian terlebih dahulu!']]);
-            return $this->redirect(['view', 'id' => $id]);
-        } else {
-            $model->delete();
-            return $this->redirect(['index']);
+        $model->delete();
+        if (!empty($model_detail->id_pembelian)) {
+            $model_detail->delete();
         }
+        return $this->redirect(['index']);
     }
 
     public function actionView($id)
@@ -281,7 +279,7 @@ class AktPembelianPembelianController extends Controller
                 $no_jurnal_umum = AktJurnalUmum::getKodeJurnalUmum();
                 $jurnal_umum->no_jurnal_umum = $no_jurnal_umum;
                 $jurnal_umum->tipe = 1;
-                $jurnal_umum->tanggal = date('Y-m-d');
+                $jurnal_umum->tanggal = $model->tanggal_pembelian;
                 $jurnal_umum->keterangan = 'Pembelian : ' .  $model->no_pembelian;
                 $jurnal_umum->save(false);
 

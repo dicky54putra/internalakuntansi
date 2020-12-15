@@ -57,7 +57,27 @@ class AktLaporanKasController extends Controller
         $kasbank_asal = Yii::$app->request->post('kasbank_asal');
         $kasbank_tujuan = Yii::$app->request->post('kasbank_tujuan');
 
-        return $this->render('laporan_transfer_kas', [
+        return $this->render('laporan_rekap_transfer_kas', [
+            'tanggal_awal' => $tanggal_awal,
+            'tanggal_akhir' => $tanggal_akhir,
+            'kasbank_asal' => $kasbank_asal,
+            'kasbank_tujuan' => $kasbank_tujuan,
+        ]);
+    }
+
+    public function actionLaporanRekapTransferKasCetak($tanggal_awal, $tanggal_akhir, $kasbank_asal = null, $kasbank_tujuan = null)
+    {
+        return $this->renderPartial('laporan_rekap_transfer_kas_cetak', [
+            'tanggal_awal' => $tanggal_awal,
+            'tanggal_akhir' => $tanggal_akhir,
+            'kasbank_asal' => $kasbank_asal,
+            'kasbank_tujuan' => $kasbank_tujuan,
+        ]);
+    }
+
+    public function actionLaporanRekapTransferKasExport($tanggal_awal, $tanggal_akhir, $kasbank_asal = null, $kasbank_tujuan = null)
+    {
+        return $this->renderPartial('laporan_rekap_transfer_kas_export', [
             'tanggal_awal' => $tanggal_awal,
             'tanggal_akhir' => $tanggal_akhir,
             'kasbank_asal' => $kasbank_asal,
@@ -72,7 +92,7 @@ class AktLaporanKasController extends Controller
         $kasbank_asal = Yii::$app->request->post('kasbank_asal');
         $kasbank_tujuan = Yii::$app->request->post('kasbank_tujuan');
 
-        return $this->render('laporan_rekap_transfer_kas', [
+        return $this->render('laporan_transfer_kas', [
             'tanggal_awal' => $tanggal_awal,
             'tanggal_akhir' => $tanggal_akhir,
             'kasbank_asal' => $kasbank_asal,
@@ -92,7 +112,7 @@ class AktLaporanKasController extends Controller
 
     public function actionLaporanTransferKasExport($tanggal_awal, $tanggal_akhir, $kasbank_asal = null, $kasbank_tujuan = null)
     {
-        return $this->renderPartial('laporan_transfer_kas_cetak', [
+        return $this->renderPartial('laporan_transfer_kas_export', [
             'tanggal_awal' => $tanggal_awal,
             'tanggal_akhir' => $tanggal_akhir,
             'kasbank_asal' => $kasbank_asal,

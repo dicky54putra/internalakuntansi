@@ -9,7 +9,7 @@ use backend\models\Setting;
 use kartik\select2\Select2;
 use yii\helpers\ArrayHelper;
 
-$this->title = 'Laporan Transfer Kas';
+$this->title = 'Laporan Rekap Transfer Kas';
 ?>
 
 <div class="absensi-index">
@@ -156,13 +156,11 @@ $this->title = 'Laporan Transfer Kas';
     ?>
         <p style="font-weight: bold; font-size: 20px;">
             <?= 'Periode : ' . date('d/m/Y', strtotime($tanggal_awal)) . ' s/d ' . date('d/m/Y', strtotime($tanggal_akhir)) ?>
-            <?= Html::a('Cetak', ['laporan-transfer-kas-cetak', 'tanggal_awal' => $tanggal_awal, 'tanggal_akhir' => $tanggal_akhir, 'kasbank_asal' => $kasbank_asal, 'kasbank_tujuan' => $kasbank_tujuan], ['class' => 'btn btn-primary', 'target' => '_blank', 'method' => 'post']) ?>
-            <?= Html::a('Export', ['laporan-jurnal-umum-excel', 'tanggal_awal' => $tanggal_awal, 'tanggal_akhir' => $tanggal_akhir, 'kasbank_asal' => $kasbank_asal, 'kasbank_tujuan' => $kasbank_tujuan], ['class' => 'btn btn-success', 'target' => '_blank', 'method' => 'post']) ?>
+            <?= Html::a('Cetak', ['laporan-rekap-transfer-kas-cetak', 'tanggal_awal' => $tanggal_awal, 'tanggal_akhir' => $tanggal_akhir, 'kasbank_asal' => $kasbank_asal, 'kasbank_tujuan' => $kasbank_tujuan], ['class' => 'btn btn-primary', 'target' => '_blank', 'method' => 'post']) ?>
+            <?= Html::a('Export', ['laporan-rekap-transfer-kas-export', 'tanggal_awal' => $tanggal_awal, 'tanggal_akhir' => $tanggal_akhir, 'kasbank_asal' => $kasbank_asal, 'kasbank_tujuan' => $kasbank_tujuan], ['class' => 'btn btn-success', 'target' => '_blank', 'method' => 'post']) ?>
         </p>
         <div class="box">
             <div class="box box-primary">
-                <div class="box-heading" style="overflow-x: auto;">
-                </div>
                 <div class="box-body" style="overflow-x: auto;">
                     <table class="table">
                         <tr>
@@ -189,8 +187,6 @@ $this->title = 'Laporan Transfer Kas';
                         <thead>
                             <tr>
                                 <th>#</th>
-                                <th>Tanggal</th>
-                                <th>No Transaksi</th>
                                 <th>Kas Asal</th>
                                 <th>Kas Tujuan</th>
                                 <th style="text-align: right;">Jumlah Kas Asal</th>
@@ -220,13 +216,12 @@ $this->title = 'Laporan Transfer Kas';
                         </tbody>
                         <tfoot>
                             <tr>
-                                <th colspan="5" style="text-align: left;">Total</th>
+                                <th colspan="3" style="text-align: left;">Total</th>
                                 <th style="text-align: right;"><?= ribuan($sum_asal) ?></th>
                                 <th style="text-align: right;"><?= ribuan($sum_tujuan) ?></th>
                             </tr>
                         </tfoot>
                     </table>
-
                 </div>
             </div>
         </div>

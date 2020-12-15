@@ -153,7 +153,7 @@ class AktPembelianHartaTetapController extends Controller
         $no_jurnal_umum = AktJurnalUmum::getKodeJurnalUmum();
         $jurnal_umum->no_jurnal_umum = $no_jurnal_umum;
         $jurnal_umum->tipe = 1;
-        $jurnal_umum->tanggal = date('Y-m-d');
+        $jurnal_umum->tanggal = $model->tanggal_approve;
         $jurnal_umum->keterangan = 'Pembelian Harta Tetap : ' .  $model->no_pembelian_harta_tetap;
         $jurnal_umum->save(false);
 
