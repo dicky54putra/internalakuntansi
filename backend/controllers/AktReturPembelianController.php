@@ -365,7 +365,7 @@ class AktReturPembelianController extends Controller
         $history_transaksi->save(false);
 
 
-        $model->tanggal_approve = date("Y-m-d h:i:sa");
+        $model->tanggal_approve = date("Y-m-d h:i:s");
         $model->id_login = Yii::$app->user->identity->id_login;
         $model->status_retur = 2;
         $model->total = $hutang_usaha;

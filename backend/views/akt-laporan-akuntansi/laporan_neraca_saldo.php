@@ -71,7 +71,7 @@ $this->title = 'Laporan Neraca Saldo';
                                     </td>
                                     <td width="30%">
                                         <div class="form-group">
-                                            <input type="date" name="tanggal_awal" class="form-control" value="<?= date('Y-m-d', strtotime('-30 days', strtotime(date('Y-m-d')))) ?>" required>
+                                            <input type="date" name="tanggal_awal" class="form-control" value="<?= (!empty($tanggal_awal)) ? $tanggal_awal : date('Y-m-d', strtotime('-30 days', strtotime(date('Y-m-d')))) ?>" required>
                                         </div>
                                     </td>
                                     <td width="5%"></td>
@@ -85,7 +85,7 @@ $this->title = 'Laporan Neraca Saldo';
                                     </td>
                                     <td width="30%">
                                         <div class="form-group">
-                                            <input type="date" name="tanggal_akhir" class="form-control" value="<?= date('Y-m-d') ?>" required>
+                                            <input type="date" name="tanggal_akhir" class="form-control" value="<?= (!empty($tanggal_akhir)) ? $tanggal_akhir : date('Y-m-d') ?>" required>
                                         </div>
                                     </td>
                                     <td width="5%"></td>
