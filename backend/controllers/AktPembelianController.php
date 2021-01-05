@@ -23,7 +23,6 @@ use backend\models\AktPembelianPenerimaan;
 use backend\models\JurnalTransaksi;
 use backend\models\JurnalTransaksiDetail;
 use backend\models\AktJurnalUmumDetail;
-use backend\models\AktPembayaranBiaya;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Json;
 use yii\helpers\Utils;
@@ -74,7 +73,6 @@ class AktPembelianController extends Controller
         $model = $this->findModel($id);
         $query = (new \yii\db\Query())->from('akt_pembelian_detail')->where(['id_pembelian' => $model->id_pembelian]);
         $model_pembelian_detail = $query->sum('total');
-        $count = $query->count();
 
         $data_customer = AktPembelian::dataCustomer();
         $data_mata_uang = AktPembelian::dataMataUang();
@@ -89,36 +87,31 @@ class AktPembelianController extends Controller
 
             if ($model->load(Yii::$app->request->post())) {
 
-                if ($count > 0) {
-                    // $model_ongkir = Yii::$app->request->post('AktPembelian')['ongkir'];
-                    $model_ongkir = preg_replace("/[^0-9,]+/", "", Yii::$app->request->post('AktPembelian')['ongkir']);
-                    // echo $model_ongkir; die;
-                    $model_materai = preg_replace("/[^0-9,]+/", "", Yii::$app->request->post('AktPembelian')['materai']);
-                    $model_uang_muka = preg_replace("/[^0-9,]+/", "", Yii::$app->request->post('AktPembelian')['uang_muka']);
-                    if ($model->uang_muka > 0 && $model->id_kas_bank == '') {
-                        Yii::$app->session->setFlash('danger', [['Perhatian !', 'Jika ada uang muka, kas bank tidak boleh kosong!']]);
-                        return $this->redirect(['view', 'id' => $model->id_pembelian]);
-                    }
+                // $model_ongkir = Yii::$app->request->post('AktPembelian')['ongkir'];
+                $model->uang_muka = preg_replace("/[^0-9,]+/", "", $model->uang_muka);
+                $model->ongkir = preg_replace("/[^0-9,]+/", "", $model->ongkir);
+                $model->materai = preg_replace("/[^0-9,]+/", "", $model->materai);
 
-                    $diskon = ($model->diskon > 0) ? ($model->diskon * $model_pembelian_detail) / 100 : 0;
-                    $pajak = ($model->pajak == 1) ? (($model_pembelian_detail - $diskon) * 10) / 100 : 0;
-                    $model_total = (($model_pembelian_detail - $diskon) + $pajak) + $model_ongkir + $model_materai - $model_uang_muka;
-
-                    $model->total = $model_total;
-                    $model->ongkir = $model_ongkir;
-                    $model->materai = $model_materai;
-                    $model->uang_muka = $model_uang_muka;
-
-                    if ($model->jenis_bayar == 1) {
-                        # code...
-                        $model->jatuh_tempo = NULL;
-                        $model->tanggal_tempo = NULL;
-                    } else {
-                        $model->tanggal_tempo = date('Y-m-d', strtotime('+' . $model->jatuh_tempo . ' days', strtotime($model->tanggal_order_pembelian)));
-                    }
+                if ($model->uang_muka > 0 && $model->id_kas_bank == '') {
+                    Yii::$app->session->setFlash('danger', [['Perhatian !', 'Jika ada uang muka, kas bank tidak boleh kosong!']]);
+                    return $this->redirect(['view', 'id' => $model->id_pembelian]);
                 }
-                $model->save(FALSE);
 
+                $diskon = ($model->diskon > 0) ? ($model->diskon * $model_pembelian_detail) / 100 : 0;
+                $pajak = ($model->pajak == 1) ? (($model_pembelian_detail - $diskon) * 10) / 100 : 0;
+                $model_total = (($model_pembelian_detail - $diskon) + $pajak) + $model->ongkir + $model->materai - $model->uang_muka;
+
+                $model->total = $model_total;
+
+                if ($model->jenis_bayar == 1) {
+                    # code...
+                    $model->jatuh_tempo = NULL;
+                    $model->tanggal_tempo = NULL;
+                } else {
+                    $model->tanggal_tempo = date('Y-m-d', strtotime('+' . $model->jatuh_tempo . ' days', strtotime($model->tanggal_order_pembelian)));
+                }
+
+                $model->save(FALSE);
 
                 Yii::$app->session->setFlash('success', [['Perhatian !', 'Perubahan Data Pembelian Berhasil Di Simpan']]);
                 return $this->redirect(['view', 'id' => $model->id_pembelian]);
@@ -202,12 +195,9 @@ class AktPembelianController extends Controller
         $model = new AktPembelian();
 
         $kode =  Utils::getNomorTransaksi($model, 'PO', 'no_order_pembelian', 'no_order_pembelian');
-        $kode_pembelian =  Utils::getNomorTransaksi($model, 'PE', 'no_pembelian', 'no_pembelian');
-        $kode_penerimaan =  Utils::getNomorTransaksi($model, 'PQ', 'no_penerimaan', 'no_penerimaan');
-
         $model->no_order_pembelian = $kode;
-        $model->no_pembelian = $kode_pembelian;
-        $model->no_penerimaan =  $kode_penerimaan;
+        $model->no_pembelian = substr_replace($kode, "PE", 0, 2);
+        $model->no_penerimaan = substr_replace($kode, "PQ", 0, 2);
 
         $data_customer = AktPembelian::dataCustomer();
         $data_mata_uang = AktPembelian::dataMataUang();
@@ -382,7 +372,7 @@ class AktPembelianController extends Controller
             $no_jurnal_umum = AktJurnalUmum::getKodeJurnalUmum();
             $jurnal_umum->no_jurnal_umum = $no_jurnal_umum;
             $jurnal_umum->tipe = 1;
-            $jurnal_umum->tanggal = $model->tanggal_pembelian;
+            $jurnal_umum->tanggal = date('Y-m-d');
             $jurnal_umum->keterangan = 'Order Pembelian : ' .  $model->no_order_pembelian;
             $jurnal_umum->save(false);
 
@@ -441,17 +431,7 @@ class AktPembelianController extends Controller
             $jurnal_umum_detail = AktJurnalUmumDetail::find()->where(['id_jurnal_umum' => $jurnal_umum['id_jurnal_umum']])->all();
             foreach ($jurnal_umum_detail as $ju) {
                 $akun = AktAkun::find()->where(['id_akun' => $ju->id_akun])->one();
-                if ($akun->id_akun == 1 && $model->id_kas_bank != null) {
-                    $history_transaksi_kas = AktHistoryTransaksi::find()
-                        ->where(['id_tabel' => $model->id_kas_bank])
-                        ->andWhere(['nama_tabel' => 'akt_kas_bank'])
-                        ->andWhere(['id_jurnal_umum' => $ju->id_jurnal_umum_detail])->one();
-                    $akt_kas_bank = AktKasBank::find()->where(['id_kas_bank' => $model->id_kas_bank])->one();
-                    $akt_kas_bank->saldo = $akt_kas_bank->saldo - $ju->debit + $ju->kredit;
-                    $akt_kas_bank->save(false);
-                    $history_transaksi_kas->delete();
-                } else {
-
+                if ($akun->nama_akun != 'kas') {
                     if ($akun->saldo_normal == 1 && $ju->debit > 0 || $ju->debit < 0) {
                         $akun->saldo_akun = $akun->saldo_akun - $ju->debit;
                     } else if ($akun->saldo_normal == 1 && $ju->kredit > 0 || $ju->kredit < 0) {
@@ -461,6 +441,15 @@ class AktPembelianController extends Controller
                     } else if ($akun->saldo_normal == 2 && $ju->debit > 0 || $ju->debit < 0) {
                         $akun->saldo_akun = $akun->saldo_akun + $ju->debit;
                     }
+                } else if ($akun->nama_akun == 'kas' && $model->id_kas_bank != null) {
+                    $history_transaksi_kas = AktHistoryTransaksi::find()
+                        ->where(['id_tabel' => $model->id_kas_bank])
+                        ->andWhere(['nama_tabel' => 'akt_kas_bank'])
+                        ->andWhere(['id_jurnal_umum' => $ju->id_jurnal_umum_detail])->one();
+                    $akt_kas_bank = AktKasBank::find()->where(['id_kas_bank' => $model->id_kas_bank])->one();
+                    $akt_kas_bank->saldo = $akt_kas_bank->saldo - $ju->debit + $ju->kredit;
+                    $akt_kas_bank->save(false);
+                    $history_transaksi_kas->delete();
                 }
                 $akun->save(false);
                 $ju->delete();

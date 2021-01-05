@@ -40,26 +40,12 @@ class AktLaporanAkuntansiController extends Controller
     public function actionLaporanDaftarAkun()
     {
         $searchModel = new AktAkunSearch();
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+        $dataProvider = $searchModel->searchLaporanDaftarAkun(Yii::$app->request->queryParams);
 
         return $this->render('laporan_daftar_akun', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
         ]);
-    }
-    public function actionCetakLaporanDaftarAkun()
-    {
-
-        $model = AktAkun::find()->all();
-
-        $print =  $this->renderPartial('_cetak_lap_daftar_akun', [
-            'model' => $model,
-        ]);
-        $mPDF = new mPDF(['orientation' => 'L']);
-        $mPDF->showImageErrors = true;
-        $mPDF->writeHTML($print);
-        $mPDF->Output();
-        exit();
     }
 
     public function actionLaporanBukuBesar()
@@ -118,15 +104,6 @@ class AktLaporanAkuntansiController extends Controller
     {
 
         return $this->renderPartial('laporan_neraca_saldo_sebelum_penyesuaian_excel', [
-            'tanggal_awal' => $tanggal_awal,
-            'tanggal_akhir' => $tanggal_akhir,
-        ]);
-    }
-
-    public function actionLaporanNeracaSaldoExcel($tanggal_awal, $tanggal_akhir)
-    {
-
-        return $this->renderPartial('laporan_neraca_saldo_excel', [
             'tanggal_awal' => $tanggal_awal,
             'tanggal_akhir' => $tanggal_akhir,
         ]);
@@ -215,17 +192,6 @@ class AktLaporanAkuntansiController extends Controller
         $tanggal_akhir = Yii::$app->request->post('tanggal_akhir');
 
         return $this->render('laporan_neraca_saldo_sebelum_penyesuaian', [
-            'tanggal_awal' => $tanggal_awal,
-            'tanggal_akhir' => $tanggal_akhir,
-        ]);
-    }
-
-    public function actionLaporanNeracaSaldo()
-    {
-        $tanggal_awal = Yii::$app->request->post('tanggal_awal');
-        $tanggal_akhir = Yii::$app->request->post('tanggal_akhir');
-
-        return $this->render('laporan_neraca_saldo', [
             'tanggal_awal' => $tanggal_awal,
             'tanggal_akhir' => $tanggal_akhir,
         ]);

@@ -18,7 +18,7 @@ class AktMitraBisnisSearch extends AktMitraBisnis
     {
         return [
             [['id_mitra_bisnis', 'tipe_mitra_bisnis', 'id_gmb_satu', 'id_gmb_dua', 'id_gmb_tiga', 'id_level_harga', 'id_sales', 'status_mitra_bisnis'], 'integer'],
-            [['kode_mitra_bisnis', 'deskripsi_mitra_bisnis', 'nama_mitra_bisnis'], 'safe'],
+            [['kode_mitra_bisnis', 'deskripsi_mitra_bisnis', 'nama_mitra_bisnis', 'pemilik_bisnis'], 'safe'],
         ];
     }
 
@@ -71,6 +71,7 @@ class AktMitraBisnisSearch extends AktMitraBisnis
 
         $query->andFilterWhere(['like', 'kode_mitra_bisnis', $this->kode_mitra_bisnis])
             ->andFilterWhere(['like', 'deskripsi_mitra_bisnis', $this->deskripsi_mitra_bisnis])
+            ->andFilterWhere(['like', 'pemilik_bisnis', $this->pemilik_bisnis])
             ->andFilterWhere(['like', 'nama_mitra_bisnis', $this->nama_mitra_bisnis]);
 
         return $dataProvider;

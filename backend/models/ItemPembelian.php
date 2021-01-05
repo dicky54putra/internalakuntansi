@@ -37,7 +37,7 @@ class ItemPembelian extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['id_pembelian', 'id_satuan', 'id_item_stok', 'quantity', 'diskon', 'id_departement', 'id_gudang', 'id_proyek'], 'integer'],
+            [['id_pembelian','id_satuan', 'id_item_stok', 'quantity', 'harga', 'diskon', 'id_departement', 'id_gudang', 'id_proyek'], 'integer'],
             [['quantity', 'id_satuan', 'harga', 'diskon', 'keterangan'], 'required'],
             [['keterangan'], 'string'],
             [['no_order_pembelian', 'no_penerimaan_pembelian'], 'string', 'max' => 123],
@@ -70,17 +70,17 @@ class ItemPembelian extends \yii\db\ActiveRecord
         return $this->hasOne(AktItemStok::className(), ['id_item_stok' => 'id_item_stok']);
     }
 
-    public function getSatuan()
+     public function getSatuan()
     {
         return $this->hasOne(AktSatuan::className(), ['id_satuan' => 'id_satuan']);
     }
 
-    public function getProyek()
+     public function getProyek()
     {
         return $this->hasOne(AktProyek::className(), ['id_proyek' => 'id_proyek']);
     }
 
-    public function getDepartement()
+     public function getDepartement()
     {
         return $this->hasOne(AktDepartement::className(), ['id_departement' => 'id_departement']);
     }

@@ -137,7 +137,7 @@ $count_query_detail = AktPembelianDetail::find()->where(['id_pembelian' => $mode
                                     ],
                                     [
                                         'attribute' => 'tanggal_estimasi',
-                                        'label' => 'Tanggal Estimasi Barang Diterima',
+                                        'label' => 'Tanggal Estimasi',
                                         'value' => function ($model) {
                                             if (!empty($model->tanggal_estimasi)) {
                                                 # code...
@@ -388,7 +388,7 @@ $count_query_detail = AktPembelianDetail::find()->where(['id_pembelian' => $mode
                                                     </tr>
                                                     <tr>
                                                         <?php
-                                                        $grand_total =  $model->ongkir + $pajak + $totalan_total - $diskon + $model->materai;
+                                                        $grand_total = $model->materai + $model->ongkir + $pajak + $totalan_total - $diskon;
                                                         ?>
                                                         <th colspan="6" style="text-align: right;">Grand Total</th>
                                                         <th style="text-align: right;"><?= ribuan($grand_total) ?></th>
@@ -658,7 +658,7 @@ $count_query_detail = AktPembelianDetail::find()->where(['id_pembelian' => $mode
                                 </div>
                                 <div class="form-group">
                                     <label for="total_perhitungan">Kekurangan Pembayaran</label>
-                                    <input id="total_perhitungan" readonly class="form-control" name="kekurangan_pembayaran">
+                                    <input id="total_perhitungan" readonly class="form-control">
                                 </div>
                             </div>
                         </div>

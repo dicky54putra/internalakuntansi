@@ -70,7 +70,11 @@ $this->title = 'Daftar Kelompok Harta Tetap';
                 'label' => 'Akun Akumulasi',
                 'format' => 'html',
                 'value' => function ($model) {
-                    return $model->akun_akumulasi->nama_akun;
+                    if (!empty($model->akun_akumulasi->nama_akun)) {
+                        return $model->akun_akumulasi->nama_akun;
+                    } else {
+                        return null;
+                    }
                 }
             ],
             [
@@ -78,7 +82,11 @@ $this->title = 'Daftar Kelompok Harta Tetap';
                 'label' => 'Akun Depresiasi',
                 'format' => 'html',
                 'value' => function ($model) {
-                    return $model->akun_depresiasi->nama_akun;
+                    if (!empty($model->akun_depresiasi->nama_akun)) {
+                        return $model->akun_depresiasi->nama_akun;
+                    } else {
+                        return null;
+                    }
                 }
             ],
             'keterangan:ntext',

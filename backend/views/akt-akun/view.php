@@ -41,7 +41,18 @@ $this->title = 'Detail Akun : ' . $model->nama_akun;
                                 // 'id_akun',
                                 'kode_akun',
                                 'nama_akun',
-                                'saldo_akun',
+                                [
+                                    'attribute' => 'saldo_akun',
+                                    'hAlign' => 'right',
+                                    'value' => function ($model) {
+                                        $sum_kas_bank = Yii::$app->db->createCommand("SELECT SUM(saldo) FROM akt_kas_bank")->queryScalar();
+                                        if (strtolower($model->nama_akun) == 'kas') {
+                                            return ribuan($sum_kas_bank);
+                                        } else {
+                                            return ribuan($model->saldo_akun);
+                                        }
+                                    }
+                                ],
                                 // 'header',
                                 [
                                     'attribute' => 'header',

@@ -233,4 +233,15 @@ class AktPenjualanPengirimanParentController extends Controller
 
         return $this->redirect(['view', 'id' => $model_penjualan_pengiriman->id_penjualan, '#' => 'data-pengiriman']);
     }
+
+    public function actionHapusDataPengiriman($id)
+    {
+        $model = $this->findModel($id);
+        $model->status = 2;
+        $model->save(FALSE);
+
+        return $this->redirect(['akt-penjualan-penjualan/view', 'id' => $model->id_penjualan]);
+
+        // return $this->redirect(['akt-penjualan-pengiriman-parent/update-data-penjualan-pengiriman', 'id' => $model->id_penjualan]);
+    }
 }

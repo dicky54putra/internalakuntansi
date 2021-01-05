@@ -33,9 +33,10 @@ class AktItem extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['kode_item', 'nama_item', 'id_tipe_item', 'status_aktif_item'], 'required'],
+            [['kode_item', 'nama_item', 'id_tipe_item', 'status_aktif_item', 'berat_item'], 'required'],
             [['id_tipe_item', 'id_merk', 'status_aktif_item', 'id_satuan', 'id_mitra_bisnis'], 'integer'],
             [['keterangan_item'], 'string'],
+            [['berat_item'], 'safe'],
             [['kode_item', 'barcode_item', 'nama_item', 'nama_alias_item'], 'string', 'max' => 200],
         ];
     }
@@ -53,6 +54,7 @@ class AktItem extends \yii\db\ActiveRecord
             'nama_alias_item' => 'Nama Alias Barang',
             'id_tipe_item' => 'Tipe Barang',
             'id_merk' => 'Merk',
+            'berat_item' => 'Berat Item (Kg)',
             'keterangan_item' => 'Keterangan Barang',
             'status_aktif_item' => 'Status',
             'id_satuan' => 'Satuan',

@@ -97,18 +97,11 @@ class AktPenjualanPenjualanController extends Controller
         # untuk tombol pengiriman klo data penjualan belom di update belom bisa melakukan pengiriman
         $count_model_no_penjualan = ($model->no_penjualan == NULL) ? 1 : 0;
         $count_model_tanggal_penjualan = ($model->tanggal_penjualan == NULL) ? 1 : 0;
-        if ($model->jenis_bayar == 1) {
-            $count_model_jenis_bayar = 0;
-        } else {
-            if ($model->tanggal_tempo == null || $model->jumlah_tempo == null) {
-                $count_model_jenis_bayar = 1;
-            } else {
-                $count_model_jenis_bayar = 0;
-            }
-        }
+        $count_model_total = ($model->total == NULL) ? 1 : 0;
+        $count_model_jenis_bayar = ($model->jenis_bayar == 1) ? 0 : $retVal = ($model->jenis_bayar == 2 && $model->tanggal_tempo != NULL && $model->jumlah_tempo != NULL) ? 0 : 1;
+        $count_data_penjualan_count = $count_model_no_penjualan + $count_model_tanggal_penjualan + $count_model_total + $count_model_jenis_bayar;
 
 
-        $count_data_penjualan_count = $count_model_no_penjualan + $count_model_tanggal_penjualan +  $count_model_jenis_bayar;
         $is_penjualan = AktPenjualan::cekButtonPenjualan();
 
         $data_customer = AktPenjualan::dataCustomer();
@@ -163,7 +156,7 @@ class AktPenjualanPenjualanController extends Controller
         $i = 0;
         foreach ($state as $value) {
             $all_state[$i]['id'] =  $value['id_item_harga_jual'];
-            $all_state[$i]['name'] =  $value['keterangan'];
+            $all_state[$i]['name'] = $value['keterangan'];
             $i++;
         }
 
@@ -208,26 +201,29 @@ class AktPenjualanPenjualanController extends Controller
         if ($model->load(Yii::$app->request->post())) {
 
             if ($count_penjualan_detail >  0) {
-                $post_total_penjualan_detail = Yii::$app->request->post('total_penjualan_detail');
-                $total_penjualan_detail = preg_replace('/\D/', '', $post_total_penjualan_detail);
+                $query = (new \yii\db\Query())->from('akt_penjualan_detail')->where(['id_penjualan' => $model->id_penjualan]);
+                $total_penjualan_detail = $query->sum('total');
 
-                $model_ongkir = preg_replace("/[^0-9,]+/", "", Yii::$app->request->post('AktPenjualan')['ongkir']);
-                $model_materai = preg_replace("/[^0-9,]+/", "", Yii::$app->request->post('AktPenjualan')['materai']);
-                $model_uang_muka = preg_replace("/[^0-9,]+/", "", Yii::$app->request->post('AktPenjualan')['uang_muka']);
+                $model_uang_muka = Yii::$app->request->post('AktPenjualan')['uang_muka'];
+                $model_ongkir = Yii::$app->request->post('AktPenjualan')['ongkir'];
+                $model_materai = Yii::$app->request->post('AktPenjualan')['materai'];
 
+                $model->uang_muka = $model_uang_muka;
                 $diskon = ($model->diskon > 0) ? ($model->diskon * $total_penjualan_detail) / 100 : 0;
                 $pajak = ($model->pajak == 1) ? (($total_penjualan_detail - $diskon) * 10) / 100 : 0;
-                $model_total_sementara = (($total_penjualan_detail - $diskon) + $pajak) + $model_ongkir;
+                $model_total_sementara = (($total_penjualan_detail - $diskon) + $pajak) + $model->ongkir;
                 $model_total = $model_total_sementara - $model_uang_muka;
 
                 $model->total = $model_total;
                 $model->ongkir = $model_ongkir;
                 $model->materai = $model_materai;
-                $model->uang_muka = $model_uang_muka;
+
                 if ($model->uang_muka > 0 && $model->id_kas_bank == '') {
                     Yii::$app->session->setFlash('danger', [['Perhatian !', 'Jika ada uang muka, kas bank tidak boleh kosong!']]);
                     return $this->redirect(['view', 'id' => $model->id_penjualan]);
                 }
+
+
                 if ($model->jenis_bayar == 1) {
                     # code...
                     $model->jenis_bayar = 1;
@@ -268,7 +264,7 @@ class AktPenjualanPenjualanController extends Controller
                 $penjualan_barang = $penjualan_detail - $diskon;
                 $grand_total = $penjualan_barang + $pajak + $model->ongkir - $model->materai;
 
-                $piutang_usaha = $grand_total - $model->uang_muka;
+                $piutang_usaha = $grand_total - $model->uang_muka;;
 
                 $data_jurnal_umum = array(
                     'piutang_usaha' => $piutang_usaha,
@@ -304,6 +300,66 @@ class AktPenjualanPenjualanController extends Controller
             return $this->redirect(['view', 'id' => $id]);
         }
     }
+    public function actionPostToJurnalUmum($id)
+    {
+
+        $model = AktPenjualan::findOne($id);
+
+        $jurnal_umum = new AktJurnalUmum();
+        $no_jurnal_umum = AktJurnalUmum::getKodeJurnalUmum();
+        $jurnal_umum->no_jurnal_umum = $no_jurnal_umum;
+        $jurnal_umum->tipe = 1;
+        $jurnal_umum->tanggal = $model->tanggal_penjualan;
+        $jurnal_umum->keterangan = 'Penjualan : ' .  $model->no_penjualan;
+        $jurnal_umum->save(false);
+
+        // End Create Jurnal Umum
+        $penjualan_detail = Yii::$app->db->createCommand("SELECT SUM(total) FROM akt_penjualan_detail WHERE id_penjualan = '$model->id_penjualan'")->queryScalar();
+        $pajak = 0;
+        $diskon = $model->diskon / 100 * $penjualan_detail;
+        if ($model->pajak == 1) {
+            $total_pembelian = $penjualan_detail - $diskon;
+            $pajak = 0.1 * $total_pembelian;
+        } else if ($model->pajak == 0) {
+            $pajak = 0;
+        }
+        $penjualan_barang = $penjualan_detail - $diskon;
+        $grand_total = $penjualan_barang + $pajak + $model->ongkir - $model->materai;
+
+        $piutang_usaha = $grand_total - $model->uang_muka;
+
+        $data_jurnal_umum = array(
+            'piutang_usaha' => $piutang_usaha,
+            'total_penjualan' => $penjualan_barang,
+            'pajak' => $pajak,
+            'uang_muka' => $model->uang_muka,
+            'materai' => $model->materai,
+            'ongkir' => $model->ongkir
+        );
+
+        if ($model->jenis_bayar == 2) {
+            // Data for debit or credit in jurnal transaksi
+            $penjualanKredit = JurnalTransaksi::find()->where(['nama_transaksi' => 'Penjualan Kredit'])->one();
+            $jurnal_transaksi_detail = JurnalTransaksiDetail::find()->where(['id_jurnal_transaksi' => $penjualanKredit['id_jurnal_transaksi']])->all();
+            AktPenjualan::setAkunJurnalUmum($jurnal_transaksi_detail, $model, $data_jurnal_umum, $jurnal_umum, 'penjualan');
+        } elseif ($model->jenis_bayar == 1) {
+            // Data for debit or credit in jurnal transaksi
+            $penjualan_cash = JurnalTransaksi::find()->where(['nama_transaksi' => 'Penjualan Cash'])->one();
+            $jurnal_transaksi_detail = JurnalTransaksiDetail::find()->where(['id_jurnal_transaksi' => $penjualan_cash['id_jurnal_transaksi']])->all();
+            AktPenjualan::setAkunJurnalUmum($jurnal_transaksi_detail, $model, $data_jurnal_umum, $jurnal_umum, 'penjualan');
+        }
+
+
+        $history_transaksi = new AktHistoryTransaksi();
+        $history_transaksi->nama_tabel = 'akt_penjualan';
+        $history_transaksi->id_tabel = $model->id_penjualan;
+        $history_transaksi->id_jurnal_umum = $jurnal_umum->id_jurnal_umum;
+        $history_transaksi->save(false);
+
+        Yii::$app->session->setFlash('success', [['Perhatian!', 'Post to jurnal umum success']]);
+        return $this->redirect(['view', 'id' => $model->id_penjualan]);
+    }
+
 
     public function actionHapusDataPenjualan($id)
     {
@@ -342,7 +398,6 @@ class AktPenjualanPenjualanController extends Controller
                     $model->id_kas_bank = null;
                     $model->save(false);
                 } else {
-
                     if ($akun->saldo_normal == 1 && $ju->debit > 0 || $ju->debit < 0) {
                         $akun->saldo_akun = $akun->saldo_akun - $ju->debit;
                     } else if ($akun->saldo_normal == 1 && $ju->kredit > 0 || $ju->kredit < 0) {
@@ -385,6 +440,22 @@ class AktPenjualanPenjualanController extends Controller
         // return $this->redirect(['akt-penjualan-pengiriman-parent/update-data-penjualan-pengiriman', 'id' => $model->id_penjualan]);
     }
 
+    public function actionCetakInvoicePpn($id)
+    {
+        $model = $this->findModel($id);
+
+        $data_setting = Setting::find()->one();
+
+        $query = (new \yii\db\Query())->from('akt_penjualan_detail')->where(['id_penjualan' => $model->id_penjualan]);
+        $total_penjualan_barang = $query->sum('total');
+
+        return $this->renderPartial('cetak_invoice_ppn', [
+            'model' => $model,
+            'data_setting' => $data_setting,
+            'total_penjualan_barang' => $total_penjualan_barang,
+        ]);
+    }
+
     public function actionCetakInvoice($id)
     {
         $model = $this->findModel($id);
@@ -401,8 +472,7 @@ class AktPenjualanPenjualanController extends Controller
         ]);
     }
 
-
-    public function actionCetakInvoiceNonPpn($id)
+    public function actionCetakStandard($id)
     {
         $model = $this->findModel($id);
 
@@ -411,24 +481,7 @@ class AktPenjualanPenjualanController extends Controller
         $query = (new \yii\db\Query())->from('akt_penjualan_detail')->where(['id_penjualan' => $model->id_penjualan]);
         $total_penjualan_barang = $query->sum('total');
 
-        return $this->renderPartial('cetak_invoice_non_ppn', [
-            'model' => $model,
-            'data_setting' => $data_setting,
-            'total_penjualan_barang' => $total_penjualan_barang,
-        ]);
-    }
-
-
-    public function actionCetakInvoicePpn($id)
-    {
-        $model = $this->findModel($id);
-
-        $data_setting = Setting::find()->one();
-
-        $query = (new \yii\db\Query())->from('akt_penjualan_detail')->where(['id_penjualan' => $model->id_penjualan]);
-        $total_penjualan_barang = $query->sum('total');
-
-        return $this->renderPartial('cetak_invoice_ppn', [
+        return $this->renderPartial('cetak_standard', [
             'model' => $model,
             'data_setting' => $data_setting,
             'total_penjualan_barang' => $total_penjualan_barang,
@@ -496,15 +549,7 @@ class AktPenjualanPenjualanController extends Controller
     public function actionDelete($id)
     {
         $model = $this->findModel($id);
-        $cek_detail = AktPenjualanDetail::find()->where(['id_penjualan' => $id])->count();
-
-        if ($cek_detail > 0) {
-            Yii::$app->session->setFlash('danger', [['Perhatian!', 'Silahkan hapus data detail penjualan terlebih dahulu']]);
-            return $this->redirect(['view', 'id' => $id]);
-        } else {
-            $model->delete();
-            Yii::$app->session->setFlash('success', [['Perhatian!', 'Data Order Penjualan ' . $model->no_order_penjualan . ' Berhasil Dihapus']]);
-            return $this->redirect(['index']);
-        }
+        AktPenjualanDetail::deleteAll(['id_penjualan' => $id]);
+        $model->delete();
     }
 }

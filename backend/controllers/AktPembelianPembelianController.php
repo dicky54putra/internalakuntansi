@@ -76,12 +76,7 @@ class AktPembelianPembelianController extends Controller
     public function actionDelete($id)
     {
         $model =  $this->findModel($id);
-        $model_detail = AKtPembelianDetail::find()->where(['id_pembelian' => $id])->one();
-
-        $model->delete();
-        if (!empty($model_detail->id_pembelian)) {
-            $model_detail->delete();
-        }
+        AktPembelianDetail::deleteAll(['id_pembelian' => $id]);
         return $this->redirect(['index']);
     }
 
@@ -211,17 +206,19 @@ class AktPembelianPembelianController extends Controller
         $model = AktPembelian::findOne($id);
         $query = (new \yii\db\Query())->from('akt_pembelian_detail')->where(['id_pembelian' => $model->id_pembelian]);
         $model_pembelian_detail = $query->sum('total');
-        $count_pembelian_detail = $query->count();
+        $count = $query->count();
 
 
         if ($model->load(Yii::$app->request->post())) {
 
-            if ($count_pembelian_detail > 0) {
+
+
+            if ($count > 0) {
+
 
                 $model->ongkir = $model->ongkir == '' ? 0 : $model->ongkir;
                 $model->diskon = $model->diskon == '' ? 0 : $model->diskon;
                 $model->materai = $model->materai == '' ? 0 : $model->materai;
-
 
                 $model_ongkir = preg_replace("/[^0-9,]+/", "", Yii::$app->request->post('AktPembelian')['ongkir']);
                 $model_materai = preg_replace("/[^0-9,]+/", "", Yii::$app->request->post('AktPembelian')['materai']);
@@ -250,8 +247,6 @@ class AktPembelianPembelianController extends Controller
                     $model->tanggal_tempo = date('Y-m-d', strtotime('+' . $model->jatuh_tempo . ' days', strtotime($model->tanggal_pembelian)));
                 }
 
-                $model->save();
-
                 $pembelian_detail = Yii::$app->db->createCommand("SELECT SUM(total) FROM akt_pembelian_detail WHERE id_pembelian = '$model->id_pembelian'")->queryScalar();
                 $pajak = 0;
                 $diskon = $model->diskon / 100 * $pembelian_detail;
@@ -263,7 +258,7 @@ class AktPembelianPembelianController extends Controller
                 }
                 $pembelian_barang = $pembelian_detail - $diskon;
                 $grand_total = $pembelian_barang + $pajak + $model->ongkir + $model->materai;
-                $hutang_usaha = $grand_total - $model->uang_muka;
+                $hutang_usaha = $grand_total - $model->uang_muka;;
 
                 $data_jurnal_umum = array(
                     'hutang_usaha' => $hutang_usaha,
@@ -294,16 +289,76 @@ class AktPembelianPembelianController extends Controller
                     $jurnal_transaksi_detail = JurnalTransaksiDetail::find()->where(['id_jurnal_transaksi' => $pembelian_cash['id_jurnal_transaksi']])->all();
                     AktPembelian::setAkunJurnalUmum($jurnal_transaksi_detail, $model, $data_jurnal_umum, $jurnal_umum, 'pembelian');
                 }
+                $model->save(FALSE);
+                $history_transaksi = new AktHistoryTransaksi();
+                $history_transaksi->nama_tabel = 'akt_pembelian';
+                $history_transaksi->id_tabel = $model->id_pembelian;
+                $history_transaksi->id_jurnal_umum = $jurnal_umum->id_jurnal_umum;
+                $history_transaksi->save(false);
+            } else {
+                $model->save(false);
             }
-            $model->save(FALSE);
-            $history_transaksi = new AktHistoryTransaksi();
-            $history_transaksi->nama_tabel = 'akt_pembelian';
-            $history_transaksi->id_tabel = $model->id_pembelian;
-            $history_transaksi->id_jurnal_umum = $jurnal_umum->id_jurnal_umum;
-            $history_transaksi->save(false);
         }
 
         Yii::$app->session->setFlash('success', [['Perhatian!', 'Perubahan Data Pembelian Berhasil Di Simpan']]);
+        return $this->redirect(['view', 'id' => $model->id_pembelian]);
+    }
+    public function actionPostToJurnalUmum($id)
+    {
+
+        $model = AktPembelian::findOne($id);
+
+        $pembelian_detail = Yii::$app->db->createCommand("SELECT SUM(total) FROM akt_pembelian_detail WHERE id_pembelian = '$model->id_pembelian'")->queryScalar();
+        $pajak = 0;
+        $diskon = $model->diskon / 100 * $pembelian_detail;
+        if ($model->pajak == 1) {
+            $total_pembelian = $pembelian_detail - $diskon;
+            $pajak = 0.1 * $total_pembelian;
+        } else if ($model->pajak == 0) {
+            $pajak = 0;
+        }
+
+        $pembelian_barang = $pembelian_detail - $diskon;
+        $grand_total = $pembelian_barang + $pajak + $model->ongkir + $model->materai;
+        $hutang_usaha = $grand_total - $model->uang_muka;
+
+        $data_jurnal_umum = array(
+            'hutang_usaha' => $hutang_usaha,
+            'pembelian_barang' => $pembelian_barang,
+            'pajak' => $pajak,
+            'uang_muka' => $model->uang_muka,
+            'materai' => $model->materai,
+            'ongkir' => $model->ongkir
+        );
+
+        // Create Jurnal Umum
+        $jurnal_umum = new AktJurnalUmum();
+        $no_jurnal_umum = AktJurnalUmum::getKodeJurnalUmum();
+        $jurnal_umum->no_jurnal_umum = $no_jurnal_umum;
+        $jurnal_umum->tipe = 1;
+        $jurnal_umum->tanggal = $model->tanggal_pembelian;
+        $jurnal_umum->keterangan = 'Pembelian : ' .  $model->no_pembelian;
+        $jurnal_umum->save(false);
+
+        // End Create Jurnal Umum
+
+        if ($model->jenis_bayar == 2) {
+            $pembelian_kredit = JurnalTransaksi::find()->where(['nama_transaksi' => 'Pembelian Kredit'])->one();
+            $jurnal_transaksi_detail = JurnalTransaksiDetail::find()->where(['id_jurnal_transaksi' => $pembelian_kredit['id_jurnal_transaksi']])->all();
+            AktPembelian::setAkunJurnalUmum($jurnal_transaksi_detail, $model, $data_jurnal_umum, $jurnal_umum, 'pembelian');
+        } else if ($model->jenis_bayar == 1) {
+            $pembelian_cash = JurnalTransaksi::find()->where(['nama_transaksi' => 'Pembelian Cash'])->one();
+            $jurnal_transaksi_detail = JurnalTransaksiDetail::find()->where(['id_jurnal_transaksi' => $pembelian_cash['id_jurnal_transaksi']])->all();
+            AktPembelian::setAkunJurnalUmum($jurnal_transaksi_detail, $model, $data_jurnal_umum, $jurnal_umum, 'pembelian');
+        }
+
+        $history_transaksi = new AktHistoryTransaksi();
+        $history_transaksi->nama_tabel = 'akt_pembelian';
+        $history_transaksi->id_tabel = $model->id_pembelian;
+        $history_transaksi->id_jurnal_umum = $jurnal_umum->id_jurnal_umum;
+        $history_transaksi->save(false);
+
+        Yii::$app->session->setFlash('success', [['Perhatian!', 'Post to jurnal umum success']]);
         return $this->redirect(['view', 'id' => $model->id_pembelian]);
     }
 
@@ -341,13 +396,13 @@ class AktPembelianPembelianController extends Controller
                     $model->id_kas_bank = null;
                     $model->save(false);
                 } else {
-                    if ($akun->saldo_normal == 1 && $ju->debit >= 0 || $ju->kredit <= 0) {
+                    if ($akun->saldo_normal == 1 && $ju->debit > 0 || $ju->debit < 0) {
                         $akun->saldo_akun = $akun->saldo_akun - $ju->debit;
-                    } else if ($akun->saldo_normal == 1 && $ju->kredit >= 0 || $ju->debit <= 0) {
+                    } else if ($akun->saldo_normal == 1 && $ju->kredit > 0 || $ju->kredit < 0) {
                         $akun->saldo_akun = $akun->saldo_akun + $ju->kredit;
-                    } else if ($akun->saldo_normal == 2 && $ju->kredit >= 0 || $ju->debit <= 0) {
+                    } else if ($akun->saldo_normal == 2 && $ju->kredit > 0 || $ju->kredit < 0) {
                         $akun->saldo_akun = $akun->saldo_akun - $ju->kredit;
-                    } else if ($akun->saldo_normal == 2 && $ju->debit >= 0 || $ju->kredit <= 0) {
+                    } else if ($akun->saldo_normal == 2 && $ju->debit > 0 || $ju->debit < 0) {
                         $akun->saldo_akun = $akun->saldo_akun + $ju->debit;
                     }
                 }

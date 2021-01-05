@@ -38,7 +38,7 @@ class AktBom extends \yii\db\ActiveRecord
             [['no_bom', 'tipe', 'id_item_stok', 'qty', 'total', 'status_bom'], 'required'],
             [['id_item_stok', 'qty', 'status_bom'], 'integer'],
             [['keterangan'], 'string'],
-            [['total'], 'safe'],
+            [['total'], 'number'],
             [['tipe'], 'string', 'max' => 200],
         ];
     }

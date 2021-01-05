@@ -7,13 +7,11 @@ use backend\models\AktGudang;
 use backend\models\AktSatuan;
 ?>
 <style type="text/css">
-    * {
-        font-size: 11px;
-    }
-
     .table1 {
         width: 100%;
         border-collapse: collapse;
+        /*font-family: Arial;*/
+        font-size: 15px;
     }
 
     .table1 th {
@@ -48,6 +46,7 @@ use backend\models\AktSatuan;
     .table2 {
         border-collapse: collapse;
         width: 100%;
+        font-size: 13px;
         font-family: Arial;
     }
 
@@ -96,6 +95,9 @@ use backend\models\AktSatuan;
 </style>
 <table class="table3">
     <thead>
+        <tr>
+            <th class="header_kiri" style="font-size: 15px; font-weight: bold;"><?= $data_setting->nama ?></th>
+        </tr>
         <tr>
             <th class="header_kiri"><?= $data_setting->nama_usaha ?></th>
         </tr>
@@ -164,7 +166,7 @@ use backend\models\AktSatuan;
             <th style="width: 13%;">Kode Barang</th>
             <th>Nama Barang</th>
             <th style="text-align: right;">Harga Satuan</th>
-            <th style="text-align: center; width: 10%;">Diskon</th>
+            <th style="text-align: center; width: 10%;">Diskon %</th>
             <th style="text-align: right;">Sub Total</th>
         </tr>
     </thead>
@@ -205,13 +207,7 @@ use backend\models\AktSatuan;
             <th style="text-align: right; width: 80%;">Diskon <?= $model->diskon ?>%</th>
             <th style="text-align: right;">
                 <?php
-                if ($model->jenis_diskon == 1) {
-                    $diskon = ($model->diskon * $totalan_sub_total) / 100;
-                } else if ($model->jenis_diskon == 2) {
-                    $diskon = $model->diskon;
-                } else {
-                    $diskon = 0;
-                }
+                $diskon = ($model->diskon * $totalan_sub_total) / 100;
                 echo ribuan($diskon);
                 ?>
             </th>

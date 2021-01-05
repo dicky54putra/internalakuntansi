@@ -18,7 +18,7 @@ class AktItemSearch extends AktItem
     {
         return [
             [['id_item', 'status_aktif_item'], 'integer'],
-            [['kode_item', 'barcode_item', 'nama_item', 'nama_alias_item', 'keterangan_item', 'id_tipe_item', 'id_merk', 'id_satuan', 'id_mitra_bisnis'], 'safe'],
+            [['kode_item', 'barcode_item', 'nama_item', 'nama_alias_item', 'keterangan_item', 'id_tipe_item', 'id_merk', 'id_satuan', 'id_mitra_bisnis', 'berat_item'], 'safe'],
         ];
     }
 
@@ -76,6 +76,7 @@ class AktItemSearch extends AktItem
             ->andFilterWhere(['like', 'akt_merk.nama_merk', $this->id_merk])
             ->andFilterWhere(['like', 'akt_satuan.nama_satuan', $this->id_satuan])
             ->andFilterWhere(['like', 'akt_mitra_bisnis.nama_mitra_bisnis', $this->id_mitra_bisnis])
+            ->andFilterWhere(['like', 'berat_item', $this->berat_item])
             ->andFilterWhere(['like', 'keterangan_item', $this->keterangan_item]);
 
         return $dataProvider;

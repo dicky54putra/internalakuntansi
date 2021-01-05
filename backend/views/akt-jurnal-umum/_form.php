@@ -19,7 +19,7 @@ use yii\widgets\ActiveForm;
 
                     <div class="row">
                         <div class="col-md-6">
-                        <?= $form->field($model, 'no_jurnal_umum')->textInput(['readonly' => true]) ?>
+                            <?= $form->field($model, 'no_jurnal_umum')->textInput(['readonly' => true]) ?>
 
                             <?= $form->field($model, 'tanggal')->widget(\yii\jui\DatePicker::classname(), [
                                 'clientOptions' => [
@@ -37,11 +37,11 @@ use yii\widgets\ActiveForm;
                             ) ?>
                         </div>
                         <div class="col-md-6">
-                             <?= $form->field($model, 'keterangan')->textarea(['rows' => 5]) ?>
+                            <?= $form->field($model, 'keterangan')->textarea(['rows' => 5]) ?>                
                         </div>
                     </div>
-                   
 
+                
 
                     <div class="form-group">
                         <?php

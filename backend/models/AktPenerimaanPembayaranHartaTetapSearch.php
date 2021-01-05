@@ -17,8 +17,8 @@ class AktPenerimaanPembayaranHartaTetapSearch extends AktPenerimaanPembayaranHar
     public function rules()
     {
         return [
-            [['id_penerimaan_pembayaran_harta_tetap', 'id_penjualan_harta_tetap', 'cara_bayar', 'id_kas_bank'], 'integer'],
-            [['tanggal_penerimaan_pembayaran', 'keterangan', 'nominal'], 'safe'],
+            [['id_penerimaan_pembayaran_harta_tetap', 'id_penjualan_harta_tetap', 'cara_bayar', 'id_kas_bank', 'nominal'], 'integer'],
+            [['tanggal_penerimaan_pembayaran', 'keterangan'], 'safe'],
         ];
     }
 

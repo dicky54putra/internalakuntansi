@@ -140,7 +140,6 @@ $this->title = 'Detail Data Order Penjualan : ' . $model->no_order_penjualan;
                                     ],
                                     [
                                         'attribute' => 'tanggal_estimasi',
-                                        'label' => 'Tanggal Estimasi Barang Dikirim',
                                         'value' => function ($model) {
                                             if (!empty($model->tanggal_estimasi)) {
                                                 # code...
@@ -270,7 +269,7 @@ $this->title = 'Detail Data Order Penjualan : ' . $model->no_order_penjualan;
 
                                                 <?= $form->field($model_penjualan_detail_baru, 'id_penjualan')->textInput(['readonly' => true, 'type' => 'hidden'])->label(FALSE) ?>
 
-                                                <div class="col-md-3">
+                                                <div class="col-md-4">
                                                     <?= $form->field($model_penjualan_detail_baru, 'id_item_stok')->widget(Select2::classname(), [
                                                         'data' => $data_item_stok,
                                                         'language' => 'en',
@@ -282,16 +281,16 @@ $this->title = 'Detail Data Order Penjualan : ' . $model->no_order_penjualan;
                                                     ?>
                                                 </div>
 
-                                                <div class="col-md-2">
+                                                <div class="col-md-3">
                                                     <?= $form->field($model_penjualan_detail_baru, 'id_item_harga_jual')->widget(DepDrop::classname(), [
                                                         'type' => DepDrop::TYPE_SELECT2,
-                                                        'options' => ['id' => 'id-harga-jual', 'placeholder' => 'Pilih Level Harga...'],
+                                                        'options' => ['id' => 'id-harga-jual', 'placeholder' => 'Pilih Jenis...'],
                                                         'select2Options' => ['pluginOptions' => ['allowClear' => true]],
                                                         'pluginOptions' => [
                                                             'depends' => ['id_item_stok'],
                                                             'url' => Url::to(['/akt-penjualan/level-harga'])
                                                         ]
-                                                    ])->label('Level Harga');
+                                                    ])->label('Jenis');
                                                     ?>
                                                 </div>
                                                 <div class="col-md-2">
@@ -301,20 +300,7 @@ $this->title = 'Detail Data Order Penjualan : ' . $model->no_order_penjualan;
                                                     <?= $form->field($model_penjualan_detail_baru, 'qty')->textInput(['autocomplete' => 'off']) ?>
                                                 </div>
                                                 <div class="col-md-2">
-                                                    <?= $form->field($model_penjualan_detail_baru, 'jenis_diskon')->dropDownList(
-                                                        array(1 => "Persen %", 2 => "Rupiah Rp."),
-                                                        [
-                                                            'prompt' => 'Pilih Jenis Diskon',
-                                                        ]
-                                                    ) ?>
-                                                </div>
-                                                <style>
-                                                    .nominal_diskon {
-                                                        display: none;
-                                                    }
-                                                </style>
-                                                <div class="col-md-2 nominal_diskon" id="nominal_diskon">
-                                                    <?= $form->field($model_penjualan_detail_baru, 'diskon')->textInput(['placeholder' => 'Diskon', 'autocomplete' => 'off', 'pattern' => '[+-]?([0-9]*[.])?[0-9]+', 'id' => 'diskon-floating']) ?>
+                                                    <?= $form->field($model_penjualan_detail_baru, 'diskon')->textInput(['placeholder' => 'Diskon %', 'autocomplete' => 'off', 'pattern' => '[+-]?([0-9]*[.])?[0-9]+', 'id' => 'diskon-floating']) ?>
                                                 </div>
 
                                                 <div class="col-md-10">
@@ -323,11 +309,13 @@ $this->title = 'Detail Data Order Penjualan : ' . $model->no_order_penjualan;
 
                                                 <div class="col-md-2">
                                                     <button type="submit" class="btn btn-success col-md-12"><span class="glyphicon glyphicon-plus"></span> Tambahkan</button>
+                                                    <!-- <button type="reset" class="btn btn-danger"><span class="glyphicon glyphicon-remove-sign"></span> Reset</button> -->
                                                 </div>
 
                                                 <?php ActiveForm::end(); ?>
                                             <?php } ?>
                                         </div>
+
                                         <table class="table table-hover table-condensed table-responsive">
                                             <thead>
                                                 <tr>
@@ -337,9 +325,7 @@ $this->title = 'Detail Data Order Penjualan : ' . $model->no_order_penjualan;
                                                     <th style="width: 10%;">Gudang</th>
                                                     <th style="width: 5%;">Qty</th>
                                                     <th style="width: 10%;">Harga</th>
-                                                    <th style="width: 10%;">Diskon
-                                                        <??>
-                                                    </th>
+                                                    <th style="width: 10%;">Diskon %</th>
                                                     <th style="width: 20%;">Keterangan</th>
                                                     <th style="width: 10%;">Sub Total</th>
                                                 </tr>
@@ -388,19 +374,7 @@ $this->title = 'Detail Data Order Penjualan : ' . $model->no_order_penjualan;
                                                         <td><?= (!empty($gudang->nama_gudang)) ? $gudang->nama_gudang : '' ?></td>
                                                         <td><?= $data['qty'] ?></td>
                                                         <td><?= ribuan($data['harga']) ?></td>
-                                                        <td>
-                                                            <?php
-
-                                                            if ($model->jenis_diskon == 1) {
-                                                                echo $data['diskon'] . '%';
-                                                            } else if ($model->jenis_diskon == 2) {
-                                                                echo 'Rp ' . ribuan($data['diskon']);
-                                                            } else {
-                                                                echo $data['diskon'];
-                                                            }
-
-                                                            ?>
-                                                        </td>
+                                                        <td><?= $data['diskon'] ?></td>
                                                         <td><?= $data['keterangan'] ?></td>
                                                         <td style="text-align: right;"><?= ribuan($data['total']) ?></td>
                                                         <?php
@@ -429,16 +403,10 @@ $this->title = 'Detail Data Order Penjualan : ' . $model->no_order_penjualan;
                                                     <th style="text-align: right;"><?= ribuan($totalan_total) ?></th>
                                                 </tr>
                                                 <tr>
-                                                    <th colspan="8" style="text-align: right;">Diskon <?= $model->jenis_diskon == 1 ? '%' : 'Rp.'  ?></th>
+                                                    <th colspan="8" style="text-align: right;">Diskon <?= $model->diskon ?> %</th>
                                                     <th style="text-align: right;">
                                                         <?php
-                                                        if ($model->jenis_diskon == 1) {
-                                                            $diskon = ($model->diskon * $totalan_total) / 100;
-                                                        } else if ($model->jenis_diskon == 2) {
-                                                            $diskon = $model->diskon;
-                                                        } else {
-                                                            $diskon = 0;
-                                                        }
+                                                        $diskon = ($model->diskon * $totalan_total) / 100;
                                                         echo ribuan($diskon);
                                                         ?>
                                                     </th>
@@ -642,7 +610,7 @@ $this->title = 'Detail Data Order Penjualan : ' . $model->no_order_penjualan;
                             ],
                             'dateFormat' => 'yyyy-MM-dd',
                             'options' => ['class' => 'form-control']
-                        ])->label('Tanggal Estimasi Barang Dikirim') ?>
+                        ]) ?>
 
                     </div>
                 </div>
@@ -654,18 +622,8 @@ $this->title = 'Detail Data Order Penjualan : ' . $model->no_order_penjualan;
                         <div class="col-md-6">
                             <?= $form->field($model, 'ongkir')->textInput(['value' => $model->ongkir == '' ? 0 : $model->ongkir, 'autocomplete' => 'off', 'class' => 'ongkir_penjualan form-control', 'pattern' => '[+-]?([0-9]*[.])?[0-9]+'])->label('Ongkir') ?>
 
-                            <?= $form->field($model, 'jenis_diskon')->dropDownList(
-                                array(1 => "Persen %", 2 => "Rupiah Rp."),
-                                [
-                                    'prompt' => 'Pilih Jenis Diskon',
-                                ]
-                            ) ?>
+                            <?= $form->field($model, 'diskon')->textInput(['value' => $model->diskon == '' ? 0 : $model->diskon, 'autocomplete' => 'off', 'pattern' => '[+-]?([0-9]*[.])?[0-9]+', 'id' => 'diskon-floating', 'class' => 'diskon-penjualan form-control'])->label('Diskon %') ?>
 
-                            <div class="nominal_diskon" id="diskon_penjualan">
-
-                                <?= $form->field($model, 'diskon')->textInput(['value' => $model->diskon == '' ? 0 : $model->diskon, 'autocomplete' => 'off', 'pattern' => '[+-]?([0-9]*[.])?[0-9]+', 'id' => 'diskon-floating', 'class' => 'diskon-penjualan form-control'])->label('Diskon %') ?>
-
-                            </div>
                             <div class="row">
                                 <div class="col-md-12">
                                     <?= $form->field($model, 'uang_muka')->textInput(['value' => $model->uang_muka == '' ? 0 : $model->uang_muka, 'autocomplete' => 'off']); ?>
@@ -895,36 +853,6 @@ $this->registerJs($script);
 
 
 <script>
-    const nominalDiskon = document.querySelector("#nominal_diskon");
-    const jenisDiskon = document.querySelector("#aktpenjualandetail-jenis_diskon");
-
-    jenisDiskon.addEventListener('change', function(e) {
-        if (e.target.value == 1 || e.target.value == 2) {
-            nominalDiskon.classList.remove('nominal_diskon');
-        } else {
-            nominalDiskon.classList.add('nominal_diskon');
-        }
-    })
-
-
-    const nominalDiskonPenjualan = document.querySelector("#diskon_penjualan");
-    const jenisDiskonPenjualan = document.querySelector("#aktpenjualan-jenis_diskon");
-
-    if (jenisDiskonPenjualan.value == '') {
-        nominalDiskonPenjualan.classList.add('nominal_diskon');
-    } else {
-        nominalDiskonPenjualan.classList.remove('nominal_diskon');
-    }
-
-
-    // jenisDiskonPenjualan.addEventListener('change', function(e) {
-    //     if (e.target.value == 1 || e.target.value == 2) {
-    //         nominalDiskonPenjualan.classList.remove('nominal_diskon');
-    //     } else {
-    //         nominalDiskonPenjualan.classList.add('nominal_diskon');
-    //     }
-    // })
-
     const elements = document.querySelectorAll('#diskon-floating');
     for (var i = 0; i < elements.length; i++) {
         elements[i].oninvalid = function(e) {
@@ -969,51 +897,38 @@ $this->registerJs($script);
         diskon = 0,
         uang_muka = 0,
         pajak = false,
-        jenis_diskon = null,
+        materai = 0
     ) {
 
-        let total = parseFloat(total_pembelian_detail.value.split('.').join(""));
+        let total = total_pembelian_detail.value.split('.').join("");
         let hilang_titik = uang_muka.split('.').join("")
 
 
         if (ongkir == '' || ongkir == " " || ongkir == null ||
             diskon == '' || diskon == " " || diskon == null ||
-            uang_muka == '' || uang_muka == " " || uang_muka == null ||
-            jenis_diskon == ''
+            materai == '' || materai == " " || materai == null ||
+            uang_muka == '' || uang_muka == " " || uang_muka == null
         ) {
 
             ongkir = 0;
             diskon = 0;
+            materai = 0;
             uang_muka = 0;
-            jenis_diskon = null;
         }
 
         let diskonRupiah;
         if (pajak == true) {
-            if (jenis_diskon != null && jenis_diskon == 1) {
-                diskonRupiah = diskon / 100 * total;
-            } else if (jenis_diskon != null && jenis_diskon == 2) {
-                diskonRupiah = diskon;
-            } else {
-                diskonRupiah = 0;
-            }
+            diskonRupiah = diskon / 100 * total;
             let totalPajak = total - diskonRupiah;
             pajak = 10 / 100 * totalPajak;
         } else {
             pajak = 0;
-            if (jenis_diskon != null && jenis_diskon == 1) {
-                diskonRupiah = diskon / 100 * total;
-            } else if (jenis_diskon != null && jenis_diskon == 2) {
-                diskonRupiah = diskon;
-            } else {
-                diskonRupiah = 0;
-            }
+            diskonRupiah = diskon / 100 * total;
         }
-
 
         let perhitungan = document.querySelector("#total_perhitungan");
 
-        hitung = parseFloat(total) + parseFloat(ongkir) + pajak - parseFloat(diskonRupiah) - parseFloat(hilang_titik);
+        hitung = parseInt(total) + parseInt(ongkir) + pajak - parseInt(materai) - parseInt(diskonRupiah) - parseInt(hilang_titik);
         let hitung2 = Math.floor(hitung);
         perhitungan.value = formatRupiah(String(hitung2));
     }
@@ -1024,17 +939,7 @@ $this->registerJs($script);
     const pajak = document.querySelector('.pajak_penjualan');
 
     diskon.addEventListener("input", (e) => {
-        setValueDataPerhitungan(ongkir.value.split('.').join(""), diskon.value, uangMuka.value, pajak.checked, jenisDiskonPenjualan.value);
-    })
-
-    jenisDiskonPenjualan.addEventListener('change', function(e) {
-        if (e.target.value == 1 || e.target.value == 2) {
-            nominalDiskonPenjualan.classList.remove('nominal_diskon');
-            setValueDataPerhitungan(ongkir.value.split('.').join(""), diskon.value, uangMuka.value, pajak.checked, e.target.value);
-        } else {
-            nominalDiskonPenjualan.classList.add('nominal_diskon');
-            setValueDataPerhitungan(ongkir.value.split('.').join(""), diskon.value, uangMuka.value, pajak.checked, null);
-        }
+        setValueDataPerhitungan(ongkir.value.split('.').join(""), diskon.value, uangMuka.value, pajak.checked, materai.value.split('.').join(""));
     })
 
     uangMuka.addEventListener("input", (e) => {
@@ -1045,15 +950,20 @@ $this->registerJs($script);
         } else(
             kasBank.classList.remove('style-kas-bank')
         )
-        setValueDataPerhitungan(ongkir.value.split('.').join(""), diskon.value, uangMuka.value, pajak.checked, jenisDiskonPenjualan.value);
+        setValueDataPerhitungan(ongkir.value.split('.').join(""), diskon.value, uangMuka.value, pajak.checked, materai.value.split('.').join(""));
+    })
+
+    materai.addEventListener("input", (e) => {
+        materai.value = formatRupiah(e.target.value);
+        setValueDataPerhitungan(ongkir.value.split('.').join(""), diskon.value, uangMuka.value, pajak.checked, materai.value.split('.').join(""));
     })
 
     ongkir.addEventListener("input", (e) => {
         ongkir.value = formatRupiah(e.target.value);
-        setValueDataPerhitungan(ongkir.value.split('.').join(""), diskon.value, uangMuka.value, pajak.checked, jenisDiskonPenjualan.value);
+        setValueDataPerhitungan(ongkir.value.split('.').join(""), diskon.value, uangMuka.value, pajak.checked, materai.value.split('.').join(""));
     })
 
     pajak.addEventListener("change", (e) => {
-        setValueDataPerhitungan(ongkir.value.split('.').join(""), diskon.value, uangMuka.value, pajak.checked, jenisDiskonPenjualan.value);
+        setValueDataPerhitungan(ongkir.value.split('.').join(""), diskon.value, uangMuka.value, pajak.checked, materai.value.split('.').join(""));
     })
 </script>

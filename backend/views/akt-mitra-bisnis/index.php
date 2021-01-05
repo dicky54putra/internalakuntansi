@@ -33,6 +33,9 @@ $this->title = 'Daftar Mitra Bisnis';
                 'label' => 'Kode',
             ],
             [
+                'attribute' => 'pemilik_bisnis',
+            ],
+            [
                 'attribute' => 'nama_mitra_bisnis',
                 'label' => 'Nama',
             ],

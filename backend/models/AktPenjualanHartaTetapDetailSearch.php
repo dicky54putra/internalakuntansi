@@ -17,9 +17,9 @@ class AktPenjualanHartaTetapDetailSearch extends AktPenjualanHartaTetapDetail
     public function rules()
     {
         return [
-            [['id_penjualan_harta_tetap_detail', 'id_penjualan_harta_tetap', 'id_pembelian_harta_tetap_detail', 'qty'], 'integer'],
+            [['id_penjualan_harta_tetap_detail', 'id_penjualan_harta_tetap', 'id_pembelian_harta_tetap_detail', 'qty', 'harga', 'total'], 'integer'],
             [['diskon'], 'number'],
-            [['keterangan', 'harga', 'total'], 'safe'],
+            [['keterangan'], 'safe'],
         ];
     }
 

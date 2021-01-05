@@ -115,7 +115,7 @@ class AktPembelianDetailController extends Controller
 
         if ($count_barang == 0) {
 
-            $model->save();
+            $model->save(false);
             Yii::$app->session->setFlash('success', [['Perhatian!', 'Data Berhasil Disimpan']]);
         } else {
             Yii::$app->session->setFlash('danger', [['Perhatian!', 'Data Barang : ' . $item->nama_item . ' Sudah Ada']]);
@@ -255,8 +255,10 @@ class AktPembelianDetailController extends Controller
         $akt_pembelian = AktPembelian::findOne($model->id_pembelian);
 
         if ($model->load(Yii::$app->request->post())) {
+
             $post_harga = Yii::$app->request->post('AktPembelianDetail')['harga'];
             $model->harga = $post_harga;
+
             if ($model->id_item_stok == $model_sebelumnya->id_item_stok) {
                 # code...
                 if ($model->qty == $model_sebelumnya->qty) {
@@ -349,8 +351,7 @@ class AktPembelianDetailController extends Controller
 
             $item_stok = AktItemStok::findOne($model->id_item_stok);
             $item = AktItem::findOne($item_stok->id_item);
-            $post_harga = Yii::$app->request->post('AktPembelianDetail')['harga'];
-            $model->harga = $post_harga;
+
             if ($model->id_item_stok == $model_sebelumnya->id_item_stok) {
                 # code...
                 $model_diskon_a = ($model->diskon > 0) ? (($model->qty * $model->harga) * $model->diskon) / 100 : 0;
@@ -400,6 +401,7 @@ class AktPembelianDetailController extends Controller
             $model->harga = $post_harga;
             if ($model->id_item_stok == $model_sebelumnya->id_item_stok) {
                 # code...
+
                 $model_diskon_a = ($model->diskon > 0) ? (($model->qty * $model->harga) * $model->diskon) / 100 : 0;
                 $model->total = ($model->qty * $model->harga) - $model_diskon_a;
                 $model->save();

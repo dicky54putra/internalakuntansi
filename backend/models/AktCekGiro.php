@@ -40,9 +40,9 @@ class AktCekGiro extends \yii\db\ActiveRecord
     {
         return [
             [['no_transaksi', 'no_cek_giro', 'tanggal_terbit', 'tanggal_effektif', 'tipe', 'in_out', 'id_bank_asal', 'id_mata_uang', 'jumlah', 'cabang_bank', 'tanggal_kliring', 'bank_kliring', 'id_penerbit'], 'required'],
-            [['tanggal_terbit', 'tanggal_effektif',  'tanggal_kliring'], 'safe'],
+            [['tanggal_terbit','tanggal_effektif',  'tanggal_kliring'], 'safe'],
             [['tipe', 'in_out', 'id_bank_asal', 'id_mata_uang', 'id_penerbit', 'id_penerima'], 'integer'],
-            [['jumlah'], 'safe'],
+            [['jumlah'], 'number'],
             [['no_transaksi', 'no_cek_giro'], 'string', 'max' => 11],
             [['cabang_bank', 'bank_kliring'], 'string', 'max' => 20],
         ];

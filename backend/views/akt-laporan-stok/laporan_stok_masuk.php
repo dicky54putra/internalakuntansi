@@ -10,7 +10,6 @@ use backend\models\AktStokMasukDetail;
 use backend\models\AktPembelianPenerimaan;
 use backend\models\AktPembelianPenerimaanDetail;
 use backend\models\AktPembelianDetail;
-use backend\models\AktPenjualanDetail;
 
 /* @var $this yii\web\View */
 /* @var $searchModel backend\models\AktItemStokSearch */
@@ -50,7 +49,7 @@ $this->title = 'Laporan Stok Masuk';
                             </td>
                             <td width="30%">
                                 <div class="form-group">
-                                    <input type="date" name="tanggal_awal" class="form-control" value="<?= (!empty($tanggal_awal)) ? $tanggal_awal : date('Y-m-d', strtotime('-30 days', strtotime(date('Y-m-d')))) ?>" required>
+                                    <input type="date" name="tanggal_awal" class="form-control" required>
                                 </div>
                             </td>
                         </tr>
@@ -63,7 +62,7 @@ $this->title = 'Laporan Stok Masuk';
                             </td>
                             <td width="30%">
                                 <div class="form-group">
-                                    <input type="date" name="tanggal_akhir" class="form-control" value="<?= (!empty($tanggal_akhir)) ? $tanggal_akhir : date('Y-m-d') ?>" required>
+                                    <input type="date" name="tanggal_akhir" class="form-control" required>
                                 </div>
                             </td>
                         </tr>
@@ -95,12 +94,9 @@ $this->title = 'Laporan Stok Masuk';
 
         </p>
         <?php
-        $query = Yii::$app->db->createCommand("SELECT id_pembelian_penerimaan as id, no_penerimaan as nomor, tanggal_penerimaan as tanggal, 'pembelian' as tipe, keterangan_pengantar as keterangan FROM akt_pembelian_penerimaan WHERE tanggal_penerimaan BETWEEN '$tanggal_awal' AND '$tanggal_akhir'
-        UNION 
-        SELECT id_stok_masuk as id, nomor_transaksi as nomor, tanggal_masuk as tanggal, 'stok masuk' as tipe, keterangan as keterangan FROM akt_stok_masuk WHERE tanggal_masuk BETWEEN '$tanggal_awal' AND '$tanggal_akhir'
-        UNION
-        SELECT id_retur_penjualan as id, no_retur_penjualan as nomor, tanggal_retur_penjualan as tanggal, 'retur penjualan' as tipe, '' as keterangan FROM akt_retur_penjualan WHERE tanggal_retur_penjualan BETWEEN '$tanggal_awal' AND '$tanggal_akhir'AND status_retur = 1")->queryAll();
-        foreach ($query as $key => $data) {
+        $query_stok_masuk = AktStokMasuk::find()->where(["BETWEEN", "tanggal_masuk", $tanggal_awal, $tanggal_akhir])->orderBy("tanggal_masuk ASC")->asArray()->all();
+        foreach ($query_stok_masuk as $key => $data) {
+            # code...
         ?>
             <div class="panel panel-primary">
                 <div class="panel-heading">
@@ -125,9 +121,9 @@ $this->title = 'Laporan Stok Masuk';
                         </thead>
                         <tbody>
                             <tr>
-                                <td><?= $data['nomor'] ?></td>
-                                <td><?= date('d/m/Y', strtotime($data['tanggal'])) ?></td>
-                                <td style="white-space: nowrap;"><?= $data['tipe'] ?></td>
+                                <td><?= $data['nomor_transaksi'] ?></td>
+                                <td><?= date('d/m/Y', strtotime($data['tanggal_masuk'])) ?></td>
+                                <td style="white-space: nowrap;"><?= ($data['tipe'] == 1) ? 'Barang Masuk' : '' ?></td>
                                 <td><?= $data['keterangan'] ?></td>
                             </tr>
                         </tbody>
@@ -149,34 +145,97 @@ $this->title = 'Laporan Stok Masuk';
                                 <tbody>
                                     <?php
                                     $no = 1;
-                                    $query_detail = Yii::$app->db->createCommand("SELECT id_pembelian_penerimaan_detail as id, id_pembelian_penerimaan as id_parent, id_pembelian_detail as to_item_stok, qty_diterima as qty, keterangan as keterangan, 'pembelian' as tipe FROM akt_pembelian_penerimaan_detail WHERE id_pembelian_penerimaan = $data[id]
-                                    UNION
-                                    SELECT id_stok_masuk_detail as id, id_stok_masuk as id_parent, id_item_stok as to_item_stok, qty as qty, '' as keterangan, 'stok masuk' as tipe FROM akt_stok_masuk_detail WHERE id_stok_masuk = $data[id]
-                                    UNION
-                                    SELECT id_retur_penjualan_detail as id, id_retur_penjualan as id_parent, id_penjualan_detail as to_item_stok, retur as qty, keterangan as keterangan, 'retur penjualan' as tipe FROM akt_retur_penjualan_detail WHERE id_retur_penjualan = $data[id]")->queryAll();
-                                    foreach ($query_detail as $qd) {
-                                        if ($qd['tipe'] == $data['tipe']) {
-                                            if ($qd['tipe'] != 'stok masuk') {
-                                                if ($qd['tipe'] == 'pembelian') {
-                                                    $id_item_stok = AktPembelianDetail::findOne($qd['to_item_stok']);
-                                                } elseif ($qd['tipe'] == 'retur penjualan') {
-                                                    $id_item_stok = AktPenjualanDetail::findOne($qd['to_item_stok']);
-                                                }
-                                                $item_stok = AktItemStok::findOne(!empty($id_item_stok->id_item_stok) ? $id_item_stok->id_item_stok : 0);
-                                            } else {
-                                                $item_stok = AktItemStok::findOne($qd['to_item_stok']);
-                                            }
-                                            $item = AktItem::findOne(!empty($item_stok->id_item) ? $item_stok->id_item : 0);
-                                            $gudang = AktGudang::findOne(!empty($item_stok->id_gudang) ? $item_stok->id_gudang : 0);
+                                    $query_stok_masuk_detail = AktStokMasukDetail::find()->where(['id_stok_masuk' => $data['id_stok_masuk']])->all();
+                                    foreach ($query_stok_masuk_detail as $key => $dataa) {
+                                        # code...
+                                        $item_stok = AktItemStok::findOne($dataa['id_item_stok']);
+                                        $item = AktItem::findOne($item_stok->id_item);
+                                        $gudang = AktGudang::findOne($item_stok->id_gudang);
                                     ?>
-                                            <tr>
-                                                <td><?= $no++ . '.' ?></td>
-                                                <td><?= (!empty($item->nama_item)) ? $item->nama_item : '' ?></td>
-                                                <td><?= $qd['qty'] ?></td>
-                                                <td><?= (!empty($item->satuan->nama_satuan)) ? $item->satuan->nama_satuan : '' ?></td>
-                                                <td><?= (!empty($gudang->nama_gudang)) ? $gudang->nama_gudang : '' ?></td>
-                                            </tr>
-                                        <?php } ?>
+                                        <tr>
+                                            <td><?= $no++ . '.' ?></td>
+                                            <td><?= $item->nama_item ?></td>
+                                            <td><?= $dataa['qty'] ?></td>
+                                            <td><?= $item->satuan->nama_satuan ?></td>
+                                            <td><?= $gudang->nama_gudang ?></td>
+                                        </tr>
+                                    <?php } ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        <?php } ?>
+        <?php
+        $query_pembelian_penerimaan = AktPembelianPenerimaan::find()->where(["BETWEEN", "tanggal_penerimaan", $tanggal_awal, $tanggal_akhir])->orderBy("tanggal_penerimaan ASC")->all();
+        foreach ($query_pembelian_penerimaan as $key => $data) {
+            # code...
+        ?>
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <style>
+                        .tabel {
+                            width: 100%;
+                        }
+
+                        .tabel th,
+                        .tabel td {
+                            padding: 3px;
+                        }
+                    </style>
+                    <table class="tabel">
+                        <thead>
+                            <tr>
+                                <th style="width: 5%;white-space: nowrap;">No Transaksi</th>
+                                <th style="width: 5%;">Tanggal</th>
+                                <th style="width: 5%;">Tipe</th>
+                                <th>Keterangan</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><?= $data->no_penerimaan ?></td>
+                                <td><?= date('d/m/Y', strtotime($data->tanggal_penerimaan)) ?></td>
+                                <td style="white-space: nowrap;"><?= 'Penerimaan Pembelian' ?></td>
+                                <td><?= $data->keterangan_pengantar ?></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="panel-body">
+                    <div class="col-md-12" style="padding: 0;">
+                        <div class="box-body">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 1%;">#</th>
+                                        <th>Nama Barang</th>
+                                        <th style="width: 5%;">Qty</th>
+                                        <th style="width: 10%;">Satuan</th>
+                                        <th style="width: 15%;">Gudang</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php
+                                    $no = 0;
+                                    $query_pembelian_penerimaan_detail = AktPembelianPenerimaanDetail::find()->where(['id_pembelian_penerimaan' => $data['id_pembelian_penerimaan']])->all();
+                                    foreach ($query_pembelian_penerimaan_detail as $key => $dataa) {
+                                        # code...
+                                        $no++;
+                                        $retVal_id_pembelian_detail = (!empty($dataa->id_pembelian_detail)) ? $dataa->id_pembelian_detail : 0;
+                                        $pembelian_detail = AktPembelianDetail::findOne($retVal_id_pembelian_detail);
+                                        $item_stok = AktItemStok::findOne($pembelian_detail->id_item_stok);
+                                        $item = AktItem::findOne($item_stok->id_item);
+                                        $gudang = AktGudang::findOne($item_stok->id_gudang);
+                                    ?>
+                                        <tr>
+                                            <td><?= $no . '.' ?></td>
+                                            <td><?= $item->nama_item ?></td>
+                                            <td><?= $dataa['qty_diterima'] ?></td>
+                                            <td><?= $item->satuan->nama_satuan ?></td>
+                                            <td><?= $gudang->nama_gudang ?></td>
+                                        </tr>
                                     <?php } ?>
                                 </tbody>
                             </table>

@@ -50,6 +50,9 @@ $this->title = "Detail Mitra Bisnis : " . $model->kode_mitra_bisnis;
                                     'label' => 'Kode',
                                 ],
                                 [
+                                    'attribute' => 'pemilik_bisnis',
+                                ],
+                                [
                                     'attribute' => 'nama_mitra_bisnis',
                                     'label' => 'Nama',
                                 ],
@@ -113,7 +116,7 @@ $this->title = "Detail Mitra Bisnis : " . $model->kode_mitra_bisnis;
                                     <!-- <li><a data-toggle="tab" href="#hutang-piutang">Hutang / Piutang</a></li> -->
                                 </ul>
 
-                                <div class="tab-content" >
+                                <div class="tab-content">
                                     <div id="alamat" class="tab-pane fade in active" style="margin-top:20px;">
                                         <p>
                                             <?= Html::a('<span class="glyphicon glyphicon-plus"></span>  Tambah Alamat', ['akt-mitra-bisnis-alamat/create', 'id' => $model->id_mitra_bisnis], ['class' => 'btn btn-success']) ?>

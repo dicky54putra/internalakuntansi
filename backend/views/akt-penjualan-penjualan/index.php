@@ -55,27 +55,7 @@ $this->title = 'Data Penjualan';
                     }
                 }
             ],
-            [
-                'attribute' => 'tanggal_estimasi',
-                'label' => 'Tanggal Estimasi Barang Dikirim',
-                'headerOptions' => ['style' => 'color:#337ab7'],
-                'filterType' => GridView::FILTER_DATE,
-                'filterWidgetOptions' => [
-                    'pluginOptions' => [
-                        'format' => 'dd-mm-yyyy',
-                        'autoclose' => true,
-                        'todayHighlight' => true,
-                    ]
-                ],
-                'value' => function ($model) {
-                    if (!empty($model->tanggal_estimasi)) {
-                        # code...
-                        return tanggal_indo($model->tanggal_estimasi, true);
-                    } else {
-                        # code...
-                    }
-                }
-            ],
+
             [
                 'attribute' => 'id_customer',
                 'value' => function ($model) {

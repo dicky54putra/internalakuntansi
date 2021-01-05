@@ -177,6 +177,7 @@ class AktPembelianSearch extends AktPembelian
         $query->andWhere('akt_pembelian.total != 0 ');
         $query->orderBy("akt_pembelian.id_pembelian desc");
 
+
         // add conditions that should always apply here
 
         $dataProvider = new ActiveDataProvider([
@@ -220,7 +221,7 @@ class AktPembelianSearch extends AktPembelian
         $query->joinWith("mata_uang");
         $query->joinWith("penagih");
         $query->where(['!=', 'akt_pembelian.status', '1']);
-        $query->andWhere(['!=', 'akt_pembelian.total', 0]);
+        // $query->andWhere(['!=', 'akt_pembelian.total', 0]);
         $query->orderBy("id_pembelian desc");
 
 

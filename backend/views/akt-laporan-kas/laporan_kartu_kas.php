@@ -43,7 +43,7 @@ $this->title = 'Laporan Kartu Kas';
                                 </td>
                                 <td width="30%">
                                     <div class="form-group">
-                                        <input type="date" name="tanggal_awal" class="form-control" required>
+                                        <input type="date" name="tanggal_awal" value="<?= (!empty($tanggal_awal)) ? $tanggal_awal : null; ?>" class="form-control" required>
                                     </div>
                                 </td>
                             </tr>
@@ -56,7 +56,7 @@ $this->title = 'Laporan Kartu Kas';
                                 </td>
                                 <td width="30%">
                                     <div class="form-group">
-                                        <input type="date" name="tanggal_akhir" class="form-control" required>
+                                        <input type="date" name="tanggal_akhir" value="<?= (!empty($tanggal_awal)) ? $tanggal_awal : null; ?>" class="form-control" required>
                                     </div>
                                 </td>
                             </tr>
@@ -82,7 +82,7 @@ $this->title = 'Laporan Kartu Kas';
                                             'options' => [
                                                 'placeholder' => 'Pilih Kas/ Bank'
                                             ],
-                                            // 'value' => (!empty($kasbank)) ? $kasbank : '',
+                                            'value' => (!empty($kasbank)) ? $kasbank : '',
                                             'pluginOptions' => [
                                                 'allowClear' => true
                                             ],
@@ -115,29 +115,8 @@ $this->title = 'Laporan Kartu Kas';
         # code...
     ?>
         <p style="font-weight: bold; font-size: 20px;">
-            <style>
-                .tabel th,
-                .tabel td {
-                    padding: 5px;
-                }
-            </style>
-            <table class="tabel">
-                <thead>
-                    <tr>
-                        <th style="width: 5%;white-space: nowrap;">Periode</th>
-                        <td>: <?= date('d/m/Y', strtotime($tanggal_awal)) . ' s/d ' . date('d/m/Y', strtotime($tanggal_akhir)) ?></td>
-                    </tr>
-                    <?php
-                    if (!empty($kasbank)) {
-                        # code...
-                    ?>
-                        <tr>
-                            <th style="width: 5%;white-space: nowrap;">Kas/Bank</th>
-                            <td>: <?= $data[$kasbank] ?></td>
-                        </tr>
-                    <?php } ?>
-                </thead>
-            </table>
+            <?= 'Periode : ' . date('d/m/Y', strtotime($tanggal_awal)) . ' s/d ' . date('d/m/Y', strtotime($tanggal_akhir)) ?>
+
         </p>
         <?php
         // $query_kas_bank = Yii::$app->db->createCommand(

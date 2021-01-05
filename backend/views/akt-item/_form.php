@@ -598,6 +598,7 @@ use yii\helpers\Utils;
                                 } else if(idSelect == '#aktitem-id_satuan' ) {
                                     $(select).append('<option value=' + data[i].id_satuan + '>' + data[i].nama_satuan + '</option>');
                                 } else if(idSelect == '#aktitem-id_mitra_bisnis' ) {
+                                    // console.log(data);
                                     $(select).append('<option value=' + data[i].id_mitra_bisnis + '>' + data[i].kode_mitra_bisnis + ' - ' + data[i].nama_mitra_bisnis + '</option>');
                                 } 
                             }
@@ -615,7 +616,6 @@ use yii\helpers\Utils;
                         })
                         .catch(err => console.log(err));
                         return data;
-
                     }
 
 
@@ -624,3 +624,10 @@ use yii\helpers\Utils;
 JS;
                 $this->registerJs($script);
                 ?>
+
+                <script>
+                    console.log("HAI");
+                    fetch(`index.php?r=akt-mitra-bisnis/get-mitra-bisnis&sort=0`)
+                        .then(res => res.json())
+                        .then(result => console.log(result));
+                </script>

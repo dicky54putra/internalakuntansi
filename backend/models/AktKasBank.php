@@ -35,11 +35,10 @@ class AktKasBank extends \yii\db\ActiveRecord
         return [
             [['kode_kas_bank', 'keterangan', 'status_aktif'], 'required'],
             [['keterangan'], 'string'],
-            [['id_mata_uang', 'total_giro_keluar', 'id_akun', 'status_aktif'], 'integer'],
+            [['id_mata_uang', 'saldo', 'total_giro_keluar', 'id_akun', 'status_aktif'], 'integer'],
             [['kode_kas_bank', 'jenis'], 'string', 'max' => 123],
             [['id_mata_uang'], 'exist', 'skipOnError' => true, 'targetClass' => AktMataUang::className(), 'targetAttribute' => ['id_mata_uang' => 'id_mata_uang']],
             [['id_akun'], 'exist', 'skipOnError' => true, 'targetClass' => AktAkun::className(), 'targetAttribute' => ['id_akun' => 'id_akun']],
-            [['saldo'], 'safe']
         ];
     }
 

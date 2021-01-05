@@ -11,12 +11,13 @@ use backend\models\Log;
 
 use backend\models\AktAkun;
 use backend\models\AktKasBank;
-use backend\models\Setting;
 use backend\models\AktPenjualan;
 use yii\helpers\ArrayHelper;
+
 use backend\models\AktPembelian;
 use backend\models\AktPembelianHartaTetap;
 use backend\models\AktPembelianHartaTetapDetail;
+use backend\models\Setting;
 
 /**
  * Site controller
@@ -60,7 +61,6 @@ class SiteController extends Controller
         return [
             'error' => [
                 'class' => 'yii\web\ErrorAction',
-                'view' => '@app/views/site/error.php',
             ],
         ];
     }

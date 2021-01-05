@@ -13,6 +13,7 @@ use yii\widgets\ActiveForm;
 use kartik\select2\Select2;
 use kartik\depdrop\DepDrop;
 use yii\helpers\Url;
+use yii\helpers\Utils;
 
 /* @var $this yii\web\View */
 /* @var $model backend\models\AktPenjualan */
@@ -35,7 +36,17 @@ $label = $model->total < 0 ? 'Total Yang Perlu Dikembalikan' : "Total Yang Belum
 
     <p>
         <?= Html::a('<span class="glyphicon glyphicon-circle-arrow-left"></span> Kembali', ['index'], ['class' => 'btn btn-warning']) ?>
-        <?= Html::a('<span class="glyphicon glyphicon-print"></span> Cetak Invoice', ['cetak-invoice', 'id' => $model->id_pembelian], ['class' => 'btn btn-default', 'target' => '_blank']) ?>
+        <?php if (Utils::getIdLogin() == 11) { ?>
+            <?= Html::a(' Post To Jurnal Umum', ['post-to-jurnal-umum', 'id' => $model->id_pembelian], [
+                'class' => 'btn btn-info',
+                'data' => [
+                    'method' => 'post',
+                ],
+            ]) ?>
+
+        <?php } ?>
+        <?= Html::a('<span class="glyphicon glyphicon-print"></span> Cetak Invoice PPN', ['cetak-invoice-ppn', 'id' => $model->id_pembelian], ['class' => 'btn btn-default', 'target' => '_blank']) ?>
+        <?= Html::a('<span class="glyphicon glyphicon-print"></span> Cetak Invoice Non PPN', ['cetak-invoice-non-ppn', 'id' => $model->id_pembelian], ['class' => 'btn btn-default', 'target' => '_blank']) ?>
     </p>
 
     <div class="panel panel-primary">
@@ -309,6 +320,15 @@ $label = $model->total < 0 ? 'Total Yang Perlu Dikembalikan' : "Total Yang Belum
                                                     );
                                                 }
 
+                                                ?>
+                                                <?php
+                                                //  $form->field($model_pembayaran_biaya, 'nominal')->widget(
+                                                //     \yii\widgets\MaskedInput::className(),
+                                                //     [
+                                                //         'options' => ['autocomplete' => 'off'],
+                                                //         'clientOptions' => ['alias' => 'decimal', 'groupSeparator' => '.', 'autoGroup' => true, 'removeMaskOnSubmit' => true, 'rightAlign' => false, 'min' => 0]
+                                                //     ]
+                                                // ); 
                                                 ?>
 
                                                 <?= $form->field($model_pembayaran_biaya, 'keterangan')->textarea(['rows' => 4]) ?>

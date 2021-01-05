@@ -18,7 +18,7 @@ class AktBomDetailBbSearch extends AktBomDetailBb
     {
         return [
             [['id_bom_detail_bb', 'id_bom', 'id_item', 'qty'], 'integer'],
-            [['harga'], 'safe'],
+            [['harga'], 'number'],
             [['keterangan'], 'safe'],
         ];
     }

@@ -32,9 +32,9 @@ class AktPenjualanDetail extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['id_penjualan', 'id_item_stok', 'qty', 'harga', 'total', 'id_item_harga_jual'], 'required'],
-            [['id_penjualan', 'id_item_stok', 'jenis_diskon'], 'integer'],
-            [['diskon', 'total'], 'safe'],
+            [['id_penjualan', 'id_item_stok', 'qty', 'harga', 'total'], 'required'],
+            [['id_penjualan', 'id_item_stok', 'total'], 'integer'],
+            [['diskon'], 'safe'],
             [['keterangan'], 'string'],
             [['qty'], 'integer', 'min' => 1],
         ];
@@ -51,7 +51,6 @@ class AktPenjualanDetail extends \yii\db\ActiveRecord
             'id_item_stok' => 'Barang',
             'qty' => 'Qty',
             'harga' => 'Harga',
-            'id_item_harga_jual' => 'Level Harga',
             'diskon' => 'Diskon %',
             'total' => 'Total',
             'keterangan' => 'Keterangan',

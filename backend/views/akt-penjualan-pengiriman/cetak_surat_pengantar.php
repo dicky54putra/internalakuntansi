@@ -138,24 +138,21 @@ use backend\models\AktSatuan;
             </tr>
         </thead>
     </table>
-    <table class="table1" style="margin-top: 30px;">
+    <table class="table3">
         <thead>
-            <tr align="left">
-                <th style="width: 30%;white-space: nowrap;">Dikirim Ke : </th>
-                <th rowspan="4" style="vertical-align: middle;text-align: center;"></th>
-                <th style="width: 15%;white-space: nowrap;">Pengemudi </th>
-                <th style="width: 10%;white-space: nowrap;">: </th>
+            <tr>
+                <th colspan="4">Dikirim Ke :</th>
             </tr>
             <tr>
-                <?php $alamat = Yii::$app->db->createCommand("SELECT akt_mitra_bisnis_alamat.alamat_lengkap FROM akt_mitra_bisnis_alamat WHERE id_mitra_bisnis_alamat = '$model->id_mitra_bisnis_alamat'")->queryScalar(); ?>
-                <th style="white-space: nowrap;"><?= $model_penjualan->customer->nama_mitra_bisnis ?>
-                    <br />
-                    <span style="max-width: 100px;"> <?= $alamat ?> </span>
-                </th>
-                <th style="white-space: nowrap;">No. Unit</th>
-                <th style="white-space: nowrap;">: </th>
+                <th class="kiri_nomor_tanggal"><?= $model_penjualan->customer->nama_mitra_bisnis ?></th>
+                <th rowspan="2">&nbsp;</th>
+                <th class="nomor_tanggal" style="text-align: left;">Pengemudi</th>
+                <th class="titik2" colspan="2">: &nbsp;</th>
             </tr>
             <tr>
+                <th class="kiri_nomor_tanggal"><?= (!empty($model->mitra_bisnis_alamat->kota->nama_kota)) ? $model->mitra_bisnis_alamat->kota->nama_kota : '' ?></th>
+                <th class="nomor_tanggal" style="text-align: left;">No. Unit</th>
+                <th class="titik2" colspan="2">: &nbsp;</th>
             </tr>
         </thead>
     </table>
@@ -164,16 +161,18 @@ use backend\models\AktSatuan;
         <thead>
             <tr>
                 <th style="width: 1%;">No</th>
-                <th style="width: 10%;white-space: nowrap;">Kode Barang</th>
+                <th style="width: 10%;white-space: nowrap;">Nomor Penjualan</th>
                 <th>Nama Barang</th>
-                <th style="width: 10%;white-space: nowrap;">Qty Dikirim</th>
+                <th style="width: 10%;white-space: nowrap;">Qty</th>
                 <th style="width: 10%;white-space: nowrap;">Satuan</th>
+                <th style="width: 10%;white-space: nowrap;">Bobot</th>
                 <!-- <th style="width: 10%;white-space: nowrap;">Bobot</th> -->
             </tr>
         </thead>
         <tbody>
             <?php
             $angka = 0;
+            $total_berat = 0;
             $totalan_qty_dikirim = 0;
             $totalan_bobot = 0;
             $penjualan_pengiriman_detail = AktPenjualanPengirimanDetail::findAll(['id_penjualan_pengiriman' => $model->id_penjualan_pengiriman]);
@@ -189,21 +188,36 @@ use backend\models\AktSatuan;
                 $item = AktItem::findOne($retVal_id_item);
 
                 $totalan_qty_dikirim += $dataa->qty_dikirim;
+                $total_berat += $item->berat_item;
             ?>
                 <tr>
                     <td style="border-left: 1px solid #000000;"><?= $angka . '.' ?></td>
-                    <td><?= (!empty($item->kode_item)) ? $item->kode_item : '' ?></td>
-                    <td><?= (!empty($item->nama_item)) ? $item->nama_item : '' ?></td>
-                    <td style="text-align: center;"><?= $dataa->qty_dikirim ?></td>
-                    <td style="text-align: center;border-right: 1px solid #000000;"><?= (!empty($item->satuan->nama_satuan)) ? $item->satuan->nama_satuan : '' ?></td>
+                    <td><?= $model_penjualan->no_penjualan ?></td>
+                    <td style="text-align: left;"><?= (!empty($item->nama_item)) ? $item->nama_item : '' ?></td>
+                    <td style="text-align: right;"><?= $dataa->qty_dikirim ?></td>
+                    <td style="text-align: left;"><?= (!empty($item->satuan->nama_satuan)) ? $item->satuan->nama_satuan : '' ?></td>
+                    <td style="text-align: right;border-right: 1px solid #000000;"><?= $dataa->qty_dikirim * $item->berat_item ?></td>
+                </tr>
+            <?php } ?>
+            <?php
+            for ($i = $count_penjualan_pengiriman_detail; $i < 10; $i++) {
+                # code...
+            ?>
+                <tr>
+                    <td style="border-left: 1px solid #000000;">&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td style="border-right: 1px solid #000000;">&nbsp;</td>
                 </tr>
             <?php } ?>
         </tbody>
         <tfoot>
-            <tr style="border-left: 1px solid #000000;border-bottom: 1px solid #000000;">
-                <td colspan="2"></td>
-                <td style="float: right;"><b>Jumlah Barang</b></td>
+            <tr>
+                <td colspan="3" style="border-left: 1px solid #000000;border-bottom: 1px solid #000000;"><b>Jumlah Barang</b></td>
                 <td style="text-align: center;border-bottom: 1px solid #000000;"><b><?= number_format($totalan_qty_dikirim) ?></b></td>
+                <td style="text-align: center;border-bottom: 1px solid #000000;"><b><?= number_format($totalan_qty_dikirim * $total_berat) ?></b></td>
                 <td style="text-align: center;border-bottom: 1px solid #000000;border-right: 1px solid #000000;"></td>
             </tr>
         </tfoot>

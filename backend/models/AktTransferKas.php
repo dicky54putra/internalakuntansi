@@ -34,7 +34,8 @@ class AktTransferKas extends \yii\db\ActiveRecord
         return [
             [['no_transfer_kas', 'tanggal', 'id_asal_kas', 'id_tujuan_kas', 'jumlah1'], 'required'],
             [['id_asal_kas', 'id_tujuan_kas'], 'integer'],
-            [['tanggal', 'jumlah2'], 'safe'],
+            [['tanggal'], 'safe'],
+            [['jumlah2'], 'number'],
             [['keterangan'], 'string'],
         ];
     }

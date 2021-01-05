@@ -44,8 +44,8 @@ class AktPembelian extends \yii\db\ActiveRecord
     {
         return [
             [['id_customer',], 'required'],
-            [['id_customer', 'id_mata_uang', 'pajak', 'jenis_bayar', 'jatuh_tempo', 'id_penagih', 'status', 'id_kas_bank'], 'integer'],
-            [['tanggal_pembelian', 'tanggal_faktur_pembelian', 'tanggal_tempo', 'tanggal_order_pembelian', 'tanggal_penerimaan', 'tanggal_estimasi', 'uang_muka', 'materai', 'diskon', 'total'], 'safe'],
+            [['id_customer', 'id_mata_uang', 'pajak', 'total', 'jenis_bayar', 'jatuh_tempo', 'id_penagih', 'status', 'id_kas_bank'], 'integer'],
+            [['tanggal_pembelian', 'tanggal_faktur_pembelian', 'tanggal_tempo', 'tanggal_order_pembelian', 'tanggal_penerimaan', 'tanggal_estimasi', 'uang_muka', 'materai', 'diskon'], 'safe'],
             [['no_order_pembelian', 'no_pembelian', 'no_faktur_pembelian', 'no_penerimaan', 'pengantar', 'penerima', 'no_spb'], 'string', 'max' => 255],
             [['keterangan_penerimaan'], 'string'],
         ];
@@ -90,16 +90,14 @@ class AktPembelian extends \yii\db\ActiveRecord
         return $this->hasOne(AktMataUang::className(), ['id_mata_uang' => 'id_mata_uang']);
     }
 
-    public function getpembayaran_biaya()
-    {
-        return $this->hasOne(AktPembayaranBiaya::className(), ['id_pembelian' => 'id_pembelian']);
-    }
-
     public function getkas_bank()
     {
         return $this->hasOne(AktKasBank::className(), ['id_kas_bank' => 'id_kas_bank']);
     }
-
+    public function getpembayaran_biaya()
+    {
+        return $this->hasOne(AktPembayaranBiaya::className(), ['id_pembelian' => 'id_pembelian']);
+    }
     public function getpenagih()
     {
         return $this->hasOne(AktMitraBisnis::className(), ['id_mitra_bisnis' => 'id_penagih'])->from(["penagih" => AktMitraBisnis::tableName()]);
@@ -194,7 +192,7 @@ class AktPembelian extends \yii\db\ActiveRecord
                 ->all(),
             'id_item_stok',
             function ($model) {
-                return 'Nama Barang : ' . $model['nama_item'] . ', Satuan : ' . $model['nama_satuan'] . ', Gudang : ' . $model['nama_gudang'] . ', Stok : ' . $model['qty'];
+                return $model['nama_item'] . ', Satuan : ' . $model['nama_satuan'] . ', Gudang : ' . $model['nama_gudang'] . ', Stok : ' . $model['qty'];
             }
         );
 

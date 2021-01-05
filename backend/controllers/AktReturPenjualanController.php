@@ -140,10 +140,12 @@ class AktReturPenjualanController extends Controller
         $no_retur_penjualan = Utils::getNomorTransaksi($model, 'RP', 'no_retur_penjualan', 'no_retur_penjualan');
         $model->no_retur_penjualan = $no_retur_penjualan;
 
+        // $subQuery = AktReturPenjualan::find()->select('id_penjualan');
         $data_penjualan = ArrayHelper::map(
             AktPenjualan::find()
                 ->where(["=", 'status', 4])
                 ->andWhere(['IS NOT', 'no_penjualan', NULL])
+                // ->andWhere(['NOT IN', 'id_penjualan', $subQuery])
                 ->all(),
             'id_penjualan',
             'no_penjualan'
@@ -175,10 +177,12 @@ class AktReturPenjualanController extends Controller
     {
         $model = $this->findModel($id);
 
+        // $subQuery = AktReturPenjualan::find()->select('id_penjualan');
         $data_penjualan = ArrayHelper::map(
             AktPenjualan::find()
                 ->where(["=", 'status', 4])
                 ->andWhere(['IS NOT', 'no_penjualan', NULL])
+                // ->andWhere(['NOT IN', 'id_penjualan', $subQuery])
                 ->all(),
             'id_penjualan',
             'no_penjualan'
@@ -261,15 +265,43 @@ class AktReturPenjualanController extends Controller
 
             $item_stok->save(false);
 
+            // cek diskon per item 
 
-            $diskon_pembelian = $penjualan_detail->diskon == NULL ? 0 : $penjualan_detail->diskon;
-            $diskon = $diskon_pembelian / 100 * $penjualan_detail['harga'];
-            $harga_per_item = $penjualan_detail['harga'] - $diskon;
-            $diskon_keseluruhan = $model_penjualan->diskon / 100 * $harga_per_item;
+            if ($penjualan_detail->jenis_diskon != NULL) {
 
-            $harga_diskon_keseluruhan = $harga_per_item - $diskon_keseluruhan;
+                if ($penjualan_detail->jenis_diskon == 1) { // diskon persen
 
-            $total = $harga_diskon_keseluruhan * $data['retur'];
+                    $diskon = $penjualan_detail->diskon / 100 * $penjualan_detail['harga'];
+                    $harga_per_item = $penjualan_detail['harga'] - $diskon;
+                    $diskon_keseluruhan = $model_penjualan->diskon === NULL ? 0 : $model_penjualan->diskon / 100 * $harga_per_item;
+
+                    $harga_diskon_keseluruhan = $harga_per_item - $diskon_keseluruhan;
+                    $total = $harga_diskon_keseluruhan * $data['retur'];
+                } elseif ($penjualan_detail->jenis_diskon == 2) { // Diskon Bertingkat
+
+                    $total_akhir = $penjualan_detail['harga'] * $data['retur'];
+                    $total_pertama = $total_akhir - ($penjualan_detail['diskon'] / 100 * $total_akhir);
+                    $total_kedua = $total_pertama - ($penjualan_detail['diskon2'] / 100 * $total_pertama);
+
+                    $total_ketiga = $total_kedua - ($penjualan_detail['diskon3'] / 100 * $total_kedua);
+                    $total_keempat = $total_ketiga - ($penjualan_detail['diskon4'] / 100 * $total_ketiga);
+                    $total_kelima = $total_keempat - ($penjualan_detail['diskon5'] / 100 * $total_keempat);
+
+
+                    $diskon_keseluruhan = $model_penjualan->diskon == NULL ?  0 : $model_penjualan->diskon / 100 * $total_kelima;
+                    $total = $total_kelima - $diskon_keseluruhan;
+                } elseif ($penjualan_detail->jenis_diskon == 3) { // Diskon Nominal
+
+                    $harga_per_item = $penjualan_detail['total'] / $penjualan_detail['qty'];
+                    $diskon_keseluruhan = $model_penjualan->diskon == NULL ? 0 : $model_penjualan->diskon / 100 * $harga_per_item;
+                    $harga_diskon_keseluruhan = $harga_per_item - $diskon_keseluruhan;
+                    $total = $harga_diskon_keseluruhan * $data['retur'];
+                }
+            } else {
+                $diskon_keseluruhan = $model_penjualan->diskon == NULL ? 0 : $model_penjualan->diskon / 100 * $penjualan_detail['harga'];
+                $total = ($penjualan_detail['harga'] - $diskon_keseluruhan)  *  $data['retur'];
+            }
+
             $total_harga_semua_retur += $total;
         }
 
@@ -460,7 +492,6 @@ class AktReturPenjualanController extends Controller
         $mPDF->Output();
         exit();
     }
-
 
     public function actionGetJenisPembayaran($id)
     {

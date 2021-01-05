@@ -47,8 +47,18 @@ class LoginForm extends \yii\db\ActiveRecord
     {
         if ($this->validate()) {
 
+            // Dijalankan saat maintenance, comment setelah maintenance
+            // $user = $this->getUser();
+            // $id_login =  $user['id_login'];
+            // if($id_login != 11) {
+            //     Yii::$app->session->setFlash('danger', '<center>"Mohon Maaf, Sedang kami maintenance"</center>');
+            // } else {
+            //     return Yii::$app->user->login($this->getUser(), 0);
+            // }
 
-            return Yii::$app->user->login($this->getUser(), 0);
+            // Uncommnet ini seteleah selesai maintenance
+            return Yii::$app->user->login($this->getUser(), 0); 
+
         }
         return false;
     }

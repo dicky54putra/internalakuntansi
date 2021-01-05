@@ -121,10 +121,13 @@ class AktReturPembelianController extends Controller
 
         $kode = Utils::getNomorTransaksi($model, 'RB', 'no_retur_pembelian', 'no_retur_pembelian');
         $model->no_retur_pembelian = $kode;
+        // $subQuery = AktReturPembelian::find()->select('id_pembelian');
+
         $data_penerimaan = ArrayHelper::map(
             AktPembelian::find()
                 ->where(["=", 'status', 4])
                 ->andWhere(['IS NOT', 'no_pembelian', NULL])
+                // ->andWhere(['NOT IN', 'id_pembelian', $subQuery])
                 ->all(),
             'id_pembelian',
             'no_pembelian'
@@ -172,10 +175,12 @@ class AktReturPembelianController extends Controller
     {
         $model = $this->findModel($id);
 
+        $subQuery = AktReturPembelian::find()->select('id_pembelian');
         $data_penerimaan = ArrayHelper::map(
             AktPembelian::find()
                 ->where(["=", 'status', 4])
                 ->andWhere(['IS NOT', 'no_pembelian', NULL])
+                // ->andWhere(['NOT IN', 'id_pembelian', $subQuery])
                 ->all(),
             'id_pembelian',
             'no_pembelian'
@@ -265,7 +270,7 @@ class AktReturPembelianController extends Controller
             $diskon_pembelian = $pembelian_detail->diskon == NULL ? 0 : $pembelian_detail->diskon;
             $diskon = $diskon_pembelian / 100 * $pembelian_detail['harga'];
             $harga_per_item = $pembelian_detail['harga'] - $diskon;
-            $diskon_keseluruhan = $model_pembelian->diskon / 100 * $harga_per_item;
+            $diskon_keseluruhan = $model_pembelian->diskon == NULL ? 0 : $model_pembelian->diskon / 100 * $harga_per_item;
 
             $harga_diskon_keseluruhan = $harga_per_item - $diskon_keseluruhan;
 
@@ -365,7 +370,7 @@ class AktReturPembelianController extends Controller
         $history_transaksi->save(false);
 
 
-        $model->tanggal_approve = date("Y-m-d h:i:s");
+        $model->tanggal_approve = date("Y-m-d h:i:sa");
         $model->id_login = Yii::$app->user->identity->id_login;
         $model->status_retur = 2;
         $model->total = $hutang_usaha;

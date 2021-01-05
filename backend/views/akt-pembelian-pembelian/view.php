@@ -119,6 +119,16 @@ $count_query_detail = AktPembelianDetail::find()->where(['id_pembelian' => $mode
             }
         }
         ?>
+
+        <?php  if($id_login == 11) { ?>
+        <?= Html::a(' Post To Jurnal Umum', ['post-to-jurnal-umum', 'id' => $model->id_pembelian], [
+            'class' => 'btn btn-info',
+            'data' => [
+                'method' => 'post',
+            ],
+        ]) ?>
+
+        <?php } ?>
         </p>
 
         <div class="panel panel-primary">
@@ -165,24 +175,6 @@ $count_query_detail = AktPembelianDetail::find()->where(['id_pembelian' => $mode
                                                     return tanggal_indo($model->tanggal_faktur_pembelian, true);
                                                 } else {
                                                     # code...
-                                                }
-                                            }
-                                        ],
-                                        [
-                                            'attribute' => 'tanggal_estimasi',
-                                            'label' => 'Tanggal Estimasi Barang Diterima',
-                                            'filterWidgetOptions' => [
-                                                'pluginOptions' => [
-                                                    'format' => 'dd-mm-yyyy',
-                                                    'autoclose' => true,
-                                                    'todayHighlight' => true,
-                                                ]
-                                            ],
-                                            'value' => function ($model) {
-                                                if ($model->tanggal_estimasi != null) {
-                                                    return tanggal_indo($model->tanggal_estimasi, true);
-                                                } else {
-                                                    return null;
                                                 }
                                             }
                                         ],

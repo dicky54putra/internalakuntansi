@@ -50,22 +50,10 @@ use yii\helpers\Url;
                             <?= $form->field($model, 'harga')->textInput(['maxlength' => true, 'autocomplete' => 'off', 'id' => 'harga']) ?>
 
                         </div>
-                        <style>
-                            .nominal_diskon {
-                                display: none;
-                            }
-                        </style>
-
                         <div class="col-md-6">
-                            <?= $form->field($model, 'jenis_diskon')->dropDownList(
-                                array(1 => "Persen %", 2 => "Rupiah Rp."),
-                                [
-                                    'prompt' => 'Pilih Jenis Diskon',
-                                ]
-                            ) ?>
-                            <div class="nominal_diskon" id="nominal_diskon">
-                                <?= $form->field($model, 'diskon')->textInput(['autocomplete' => 'off', 'id' => 'diskon-floating', 'pattern' => '[+-]?([0-9]*[.])?[0-9]+']) ?>
-                            </div>
+
+                            <?= $form->field($model, 'diskon')->textInput(['autocomplete' => 'off']) ?>
+
                             <?= $form->field($model, 'keterangan')->textarea(['rows' => 5]) ?>
 
                         </div>
@@ -86,35 +74,6 @@ use yii\helpers\Url;
 
 <?php
 $script = <<< JS
-const nominalDiskon = document.querySelector("#nominal_diskon");
-const jenisDiskon = document.querySelector("#aktpenjualandetail-jenis_diskon");
-console.log(jenisDiskon.value);
-if(jenisDiskon.value == '' ) {
-    nominalDiskon.classList.add('nominal_diskon');
-} else {
-    nominalDiskon.classList.remove('nominal_diskon');
-}
-
-jenisDiskon.addEventListener('change', function(e) {
-    if (e.target.value == 1 || e.target.value == 2) {
-        nominalDiskon.classList.remove('nominal_diskon');
-    } else {
-        nominalDiskon.classList.add('nominal_diskon');
-    }
-})
-
-const elements = document.querySelectorAll('#diskon-floating');
-    for (var i = 0; i < elements.length; i++) {
-        elements[i].oninvalid = function(e) {
-            e.target.setCustomValidity("");
-            if (!e.target.validity.valid) {
-                e.target.setCustomValidity("Diskon hanya menerima inputan angka dan titik");
-            }
-        };
-        elements[i].oninput = function(e) {
-            e.target.setCustomValidity("");
-        };
-    }
 
 let harga = document.querySelector('#harga');
 harga.addEventListener('keyup', function(e){

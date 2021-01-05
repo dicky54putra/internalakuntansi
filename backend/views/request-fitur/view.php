@@ -95,7 +95,7 @@ $this->params['breadcrumbs'][] = $this->title;
         foreach ($foto as $data)
         {
             echo "<div class='col-md-6'>";
-            echo "<a href='/backend/web/upload/".$data->foto."' target='_blank'><img src='/backend/web/upload/".$data->foto."' width='150'></a><br><a href='index.php?r=request-fitur/view&id=".$model->id_request_fitur."&id_hapus=".$data->id_foto."' onclick=\"return confirm('Anda yakin ingin menghapus?')\"><img src='images/hapus.png' width='32'></a>";
+            echo "<a href='/cvajm/backend/web/upload/".$data->foto."' target='_blank'><img src='/cvajm/backend/web/upload/".$data->foto."' width='150'></a><br><a href='index.php?r=request-fitur/view&id=".$model->id_request_fitur."&id_hapus=".$data->id_foto."' onclick=\"return confirm('Anda yakin ingin menghapus?')\"><img src='images/hapus.png' width='32'></a>";
             echo "</div>";
         }
         

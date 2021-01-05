@@ -59,7 +59,6 @@ $this->title = 'Data pembelian';
             ],
             [
                 'attribute' => 'tanggal_estimasi',
-                'label' => 'Tanggal Estimasi Barang Diterima',
                 'headerOptions' => ['style' => 'color:#337ab7'],
                 'filterType' => GridView::FILTER_DATE,
                 'filterWidgetOptions' => [

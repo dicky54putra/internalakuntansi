@@ -1,6 +1,5 @@
 <?php
 
-use backend\models\AktAkun;
 use yii\helpers\Html;
 use kartik\grid\GridView;
 
@@ -18,7 +17,6 @@ $this->title = 'Laporan Daftar Akun';
 
     <p>
         <?= Html::a('<span class="glyphicon glyphicon-circle-arrow-left"></span> Kembali', ['index'], ['class' => 'btn btn-warning']) ?>
-        <?= Html::a('<span class="glyphicon glyphicon-print"></span> Cetak', ['cetak-laporan-daftar-akun'], ['class' => 'btn btn-default', 'target' => '_blank']) ?>
     </p>
 
     <?= GridView::widget([
@@ -70,53 +68,12 @@ $this->title = 'Laporan Daftar Akun';
             ],
             'kode_akun',
             'nama_akun',
-            [
-                'attribute' => 'header',
-                'filter' => array(
-                    1 => 'Header',
-                    0 => 'Bukan Header',
-                ),
-                'format' => 'raw',
-                'value' => function ($model) {
-                    if ($model->header == 1) {
-                        return '<input type="checkbox" checked disabled class="checkbox">';
-                    } else {
-                        return '<input type="checkbox" disabled class="checkbox">';;
-                    }
-                }
-            ],
-            [
-                'attribute' => 'parent',
-                'value' => function ($model) {
-                    if (!empty($model->parent)) {
-                        $akt_akun = AktAkun::findOne($model->parent);
-                        return $akt_akun->nama_akun;
-                    } else {
-                        return null;
-                    }
-                }
-            ],
-            [
-                'attribute' => 'klasifikasi',
-                'value' => function ($model) {
-                    return $model->akt_klasifikasi->klasifikasi;
-                }
-            ],
-            [
-                'attribute' => 'saldo_normal',
-                'format' => 'raw',
-                'filter' => array(
-                    1 => 'Debet',
-                    2 => 'Kredit',
-                ),
-                'value' => function ($model) {
-                    if ($model->saldo_normal == 1) {
-                        return 'Debet';
-                    } else if ($model->saldo_normal == 2) {
-                        return 'Kredit';
-                    }
-                }
-            ],
+            // 'saldo_akun',
+            // 'header',
+            // 'parent',
+            // 'jenis',
+            // 'klasifikasi',
+            // 'status_aktif',
 
         ],
         'containerOptions' => ['style' => 'overflow: auto'], // only set when $responsive = false

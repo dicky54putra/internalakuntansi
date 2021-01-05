@@ -39,8 +39,8 @@ class AktPembelianHartaTetap extends \yii\db\ActiveRecord
     {
         return [
             [['no_pembelian_harta_tetap', 'tanggal', 'id_mata_uang', 'id_supplier', 'status', 'jenis_bayar'], 'required'],
-            [['termin', 'id_kas_bank', 'jatuh_tempo', 'id_supplier', 'id_mata_uang', 'pajak',  'status', 'id_login',], 'integer'],
-            [['tanggal', 'tanggal_tempo', 'uang_muka', 'tanggal_approve', 'ongkir', 'materai', 'diskon'], 'safe'],
+            [['termin', 'id_kas_bank', 'jatuh_tempo', 'id_supplier', 'id_mata_uang', 'pajak',  'status', 'id_login'], 'integer'],
+            [['tanggal', 'tanggal_tempo', 'uang_muka', 'tanggal_approve', 'ongkir', 'materai', 'diskon', 'total'], 'safe'],
             [['keterangan'], 'string'],
         ];
     }

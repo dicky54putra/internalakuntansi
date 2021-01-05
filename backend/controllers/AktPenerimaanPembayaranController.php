@@ -13,17 +13,17 @@ use yii\filters\VerbFilter;
 use backend\models\AktKasBank;
 use backend\models\AktPenjualan;
 use backend\models\AktPenjualanSearch;
-use backend\models\AktReturPenjualan;
 use backend\models\AktJurnalUmum;
 use backend\models\AktJurnalUmumDetail;
+use backend\models\AktReturPenjualan;
 use backend\models\JurnalTransaksiDetail;
 use backend\models\AktAkun;
-use backend\models\Setting;
 use backend\models\AktPenjualanHartaTetap;
 use yii\helpers\ArrayHelper;
 use backend\models\JurnalTransaksi;
 use backend\models\AktHistoryTransaksi;
 use backend\models\AktPenjualanHartaTetapSearch;
+use backend\models\Setting;
 
 /**
  * AktPenerimaanPembayaranController implements the CRUD actions for AktPenerimaanPembayaran model.
@@ -136,7 +136,7 @@ class AktPenerimaanPembayaranController extends Controller
             }
 
             $jurnal_umum->no_jurnal_umum = $no_jurnal_umum;
-            $jurnal_umum->tanggal = $model->tanggal_penerimaan_pembayaran;
+            $jurnal_umum->tanggal = $model_tanggal_penerimaan_pembayaran;
             $jurnal_umum->tipe = 1;
             $jurnal_umum->keterangan = 'Penerimaan Biaya : ' . $model2->no_penjualan;
             $jurnal_umum->save(false);
@@ -152,14 +152,14 @@ class AktPenerimaanPembayaranController extends Controller
                     $akun = AktAkun::findOne($jurnal->id_akun);
                     $jurnal_umum_detail->id_jurnal_umum = $jurnal_umum->id_jurnal_umum;
                     $jurnal_umum_detail->id_akun = $jurnal->id_akun;
-                    if ($akun->nama_akun == 'Piutang Usaha' && $jurnal->tipe == 'D') {
+                    if (strtolower($akun->nama_akun) == 'piutang usaha' && $jurnal->tipe == 'D') {
                         $jurnal_umum_detail->debit = $model_nominal;
                         if ($akun->saldo_normal == 1) {
                             $akun->saldo_akun = $akun->saldo_akun + $model_nominal;
                         } else {
                             $akun->saldo_akun = $akun->saldo_akun - $model_nominal;
                         }
-                    } else if ($akun->nama_akun == 'Piutang Usaha' && $jurnal->tipe == 'K') {
+                    } else if (strtolower($akun->nama_akun) == 'piutang usaha' && $jurnal->tipe == 'K') {
                         $jurnal_umum_detail->kredit = $model_nominal;
                         if ($akun->saldo_normal == 1) {
 
@@ -167,14 +167,14 @@ class AktPenerimaanPembayaranController extends Controller
                         } else {
                             $akun->saldo_akun = $akun->saldo_akun + $model_nominal;
                         }
-                    } else if ($akun->nama_akun == 'kas' && $jurnal->tipe == 'D') {
+                    } else if (strtolower($akun->nama_akun) == 'kas' && $jurnal->tipe == 'D') {
                         $jurnal_umum_detail->debit = $model_nominal;
                         if ($akun->saldo_normal == 1) {
                             $cek_kas->saldo = $cek_kas->saldo + $model_nominal;
                         } else {
                             $cek_kas->saldo = $cek_kas->saldo - $model_nominal;
                         }
-                    } else if ($akun->nama_akun == 'kas' && $jurnal->tipe == 'K') {
+                    } else if (strtolower($akun->nama_akun) == 'kas' && $jurnal->tipe == 'K') {
                         $jurnal_umum_detail->kredit = $model_nominal;
                         if ($akun->saldo_normal == 1) {
                             $cek_kas->saldo = $cek_kas->saldo - $model_nominal;
@@ -186,7 +186,7 @@ class AktPenerimaanPembayaranController extends Controller
                     $akun->save(false);
                     $jurnal_umum_detail->save(false);
                     $cek_kas->save(false);
-                    if ($akun->nama_akun == 'kas') {
+                    if (strtolower($akun->nama_akun) == 'kas') {
                         $history_transaksi2 = new AktHistoryTransaksi();
                         $history_transaksi2->nama_tabel = 'akt_kas_bank';
                         $history_transaksi2->id_tabel = $model_id_kas_bank;
@@ -201,14 +201,14 @@ class AktPenerimaanPembayaranController extends Controller
                     $akun = AktAkun::findOne($jurnal->id_akun);
                     $jurnal_umum_detail->id_jurnal_umum = $jurnal_umum->id_jurnal_umum;
                     $jurnal_umum_detail->id_akun = $jurnal->id_akun;
-                    if ($akun->nama_akun == 'Piutang Usaha' && $jurnal->tipe == 'D') {
+                    if (strtolower($akun->nama_akun) == 'piutang usaha' && $jurnal->tipe == 'D') {
                         $jurnal_umum_detail->debit = $model_nominal;
                         if ($akun->saldo_normal == 1) {
                             $akun->saldo_akun = $akun->saldo_akun + $model_nominal;
                         } else {
                             $akun->saldo_akun = $akun->saldo_akun - $model_nominal;
                         }
-                    } else if ($akun->nama_akun == 'Piutang Usaha' && $jurnal->tipe == 'K') {
+                    } else if (strtolower($akun->nama_akun) == 'piutang usaha' && $jurnal->tipe == 'K') {
                         $jurnal_umum_detail->kredit = $model_nominal;
                         if ($akun->saldo_normal == 1) {
 
@@ -216,14 +216,14 @@ class AktPenerimaanPembayaranController extends Controller
                         } else {
                             $akun->saldo_akun = $akun->saldo_akun + $model_nominal;
                         }
-                    } else if ($akun->nama_akun == 'kas' && $jurnal->tipe == 'D') {
+                    } else if (strtolower($akun->nama_akun) == 'kas' && $jurnal->tipe == 'D') {
                         $jurnal_umum_detail->debit = $model_nominal;
                         if ($akun->saldo_normal == 1) {
                             $cek_kas->saldo = $cek_kas->saldo + $model_nominal;
                         } else {
                             $cek_kas->saldo = $cek_kas->saldo - $model_nominal;
                         }
-                    } else if ($akun->nama_akun == 'kas' && $jurnal->tipe == 'K') {
+                    } else if (strtolower($akun->nama_akun) == 'kas' && $jurnal->tipe == 'K') {
                         $jurnal_umum_detail->kredit = $model_nominal;
                         if ($akun->saldo_normal == 1) {
                             $cek_kas->saldo = $cek_kas->saldo - $model_nominal;
@@ -236,7 +236,7 @@ class AktPenerimaanPembayaranController extends Controller
                     $cek_kas->save(false);
                     $jurnal_umum_detail->save(false);
 
-                    if ($akun->nama_akun == 'kas') {
+                    if (strtolower($akun->nama_akun) == 'kas') {
                         $history_transaksi3 = new AktHistoryTransaksi();
                         $history_transaksi3->nama_tabel = 'akt_kas_bank';
                         $history_transaksi3->id_tabel = $model_id_kas_bank;
@@ -260,6 +260,8 @@ class AktPenerimaanPembayaranController extends Controller
         return $this->redirect(['view-penerimaan-pembayaran', 'id' => $model->id_penjualan]);
     }
 
+
+
     public function actionDeleteFromView($id)
     {
         $model = $this->findModel($id);
@@ -279,7 +281,7 @@ class AktPenerimaanPembayaranController extends Controller
                 // if($akt_pembelian->jenis_bayar == 1) {
                 foreach ($jurnal_umum_detail as $ju) {
                     $akun = AktAkun::find()->where(['id_akun' => $ju->id_akun])->one();
-                    if ($akun->nama_akun != 'kas') {
+                    if (strtolower($akun->nama_akun) != 'kas') {
                         if ($akun->saldo_normal == 1 && $ju->debit > 0) {
                             $akun->saldo_akun = $akun->saldo_akun - $ju->debit;
                         } else if ($akun->saldo_normal == 1 && $ju->kredit > 0) {
@@ -290,7 +292,7 @@ class AktPenerimaanPembayaranController extends Controller
                             $akun->saldo_akun = $akun->saldo_akun + $ju->debit;
                         }
                     }
-                    if ($akun->nama_akun == 'kas') {
+                    if (strtolower($akun->nama_akun) == 'kas') {
                         $history_transaksi2 = AktHistoryTransaksi::find()->where(['id_tabel' => $model->id_kas_bank])->andWhere(['nama_tabel' => 'akt_kas_bank'])->andWhere(['id_jurnal_umum' => $ju->id_jurnal_umum_detail])->one();
                         $akt_kas_bank = AktKasBank::find()->where(['id_kas_bank' => $model->id_kas_bank])->one();
                         $akt_kas_bank->saldo = $akt_kas_bank->saldo - $ju->debit + $ju->kredit;
@@ -315,6 +317,8 @@ class AktPenerimaanPembayaranController extends Controller
         Yii::$app->session->setFlash('success', [['Perhatian !', 'Berhasil Terhapus dari Data Penerimaan Pembayaran']]);
         return $this->redirect(['view-penerimaan-pembayaran', 'id' => $model->id_penjualan]);
     }
+
+
 
     public function actionViewPenerimaanHartaTetap($id)
     {
@@ -384,7 +388,7 @@ class AktPenerimaanPembayaranController extends Controller
             }
 
             $jurnal_umum->no_jurnal_umum = $no_jurnal_umum;
-            $jurnal_umum->tanggal = date('Y-m-d');
+            $jurnal_umum->tanggal = $model_tanggal_penerimaan_pembayaran;
             $jurnal_umum->tipe = 1;
             $jurnal_umum->keterangan = 'Penerimaan Biaya Harta Tetap : ' . $model2->no_penjualan_harta_tetap;
             $jurnal_umum->save(false);
@@ -564,62 +568,6 @@ class AktPenerimaanPembayaranController extends Controller
         return $this->redirect(['view-penerimaan-harta-tetap', 'id' => $model->id_penjualan_harta_tetap]);
     }
 
-    public function actionCetakInvoice($id)
-    {
-        $model = AktPenjualan::findOne($id);
-
-        $data_setting = Setting::find()->one();
-
-
-        $sum_retur = Yii::$app->db->createCommand("SELECT SUM(total) from akt_retur_penjualan WHERE id_penjualan = '$id'")->queryScalar();
-        $query = (new \yii\db\Query())->from('akt_penjualan_detail')->where(['id_penjualan' => $model->id_penjualan]);
-        $total_penjualan_barang = $query->sum('total');
-
-        return $this->renderPartial('cetak_invoice', [
-            'model' => $model,
-            'data_setting' => $data_setting,
-            'total_penjualan_barang' => $total_penjualan_barang,
-            'sum_retur' => $sum_retur,
-        ]);
-    }
-
-    public function actionCetakInvoiceNonPpn($id)
-    {
-        $model = AktPenjualan::findOne($id);
-
-        $data_setting = Setting::find()->one();
-
-
-        $sum_retur = Yii::$app->db->createCommand("SELECT SUM(total) from akt_retur_penjualan WHERE id_penjualan = '$id'")->queryScalar();
-        $query = (new \yii\db\Query())->from('akt_penjualan_detail')->where(['id_penjualan' => $model->id_penjualan]);
-        $total_penjualan_barang = $query->sum('total');
-
-        return $this->renderPartial('cetak_invoice_non_ppn', [
-            'model' => $model,
-            'data_setting' => $data_setting,
-            'total_penjualan_barang' => $total_penjualan_barang,
-            'sum_retur' => $sum_retur,
-        ]);
-    }
-
-    public function actionCetakInvoicePpn($id)
-    {
-        $model = AktPenjualan::findOne($id);
-
-        $data_setting = Setting::find()->one();
-
-
-        $sum_retur = Yii::$app->db->createCommand("SELECT SUM(total) from akt_retur_penjualan WHERE id_penjualan = '$id'")->queryScalar();
-        $query = (new \yii\db\Query())->from('akt_penjualan_detail')->where(['id_penjualan' => $model->id_penjualan]);
-        $total_penjualan_barang = $query->sum('total');
-
-        return $this->renderPartial('cetak_invoice_ppn', [
-            'model' => $model,
-            'data_setting' => $data_setting,
-            'total_penjualan_barang' => $total_penjualan_barang,
-            'sum_retur' => $sum_retur,
-        ]);
-    }
 
     protected function findModel($id)
     {
@@ -628,5 +576,64 @@ class AktPenerimaanPembayaranController extends Controller
         }
 
         throw new NotFoundHttpException('The requested page does not exist.');
+    }
+
+    public function actionCetakInvoicePpn($id)
+    {
+
+        $model = AktPenjualan::findOne($id);
+
+        $data_setting = Setting::find()->one();
+        $sum_retur = Yii::$app->db->createCommand("SELECT SUM(total) from akt_retur_penjualan WHERE id_penjualan = '$id'")->queryScalar();
+
+        $query = (new \yii\db\Query())->from('akt_penjualan_detail')->where(['id_penjualan' => $model->id_penjualan]);
+        $total_penjualan_barang = $query->sum('total');
+
+        return $this->renderPartial('cetak_invoice_ppn', [
+            'model' => $model,
+            'data_setting' => $data_setting,
+            'sum_retur' => $sum_retur,
+            'total_penjualan_barang' => $total_penjualan_barang,
+        ]);
+    }
+
+    public function actionCetakInvoiceNonPpn($id)
+    {
+
+        $model = AktPenjualan::findOne($id);
+
+        $data_setting = Setting::find()->one();
+        $sum_retur = Yii::$app->db->createCommand("SELECT SUM(total) from akt_retur_penjualan WHERE id_penjualan = '$id'")->queryScalar();
+
+
+        $query = (new \yii\db\Query())->from('akt_penjualan_detail')->where(['id_penjualan' => $model->id_penjualan]);
+        $total_penjualan_barang = $query->sum('total');
+
+        return $this->renderPartial('cetak_invoice_non_ppn', [
+            'model' => $model,
+            'data_setting' => $data_setting,
+            'sum_retur' => $sum_retur,
+            'total_penjualan_barang' => $total_penjualan_barang,
+        ]);
+    }
+
+    public function actionCetakStandard($id)
+    {
+
+        $model = AktPenjualan::findOne($id);
+
+        $data_setting = Setting::find()->one();
+        $sum_retur = Yii::$app->db->createCommand("SELECT SUM(total) from akt_retur_penjualan WHERE id_penjualan = '$id'")->queryScalar();
+
+
+        $query = (new \yii\db\Query())->from('akt_penjualan_detail')->where(['id_penjualan' => $model->id_penjualan]);
+        $total_penjualan_barang = $query->sum('total');
+
+        return $this->renderPartial('cetak_standard', [
+            'model' => $model,
+            'data_setting' => $data_setting,
+            'sum_retur' => $sum_retur,
+            'total_penjualan_barang' => $total_penjualan_barang,
+        ]);
     }
 }

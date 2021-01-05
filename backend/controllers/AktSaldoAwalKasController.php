@@ -75,7 +75,9 @@ class AktSaldoAwalKasController extends Controller
     {
         $model = new AktSaldoAwalKas();
         $model->tanggal_transaksi = date('Y-m-d');
+
         $no_transaksi = Utils::getNomorTransaksi($model, 'SW', 'no_transaksi', 'no_transaksi');
+
         $model->no_transaksi = $no_transaksi;
 
         $data_kas_bank = ArrayHelper::map(
@@ -134,7 +136,7 @@ class AktSaldoAwalKasController extends Controller
                 $jurnal_umum_detail->id_jurnal_umum = $jurnal_umum->id_jurnal_umum;
                 $jurnal_umum_detail->id_akun = $k->id_akun;
                 $akt_kas_bank = AktKasBank::findOne($model->id_kas_bank);
-                if (strtolower($akun['nama_akun'] == 'kas')) {
+                if (strtolower($akun['nama_akun']) == 'kas') {
                     $jurnal_umum_detail->debit =  $model->jumlah;
                     if ($k->tipe == 'D') {
                         $akt_kas_bank->saldo = $akt_kas_bank->saldo + $model->jumlah;

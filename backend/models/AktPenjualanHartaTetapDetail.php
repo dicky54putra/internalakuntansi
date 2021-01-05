@@ -33,8 +33,8 @@ class AktPenjualanHartaTetapDetail extends \yii\db\ActiveRecord
     {
         return [
             [['id_penjualan_harta_tetap', 'id_pembelian_harta_tetap_detail', 'qty', 'harga', 'total'], 'required'],
-            [['id_penjualan_harta_tetap', 'id_pembelian_harta_tetap_detail', 'qty'], 'integer'],
-            [['total', 'diskon'], 'safe'],
+            [['id_penjualan_harta_tetap', 'id_pembelian_harta_tetap_detail', 'qty', 'total'], 'integer'],
+            [['diskon'], 'safe'],
             [['keterangan'], 'string'],
         ];
     }

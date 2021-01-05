@@ -95,6 +95,9 @@ use backend\models\AktMitraBisnisBankPajak;
 <table class="table3">
     <thead>
         <tr>
+            <th class="header_kiri" style="font-size: 15px; font-weight: bold;"><?= $data_setting->nama ?></th>
+        </tr>
+        <tr>
             <th class="header_kiri"><?= $data_setting->nama_usaha ?></th>
         </tr>
         <tr>

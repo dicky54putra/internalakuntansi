@@ -33,7 +33,7 @@ $this->title = 'Daftar Laporan Kas';
                                 <td><?= Html::a('<span class="fa fa-file-text"></span> Laporan Detail Penerimaan Pembayaran', ['laporan-detail-penerimaan-pembayaran']) ?></td>
                             </tr>
                             <tr>
-                                <td><?= Html::a('<span class="fa fa-file-text"></span> Laporan Rekap Transfer Kas', ['laporan-rekap-transfer-kas']) ?></td>
+                                <td><?= Html::a('<span class="fa fa-file-text"></span> Laporan Rekap Transfer Kas', ['laporan-rekap-transfer']) ?></td>
                             </tr>
                             <tr>
                                 <td><?= Html::a('<span class="fa fa-file-text"></span> Laporan Rekap Arus Kas', ['akt-rekap-arus-kas']) ?></td>

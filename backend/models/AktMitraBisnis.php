@@ -38,7 +38,7 @@ class AktMitraBisnis extends \yii\db\ActiveRecord
             [['kode_mitra_bisnis', 'tipe_mitra_bisnis', 'nama_mitra_bisnis', 'status_mitra_bisnis'], 'required'],
             [['deskripsi_mitra_bisnis'], 'string'],
             [['tipe_mitra_bisnis', 'id_gmb_satu', 'id_gmb_dua', 'id_gmb_tiga', 'id_level_harga', 'id_sales', 'status_mitra_bisnis'], 'integer'],
-            [['kode_mitra_bisnis', 'nama_mitra_bisnis'], 'string', 'max' => 200],
+            [['kode_mitra_bisnis', 'nama_mitra_bisnis', 'pemilik_bisnis'], 'string', 'max' => 200],
         ];
     }
 
@@ -59,6 +59,7 @@ class AktMitraBisnis extends \yii\db\ActiveRecord
             'id_sales' => 'Sales',
             'nama_mitra_bisnis' => 'Nama Mitra Bisnis',
             'status_mitra_bisnis' => 'Status',
+            'pemilik_bisnis' => 'Pemilik Bisnis',
         ];
     }
 
@@ -70,12 +71,5 @@ class AktMitraBisnis extends \yii\db\ActiveRecord
     public function getlevel_harga()
     {
         return $this->hasOne(AktLevelHarga::className(), ['id_level_harga' => 'id_level_harga']);
-    }
-
-
-
-    public function getalamat()
-    {
-        return $this->hasOne(AktMitraBisnisAlamat::className(), ['id_mitra_bisnis' => 'id_mitra_bisnis']);
     }
 }

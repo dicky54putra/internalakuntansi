@@ -548,7 +548,7 @@ $this->title = 'Detail Data Penerimaan. No Pembelian : ' . $model->no_pembelian;
             ?>
             <div class="modal-body">
                 <?php $form = ActiveForm::begin([
-                    'action' => 'index.php?r=akt-pembelian-penerimaan-sendiri/view&aksi=terima_barang&id=' . $model->id_pembelian,
+                    'action' => '/backend/web/index.php?r=akt-pembelian-penerimaan-sendiri/view&aksi=terima_barang&id=' . $model->id_pembelian,
                     'id' => 'form-penerimaan',
                 ]); ?>
 
@@ -556,7 +556,7 @@ $this->title = 'Detail Data Penerimaan. No Pembelian : ' . $model->no_pembelian;
                     <div class="col-md-6">
                         <?= $form->field($model2, 'no_penerimaan')->textInput(['maxlength' => true, 'readonly' => true]) ?>
 
-                        <?= $form->field($model2, 'tanggal_penerimaan')->textInput(['type' => 'date']) ?>
+                        <?= $form->field($model2, 'tanggal_penerimaan')->textInput(['type' => 'date', 'value' => date('Y-m-d')]) ?>
 
                         <?= $form->field($model2, 'penerima')->textInput(['maxlength' => true,]) ?>
 
@@ -657,7 +657,7 @@ $script = <<< JS
         const id_action = $(this).attr('id-pembelian');
 
         // console.log(id_action);
-        $('#form-penerimaan').attr('action', 'index.php?r=akt-pembelian-penerimaan-sendiri/view&aksi=terima_barang&id='+id_action+'');
+        $('#form-penerimaan').attr('action', '/backend/web/index.php?r=akt-pembelian-penerimaan-sendiri/view&aksi=terima_barang&id='+id_action+'');
 
         $('#aktpembelianpenerimaan-penerima').val('');
         $('#aktpembelianpenerimaan-pengantar').val('');
@@ -673,7 +673,7 @@ $script = <<< JS
         const id_action = $(this).attr('id-pembelian');
         // $('#aktpembelianpenerimaandetail-id_pembelian_penerimaan').val(id);
 
-        $('#form-penerimaan').attr('action', 'index.php?r=akt-pembelian-penerimaan-sendiri/view&aksi=edit_terima_barang&id='+id_action+'');
+        $('#form-penerimaan').attr('action', '/backend/web/index.php?r=akt-pembelian-penerimaan-sendiri/view&aksi=edit_terima_barang&id='+id_action+'');
 
         $.ajax({
             url: 'index.php?r=akt-pembelian-penerimaan-sendiri/get-penerimaan',
@@ -684,7 +684,6 @@ $script = <<< JS
                 //  $('#aktpembelianpenerimaandetail-id_pembelian_detail').val(data.);
                  $('#aktpembelianpenerimaan-penerima').val(data.penerima);
                  $('#aktpembelianpenerimaan-pengantar').val(data.pengantar);
-                 $('#aktpembelianpenerimaan-tanggal_penerimaan').val(data.tanggal_penerimaan);
                  $('#aktpembelianpenerimaan-keterangan_pengantar').val(data.keterangan_pengantar);
                  $('#aktpembelianpenerimaan-id_pembelian_penerimaan').val(data.id_pembelian_penerimaan);
                 //  $('#id').val(data.id);

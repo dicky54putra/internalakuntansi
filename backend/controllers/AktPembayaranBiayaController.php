@@ -8,7 +8,6 @@ use backend\models\AktPembelianHartaTetapDetail;
 use backend\models\AktPembayaranBiayaSearch;
 use backend\models\AktPembelianHartaTetapSearch;
 use backend\models\AktPembelian;
-use backend\models\AktReturPembelian;
 use backend\models\JurnalTransaksi;
 use backend\models\AktHistoryTransaksi;
 use backend\models\AktPembelianSearch;
@@ -17,7 +16,6 @@ use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use yii\helpers\ArrayHelper;
 use backend\models\AktKasBank;
-use backend\models\Setting;
 use backend\models\AktJurnalUmum;
 use backend\models\JurnalTransaksiDetail;
 use backend\models\AktJurnalUmumDetail;
@@ -25,6 +23,8 @@ use backend\models\AktAkun;
 use backend\models\AktHartaTetap;
 use backend\models\AktPembayaranBiayaHartaTetap;
 use backend\models\AktPembelianHartaTetap;
+use backend\models\AktReturPembelian;
+use backend\models\Setting;
 use yii\helpers\Json;
 
 /**
@@ -216,24 +216,7 @@ class AktPembayaranBiayaController extends Controller
                 // Create jurnal umum
 
                 $jurnal_umum = new AktJurnalUmum();
-                $akt_jurnal_umum = AktJurnalUmum::find()->select(["no_jurnal_umum"])->orderBy("id_jurnal_umum DESC")->limit(1)->one();
-                if (!empty($akt_jurnal_umum->no_jurnal_umum)) {
-                    # code...
-                    $no_bulan = substr($akt_jurnal_umum->no_jurnal_umum, 2, 4);
-                    if ($no_bulan == date('ym')) {
-                        # code...
-                        $noUrut = substr($akt_jurnal_umum->no_jurnal_umum, -3);
-                        $noUrut++;
-                        $noUrut_2 = sprintf("%03s", $noUrut);
-                        $no_jurnal_umum = 'JU' . date('ym') . $noUrut_2;
-                    } else {
-                        # code...
-                        $no_jurnal_umum = 'JU' . date('ym') . '001';
-                    }
-                } else {
-                    # code...
-                    $no_jurnal_umum = 'JU' . date('ym') . '001';
-                }
+                $no_jurnal_umum = AktJurnalUmum::getKodeJurnalUmum();
 
                 $jurnal_umum->no_jurnal_umum = $no_jurnal_umum;
                 $jurnal_umum->tanggal = $model_tanggal_pembayaran_biaya;
@@ -248,103 +231,10 @@ class AktPembayaranBiayaController extends Controller
 
                 if ($akt_pembelian->jenis_bayar == 1) {
                     $jurnal_transaksi = JurnalTransaksiDetail::find()->where(['id_jurnal_transaksi' => $pembayaran_cash['id_jurnal_transaksi']])->all();
-                    foreach ($jurnal_transaksi as $jurnal) {
-                        $jurnal_umum_detail = new AktJurnalUmumDetail();
-                        $akun = AktAkun::findOne($jurnal->id_akun);
-                        $jurnal_umum_detail->id_jurnal_umum = $jurnal_umum->id_jurnal_umum;
-                        $jurnal_umum_detail->id_akun = $jurnal->id_akun;
-                        if ($jurnal->id_akun == 64 && $jurnal->tipe == 'D') {
-                            $jurnal_umum_detail->debit = $model_nominal;
-                            if ($akun->saldo_normal == 1) {
-                                $akun->saldo_akun = $akun->saldo_akun + $model_nominal;
-                            } else {
-                                $akun->saldo_akun = $akun->saldo_akun - $model_nominal;
-                            }
-                        } else if ($jurnal->id_akun == 64 && $jurnal->tipe == 'K') {
-                            $jurnal_umum_detail->kredit = $model_nominal;
-                            if ($akun->saldo_normal == 1) {
-
-                                $akun->saldo_akun = $akun->saldo_akun - $model_nominal;
-                            } else {
-                                $akun->saldo_akun = $akun->saldo_akun + $model_nominal;
-                            }
-                        } else if ($akun->nama_akun == 'kas' && $jurnal->tipe == 'D') {
-                            $jurnal_umum_detail->debit = $model_nominal;
-                            if ($akun->saldo_normal == 1) {
-                                $cek_kas->saldo = $cek_kas->saldo + $model_nominal;
-                            } else {
-                                $cek_kas->saldo = $cek_kas->saldo - $model_nominal;
-                            }
-                        } else if ($akun->nama_akun == 'kas' && $jurnal->tipe == 'K') {
-                            $jurnal_umum_detail->kredit = $model_nominal;
-                            if ($akun->saldo_normal == 1) {
-                                $cek_kas->saldo = $cek_kas->saldo - $model_nominal;
-                            } else {
-                                $cek_kas->saldo = $cek_kas->saldo + $model_nominal;
-                            }
-                        }
-                        $jurnal_umum_detail->keterangan = 'Pembayaran Biaya Cash: ' . $akt_pembelian->no_pembelian;
-                        $akun->save(false);
-                        $jurnal_umum_detail->save(false);
-                        $cek_kas->save(false);
-                        if ($akun->nama_akun == 'kas') {
-                            $history_transaksi2 = new AktHistoryTransaksi();
-                            $history_transaksi2->nama_tabel = 'akt_kas_bank';
-                            $history_transaksi2->id_tabel = $model_id_kas_bank;
-                            $history_transaksi2->id_jurnal_umum = $jurnal_umum_detail->id_jurnal_umum_detail;
-                            $history_transaksi2->save(false);
-                        }
-                    }
+                    AktPembayaranBiaya::setJurnalUmum($model, $model_nominal, $jurnal_transaksi, $jurnal_umum, $akt_pembelian, $cek_kas);
                 } else if ($akt_pembelian->jenis_bayar == 2) {
                     $jurnal_transaksi = JurnalTransaksiDetail::find()->where(['id_jurnal_transaksi' => $pembayaran_kredit['id_jurnal_transaksi']])->all();
-                    foreach ($jurnal_transaksi as $jurnal) {
-                        $jurnal_umum_detail = new AktJurnalUmumDetail();
-                        $akun = AktAkun::findOne($jurnal->id_akun);
-                        $jurnal_umum_detail->id_jurnal_umum = $jurnal_umum->id_jurnal_umum;
-                        $jurnal_umum_detail->id_akun = $jurnal->id_akun;
-                        if ($jurnal->id_akun == 64 && $jurnal->tipe == 'D') {
-                            $jurnal_umum_detail->debit = $model_nominal;
-                            if ($akun->saldo_normal == 1) {
-                                $akun->saldo_akun = $akun->saldo_akun + $model_nominal;
-                            } else {
-                                $akun->saldo_akun = $akun->saldo_akun - $model_nominal;
-                            }
-                        } else if ($jurnal->id_akun == 64 && $jurnal->tipe == 'K') {
-                            $jurnal_umum_detail->kredit = $model_nominal;
-                            if ($akun->saldo_normal == 1) {
-
-                                $akun->saldo_akun = $akun->saldo_akun - $model_nominal;
-                            } else {
-                                $akun->saldo_akun = $akun->saldo_akun + $model_nominal;
-                            }
-                        } else if ($akun->nama_akun == 'kas' && $jurnal->tipe == 'D') {
-                            $jurnal_umum_detail->debit = $model_nominal;
-                            if ($akun->saldo_normal == 1) {
-                                $cek_kas->saldo = $cek_kas->saldo + $model_nominal;
-                            } else {
-                                $cek_kas->saldo = $cek_kas->saldo - $model_nominal;
-                            }
-                        } else if ($akun->nama_akun == 'kas' && $jurnal->tipe == 'K') {
-                            $jurnal_umum_detail->kredit = $model_nominal;
-                            if ($akun->saldo_normal == 1) {
-                                $cek_kas->saldo = $cek_kas->saldo - $model_nominal;
-                            } else {
-                                $cek_kas->saldo = $cek_kas->saldo + $model_nominal;
-                            }
-                        }
-                        $jurnal_umum_detail->keterangan = 'Pembayaran Biaya Kredit : ' . $akt_pembelian->no_pembelian;
-                        $akun->save(false);
-                        $cek_kas->save(false);
-                        $jurnal_umum_detail->save(false);
-
-                        if ($akun->nama_akun == 'kas') {
-                            $history_transaksi3 = new AktHistoryTransaksi();
-                            $history_transaksi3->nama_tabel = 'akt_kas_bank';
-                            $history_transaksi3->id_tabel = $model_id_kas_bank;
-                            $history_transaksi3->id_jurnal_umum = $jurnal_umum_detail->id_jurnal_umum_detail;
-                            $history_transaksi3->save(false);
-                        }
-                    }
+                    AktPembayaranBiaya::setJurnalUmum($model, $model_nominal, $jurnal_transaksi, $jurnal_umum, $akt_pembelian, $cek_kas);
                 }
 
 
@@ -364,6 +254,41 @@ class AktPembayaranBiayaController extends Controller
         return $this->redirect(['view-pembayaran-biaya', 'id' => $model->id_pembelian]);
     }
 
+
+    public function actionPostToJurnalUmum($id)
+    {
+        $model = AktPembayaranBiaya::findOne($id);
+        $akt_pembelian = AktPembelian::findOne($id);
+        $pembayaran_cash = JurnalTransaksi::find()->where(['nama_transaksi' => 'Pembayaran Transaksi Cash'])->one();
+        $pembayaran_kredit = JurnalTransaksi::find()->where(['nama_transaksi' => 'Pembayaran Transaksi Kredit'])->one();
+
+        $jurnal_umum = new AktJurnalUmum();
+        $no_jurnal_umum = AktJurnalUmum::getKodeJurnalUmum();
+        $cek_kas = AktKasBank::find()->where(['id_kas_bank' => $model->id_kas_bank])->one();
+
+        $jurnal_umum->no_jurnal_umum = $no_jurnal_umum;
+        $jurnal_umum->tanggal = $model->tanggal_pembayaran_biaya;
+        $jurnal_umum->tipe = 1;
+        $jurnal_umum->keterangan = 'Pembayaran Biaya : ' . $akt_pembelian->no_pembelian;
+        $jurnal_umum->save(false);
+
+        if ($akt_pembelian->jenis_bayar == 1) {
+            $jurnal_transaksi = JurnalTransaksiDetail::find()->where(['id_jurnal_transaksi' => $pembayaran_cash['id_jurnal_transaksi']])->all();
+            AktPembayaranBiaya::setJurnalUmum($model, $model->nominal, $jurnal_transaksi, $jurnal_umum, $akt_pembelian, $cek_kas);
+        } else if ($akt_pembelian->jenis_bayar == 2) {
+            $jurnal_transaksi = JurnalTransaksiDetail::find()->where(['id_jurnal_transaksi' => $pembayaran_kredit['id_jurnal_transaksi']])->all();
+            AktPembayaranBiaya::setJurnalUmum($model, $model->nominal, $jurnal_transaksi, $jurnal_umum, $akt_pembelian, $cek_kas);
+        }
+
+
+        $history_transaksi = new AktHistoryTransaksi();
+        $history_transaksi->nama_tabel = 'akt_pembayaran_biaya';
+        $history_transaksi->id_tabel = $model->id_pembayaran_biaya;
+        $history_transaksi->id_jurnal_umum = $jurnal_umum->id_jurnal_umum;
+        $history_transaksi->save(false);
+
+        return $this->redirect(['view-pembayaran-biaya', 'id' => $model->id_pembelian]);
+    }
     public function actionCreateHartaTetapFromView()
     {
         $model = new AktPembayaranBiayaHartaTetap();
@@ -417,25 +342,7 @@ class AktPembayaranBiayaController extends Controller
                     // Create jurnal umum
 
                     $jurnal_umum = new AktJurnalUmum();
-                    $akt_jurnal_umum = AktJurnalUmum::find()->select(["no_jurnal_umum"])->orderBy("id_jurnal_umum DESC")->limit(1)->one();
-                    if (!empty($akt_jurnal_umum->no_jurnal_umum)) {
-                        # code...
-                        $no_bulan = substr($akt_jurnal_umum->no_jurnal_umum, 2, 4);
-                        if ($no_bulan == date('ym')) {
-                            # code...
-                            $noUrut = substr($akt_jurnal_umum->no_jurnal_umum, -3);
-                            $noUrut++;
-                            $noUrut_2 = sprintf("%03s", $noUrut);
-                            $no_jurnal_umum = 'JU' . date('ym') . $noUrut_2;
-                        } else {
-                            # code...
-                            $no_jurnal_umum = 'JU' . date('ym') . '001';
-                        }
-                    } else {
-                        # code...
-                        $no_jurnal_umum = 'JU' . date('ym') . '001';
-                    }
-
+                    $no_jurnal_umum = AktJurnalUmum::getKodeJurnalUmum();
                     $jurnal_umum->no_jurnal_umum = $no_jurnal_umum;
                     $jurnal_umum->tanggal = $model->tanggal_pembayaran_biaya;
                     $jurnal_umum->tipe = 1;
@@ -471,14 +378,14 @@ class AktPembayaranBiayaController extends Controller
                                 } else {
                                     $akun->saldo_akun = $akun->saldo_akun + $model->nominal;
                                 }
-                            } else if ($akun->nama_akun == 'kas' && $jurnal->tipe == 'D') {
+                            } else if (strtolower($akun->nama_akun) == 'kas' && $jurnal->tipe == 'D') {
                                 $jurnal_umum_detail->debit = $model->nominal;
                                 if ($akun->saldo_normal == 1) {
                                     $cek_kas->saldo = $cek_kas->saldo + $model->nominal;
                                 } else {
                                     $cek_kas->saldo = $cek_kas->saldo - $model->nominal;
                                 }
-                            } else if ($akun->nama_akun == 'kas' && $jurnal->tipe == 'K') {
+                            } else if (strtolower($akun->nama_akun) == 'kas' && $jurnal->tipe == 'K') {
                                 $jurnal_umum_detail->kredit = $model->nominal;
                                 if ($akun->saldo_normal == 1) {
                                     $cek_kas->saldo = $cek_kas->saldo - $model->nominal;
@@ -490,7 +397,7 @@ class AktPembayaranBiayaController extends Controller
                             $akun->save(false);
                             $jurnal_umum_detail->save(false);
                             $cek_kas->save(false);
-                            if ($akun->nama_akun == 'kas') {
+                            if (strtolower($akun->nama_akun) == 'kas') {
                                 $history_transaksi2 = new AktHistoryTransaksi();
                                 $history_transaksi2->nama_tabel = 'akt_kas_bank';
                                 $history_transaksi2->id_tabel = $model->id_kas_bank;
@@ -520,14 +427,14 @@ class AktPembayaranBiayaController extends Controller
                                 } else {
                                     $akun->saldo_akun = $akun->saldo_akun + $model->nominal;
                                 }
-                            } else if ($akun->nama_akun == 'kas' && $jurnal->tipe == 'D') {
+                            } else if (strtolower($akun->nama_akun) == 'kas' && $jurnal->tipe == 'D') {
                                 $jurnal_umum_detail->debit = $model->nominal;
                                 if ($akun->saldo_normal == 1) {
                                     $cek_kas->saldo = $cek_kas->saldo + $model->nominal;
                                 } else {
                                     $cek_kas->saldo = $cek_kas->saldo - $model->nominal;
                                 }
-                            } else if ($akun->nama_akun == 'kas' && $jurnal->tipe == 'K') {
+                            } else if (strtolower($akun->nama_akun) == 'kas' && $jurnal->tipe == 'K') {
                                 $jurnal_umum_detail->kredit = $model->nominal;
                                 if ($akun->saldo_normal == 1) {
                                     $cek_kas->saldo = $cek_kas->saldo - $model->nominal;
@@ -540,7 +447,7 @@ class AktPembayaranBiayaController extends Controller
                             $cek_kas->save(false);
                             $jurnal_umum_detail->save(false);
 
-                            if ($akun->nama_akun == 'kas') {
+                            if (strtolower($akun->nama_akun) == 'kas') {
                                 $history_transaksi3 = new AktHistoryTransaksi();
                                 $history_transaksi3->nama_tabel = 'akt_kas_bank';
                                 $history_transaksi3->id_tabel = $model->id_kas_bank;
@@ -706,21 +613,42 @@ class AktPembayaranBiayaController extends Controller
         return;
     }
 
-
-    public function actionCetakInvoice($id)
+    public function actionCetakInvoicePpn($id)
     {
+
         $model = AktPembelian::findOne($id);
 
         $data_setting = Setting::find()->one();
 
         $sum_retur = Yii::$app->db->createCommand("SELECT SUM(total) from akt_retur_pembelian WHERE id_pembelian = '$id'")->queryScalar();
+
         $query = (new \yii\db\Query())->from('akt_pembelian_detail')->where(['id_pembelian' => $model->id_pembelian]);
         $total_pembelian_barang = $query->sum('total');
 
-        return $this->renderPartial('cetak_invoice', [
+        return $this->renderPartial('cetak_invoice_ppn', [
             'model' => $model,
-            'sum_retur' => $sum_retur,
             'data_setting' => $data_setting,
+            'sum_retur' => $sum_retur,
+            'total_pembelian_barang' => $total_pembelian_barang,
+        ]);
+    }
+
+    public function actionCetakInvoiceNonPpn($id)
+    {
+
+        $model = AktPembelian::findOne($id);
+
+        $data_setting = Setting::find()->one();
+        $model_retur_pembelian = AktReturPembelian::find()->where(['id_pembelian' => $id])->andWhere(['status_retur' => 2]);
+        $sum_retur = Yii::$app->db->createCommand("SELECT SUM(total) from akt_retur_pembelian WHERE id_pembelian = '$id'")->queryScalar();
+
+        $query = (new \yii\db\Query())->from('akt_pembelian_detail')->where(['id_pembelian' => $model->id_pembelian]);
+        $total_pembelian_barang = $query->sum('total');
+
+        return $this->renderPartial('cetak_invoice_non_ppn', [
+            'model' => $model,
+            'data_setting' => $data_setting,
+            'sum_retur' => $sum_retur,
             'total_pembelian_barang' => $total_pembelian_barang,
         ]);
     }

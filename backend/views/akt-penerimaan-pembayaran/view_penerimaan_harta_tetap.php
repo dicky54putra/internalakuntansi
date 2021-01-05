@@ -213,15 +213,19 @@ $this->title = 'Detail Data Penerimaan Penjualan Harta Tetap : ' . $model->no_pe
                                                         <td>
                                                             <?php
                                                             $query = (new \yii\db\Query())->from('akt_penerimaan_pembayaran_harta_tetap')->where(['id_penjualan_harta_tetap' => $model->id_penjualan_harta_tetap]);
-                                                            // else if ($model->total != $sum_nominal) {
+                                                            $sum_nominal = $query->sum('nominal');
+                                                            if ($model->total == $sum_nominal) {
+                                                            } else if ($model->total != $sum_nominal) {
+
                                                             ?>
-                                                            <?= Html::a('<span class="glyphicon glyphicon-trash"></span>', ['akt-penerimaan-pembayaran/delete-harta-tetap', 'id' => $data['id_penerimaan_pembayaran_harta_tetap']], [
-                                                                'class' => 'btn btn-danger',
-                                                                'data' => [
-                                                                    'confirm' => 'Apakah anda yakin akan menghapus data nomor ' . $no . ' dari list Data Penerimaan Pembayaran ?',
-                                                                    'method' => 'post',
-                                                                ],
-                                                            ]) ?>
+                                                                <?= Html::a('<span class="glyphicon glyphicon-trash"></span>', ['akt-penerimaan-pembayaran/delete-harta-tetap', 'id' => $data['id_penerimaan_pembayaran_harta_tetap']], [
+                                                                    'class' => 'btn btn-danger',
+                                                                    'data' => [
+                                                                        'confirm' => 'Apakah anda yakin akan menghapus data nomor ' . $no . ' dari list Data Penerimaan Pembayaran ?',
+                                                                        'method' => 'post',
+                                                                    ],
+                                                                ]) ?>
+                                                            <?php } ?>
                                                         </td>
                                                     </tr>
                                                 <?php } ?>

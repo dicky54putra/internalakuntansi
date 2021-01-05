@@ -19,7 +19,7 @@ class AktBomSearch extends AktBom
         return [
             [['id_bom', 'qty', 'status_bom'], 'integer'],
             [['keterangan', 'tipe', 'id_item_stok', 'no_bom'], 'safe'],
-            [['total'], 'safe'],
+            [['total'], 'number'],
             [['nama_item'], 'safe'],
         ];
     }

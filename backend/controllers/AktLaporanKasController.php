@@ -50,41 +50,6 @@ class AktLaporanKasController extends Controller
         ]);
     }
 
-    public function actionLaporanRekapTransferKas()
-    {
-        $tanggal_awal = Yii::$app->request->post('tanggal_awal');
-        $tanggal_akhir = Yii::$app->request->post('tanggal_akhir');
-        $kasbank_asal = Yii::$app->request->post('kasbank_asal');
-        $kasbank_tujuan = Yii::$app->request->post('kasbank_tujuan');
-
-        return $this->render('laporan_rekap_transfer_kas', [
-            'tanggal_awal' => $tanggal_awal,
-            'tanggal_akhir' => $tanggal_akhir,
-            'kasbank_asal' => $kasbank_asal,
-            'kasbank_tujuan' => $kasbank_tujuan,
-        ]);
-    }
-
-    public function actionLaporanRekapTransferKasCetak($tanggal_awal, $tanggal_akhir, $kasbank_asal = null, $kasbank_tujuan = null)
-    {
-        return $this->renderPartial('laporan_rekap_transfer_kas_cetak', [
-            'tanggal_awal' => $tanggal_awal,
-            'tanggal_akhir' => $tanggal_akhir,
-            'kasbank_asal' => $kasbank_asal,
-            'kasbank_tujuan' => $kasbank_tujuan,
-        ]);
-    }
-
-    public function actionLaporanRekapTransferKasExport($tanggal_awal, $tanggal_akhir, $kasbank_asal = null, $kasbank_tujuan = null)
-    {
-        return $this->renderPartial('laporan_rekap_transfer_kas_export', [
-            'tanggal_awal' => $tanggal_awal,
-            'tanggal_akhir' => $tanggal_akhir,
-            'kasbank_asal' => $kasbank_asal,
-            'kasbank_tujuan' => $kasbank_tujuan,
-        ]);
-    }
-
     public function actionLaporanTransferKas()
     {
         $tanggal_awal = Yii::$app->request->post('tanggal_awal');
@@ -112,7 +77,7 @@ class AktLaporanKasController extends Controller
 
     public function actionLaporanTransferKasExport($tanggal_awal, $tanggal_akhir, $kasbank_asal = null, $kasbank_tujuan = null)
     {
-        return $this->renderPartial('laporan_transfer_kas_export', [
+        return $this->renderPartial('laporan_transfer_kas_cetak', [
             'tanggal_awal' => $tanggal_awal,
             'tanggal_akhir' => $tanggal_akhir,
             'kasbank_asal' => $kasbank_asal,
@@ -132,15 +97,6 @@ class AktLaporanKasController extends Controller
             'tanggal_akhir' => $tanggal_akhir,
             'supplier' => $supplier,
             // 'akun_tujuan' => $akun_tujuan,
-        ]);
-    }
-
-    public function actionLaporanDetailPembayaranExport($tanggal_awal, $tanggal_akhir, $supplier = null)
-    {
-        return $this->renderPartial('laporan_detail_pembayaran_export', [
-            'tanggal_awal' => $tanggal_awal,
-            'tanggal_akhir' => $tanggal_akhir,
-            'supplier' => $supplier,
         ]);
     }
 

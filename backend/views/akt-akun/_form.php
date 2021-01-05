@@ -38,7 +38,7 @@ use kartik\select2\Select2;
                                     'nama_akun'
                                 ),
                                 'language' => 'en',
-                                'options' => ['placeholder' => 'Pilih Parent'],
+                                'options' => ['placeholder' => 'Pilih Klasifikasi'],
                                 'pluginOptions' => [
                                     // 'allowClear' => true,
                                     'tags' => true,

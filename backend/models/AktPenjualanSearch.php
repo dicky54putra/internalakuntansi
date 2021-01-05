@@ -17,8 +17,8 @@ class AktPenjualanSearch extends AktPenjualan
     public function rules()
     {
         return [
-            [['id_penjualan', 'pajak', 'jenis_bayar', 'jumlah_tempo', 'materai', 'status', 'diskon'], 'integer'],
-            [['no_order_penjualan', 'uang_muka', 'total', 'ongkir', 'tanggal_order_penjualan', 'no_penjualan', 'tanggal_penjualan', 'no_faktur_penjualan', 'tanggal_faktur_penjualan', 'tanggal_tempo', 'id_customer', 'id_sales', 'id_mata_uang', 'no_spb', 'the_approver', 'the_approver_date', 'id_kas_bank', 'tanggal_estimasi'], 'safe'],
+            [['id_penjualan', 'ongkir', 'pajak', 'total', 'jenis_bayar', 'jumlah_tempo', 'materai', 'status', 'diskon', 'uang_muka'], 'integer'],
+            [['no_order_penjualan', 'tanggal_order_penjualan', 'no_penjualan', 'tanggal_penjualan', 'no_faktur_penjualan', 'tanggal_faktur_penjualan', 'tanggal_tempo', 'id_customer', 'id_sales', 'id_mata_uang', 'no_spb', 'the_approver', 'the_approver_date', 'id_kas_bank', 'tanggal_estimasi'], 'safe'],
         ];
     }
 
@@ -90,13 +90,10 @@ class AktPenjualanSearch extends AktPenjualan
 
     public function searchPenjualan($params)
     {
-        $query = AktPenjualan::find();
+        $query = AktPenjualan::find()->where(['>', 'akt_penjualan.status', 1])->andWhere(['!=', 'akt_penjualan.status', 5])->orderBy("id_penjualan DESC");
         $query->joinWith("customer");
         $query->joinWith("sales");
         $query->joinWith("mata_uang");
-        $query->where(['>', 'akt_penjualan.status', 1])
-            ->andWhere(['!=', 'akt_penjualan.status', 5])
-            ->orderBy("id_penjualan DESC");
 
         // add conditions that should always apply here
 
@@ -147,7 +144,6 @@ class AktPenjualanSearch extends AktPenjualan
         $query->orWhere(['NOT IN', 'akt_penjualan.id_penjualan', $subQuery]);
         $query->andWhere(['!=', 'akt_penjualan.total', 0]);
         $query->orderBy("akt_penjualan.id_penjualan desc");
-
         // add conditions that should always apply here
 
         $dataProvider = new ActiveDataProvider([

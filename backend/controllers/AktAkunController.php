@@ -38,7 +38,6 @@ class AktAkunController extends Controller
         $searchModel = new AktAkunSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
-
         $id_login =  Yii::$app->user->identity->id_login;
 
         $id_system_role = Yii::$app->db->createCommand("SELECT id_system_role from user_role WHERE id_login = '$id_login'")->queryScalar();

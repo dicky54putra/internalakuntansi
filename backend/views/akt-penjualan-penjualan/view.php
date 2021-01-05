@@ -19,6 +19,8 @@ use backend\models\AktKasBank;
 /* @var $model backend\models\AktPenjualan */
 
 $this->title = 'Detail Data Penjualan : ' . $model->no_penjualan;
+// $this->params['breadcrumbs'][] = ['label' => 'Akt Penjualans', 'url' => ['index']];
+// $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
 
 $id_login =  Yii::$app->user->identity->id_login;
@@ -45,7 +47,7 @@ $count_query_detail = AktPenjualanDetail::find()->where(['id_penjualan' => $mode
         if ($model->status == 2) {
             # code...
         ?>
-            <?php if ($model->jenis_bayar == null  && $cek_login == null) { ?>
+            <?php if ($model->jenis_bayar == null && $is_penjualan->status == 1 && $cek_login == null) { ?>
                 <?= Html::a('<span class="glyphicon glyphicon-trash"></span> Hapus', ['delete', 'id' => $model->id_penjualan], [
                     'class' => 'btn btn-danger btn-hapus-hidden',
                     'data' => [
@@ -54,16 +56,18 @@ $count_query_detail = AktPenjualanDetail::find()->where(['id_penjualan' => $mode
                     ],
                 ]) ?>
 
-                <?= Html::a('<span class="glyphicon glyphicon-edit"></span> Ubah Data Penjualan', ['#', 'id' => $model->id_penjualan], [
-                    'class' => 'btn btn-primary',
-                    'data-toggle' => 'modal',
-                    'data-target' => '#modal-default'
-                ]) ?>
-
             <?php } ?>
 
             <?php if ($count_query_detail != 0 && $is_penjualan->status == 1) { ?>
-                <?php if ($model->jenis_bayar != null) {
+                <?php if ($model->jenis_bayar == null) {
+                ?>
+                    <?= Html::a('<span class="glyphicon glyphicon-edit"></span> Ubah Data Penjualan', ['#', 'id' => $model->id_penjualan], [
+                        'class' => 'btn btn-info',
+                        'data-toggle' => 'modal',
+                        'data-target' => '#modal-default'
+                    ]) ?>
+
+                <?php  } else if ($model->jenis_bayar != null) {
                 ?>
                     <?= Html::a('<span class="glyphicon glyphicon-trash"></span> Hapus Data Penjualan', ['hapus-data-penjualan', 'id' => $model->id_penjualan], [
                         'class' => 'btn btn-danger',
@@ -90,8 +94,6 @@ $count_query_detail = AktPenjualanDetail::find()->where(['id_penjualan' => $mode
             }
             ?>
             <?php
-            // echo $count_data_penjualan_count;
-            // die;
             if ($show_hide == 0 && $count_query_detail != 0) {
                 # code...
             ?>
@@ -117,10 +119,20 @@ $count_query_detail = AktPenjualanDetail::find()->where(['id_penjualan' => $mode
         if ($model->status >= 2 && $model->status != 5) {
             # code...
         ?>
-            <?= Html::a('<span class="glyphicon glyphicon-print"></span> Cetak Non PPN', ['cetak-invoice-non-ppn', 'id' => $model->id_penjualan], ['class' => 'btn btn-default', 'target' => '_blank']) ?>
-            <?= Html::a('<span class="glyphicon glyphicon-print"></span> Cetak PPN', ['cetak-invoice-ppn', 'id' => $model->id_penjualan], ['class' => 'btn btn-default', 'target' => '_blank']) ?>
-            <?= Html::a('<span class="glyphicon glyphicon-print"></span> Cetak Standar', ['cetak-invoice', 'id' => $model->id_penjualan], ['class' => 'btn btn-default', 'target' => '_blank']) ?>
+            <?= Html::a('<span class="glyphicon glyphicon-print"></span> Cetak Invoice Non PPN', ['cetak-invoice-ppn', 'id' => $model->id_penjualan], ['class' => 'btn btn-default', 'target' => '_blank']) ?>
+            <?= Html::a('<span class="glyphicon glyphicon-print"></span> Cetak Invoice PPN', ['cetak-invoice', 'id' => $model->id_penjualan], ['class' => 'btn btn-default', 'target' => '_blank']) ?>
+            <?= Html::a('<span class="glyphicon glyphicon-print"></span> Cetak Standard', ['cetak-standard', 'id' => $model->id_penjualan], ['class' => 'btn btn-default', 'target' => '_blank']) ?>
             <?= Html::a('<span class="glyphicon glyphicon-print"></span> Cetak Surat Pesanan', ['cetak-surat-pesanan', 'id' => $model->id_penjualan], ['class' => 'btn btn-default', 'target' => '_blank']) ?>
+        <?php } ?>
+
+        <?php if ($id_login == 11) { ?>
+            <?= Html::a(' Post To Jurnal Umum', ['post-to-jurnal-umum', 'id' => $model->id_penjualan], [
+                'class' => 'btn btn-info',
+                'data' => [
+                    'method' => 'post',
+                ],
+            ]) ?>
+
         <?php } ?>
     </p>
 
@@ -224,7 +236,11 @@ $count_query_detail = AktPenjualanDetail::find()->where(['id_penjualan' => $mode
                                                 if (AktPenjualan::cekButtonPenjualan()->status == 0 && $model->no_order_penjualan != null) {
                                                     return "<span class='label label-warning'>Penjualan disetujui pada " . $the_approver_date . " oleh " . $the_approver_name . "</span>";
                                                 } else if (AktPenjualan::cekButtonPenjualan()->status == 1 || $model->no_order_penjualan == null) {
-                                                    return "<span class='label label-warning'>Penjualan </span>";
+                                                    if ($model->jenis_bayar == null) {
+                                                        return "<span class='label label-danger'>Penjualan | Belum disetting </span>";
+                                                    } else {
+                                                        return "<span class='label label-warning'>Penjualan | Sudah disetting </span>";
+                                                    }
                                                 }
                                             } elseif ($model->status == 3) {
                                                 # code...
@@ -248,7 +264,7 @@ $count_query_detail = AktPenjualanDetail::find()->where(['id_penjualan' => $mode
                             <li class="active"><a data-toggle="tab" href="#data-barang"><span class="fa fa-box"></span> Data Barang Penjualan</a></li>
                             <li><a data-toggle="tab" href="#isi-data-penjualan"> <span class="glyphicon glyphicon-shopping-cart"></span> Data Order Penjualan</a></li>
                             <li><a data-toggle="tab" href="#unggah-dokumen"><span class="fa fa-file-text"></span> Unggah Dokumen</a></li>
-                            <li><a data-toggle="tab" href="#faktur"><span class="glyphicon glyphicon-list-alt"></span> Faktur Pajak</a></li>
+                            <li><a data-toggle="tab" href="#faktur"><span class="glyphicon glyphicon-list-alt"></span> Faktur</a></li>
                         </ul>
                         <div class="tab-content">
 
@@ -263,7 +279,7 @@ $count_query_detail = AktPenjualanDetail::find()->where(['id_penjualan' => $mode
                                                 ?>
                                                     <?php $form = ActiveForm::begin([
                                                         'method' => 'post',
-                                                        'action' => ['akt-penjualan-detail/create-from-order-penjualan'],
+                                                        'action' => ['akt-penjualan-detail/create-from-data-penjualan'],
                                                     ]); ?>
 
                                                     <?= $form->field($model_penjualan_detail_baru, 'id_penjualan')->textInput(['readonly' => true, 'type' => 'hidden'])->label(FALSE) ?>
@@ -280,7 +296,7 @@ $count_query_detail = AktPenjualanDetail::find()->where(['id_penjualan' => $mode
                                                         ?>
                                                     </div>
 
-                                                    <div class="col-md-3">
+                                                    <div class="col-md-4">
                                                         <?= $form->field($model_penjualan_detail_baru, 'id_item_harga_jual')->widget(DepDrop::classname(), [
                                                             'type' => DepDrop::TYPE_SELECT2,
                                                             'options' => ['id' => 'id-harga-jual', 'placeholder' => 'Pilih Level Harga...'],
@@ -292,15 +308,49 @@ $count_query_detail = AktPenjualanDetail::find()->where(['id_penjualan' => $mode
                                                         ])->label('Level Harga');
                                                         ?>
                                                     </div>
-                                                    <div class="col-md-2">
+                                                    <div class="col-md-3">
                                                         <?= $form->field($model_penjualan_detail_baru, 'harga')->textInput(['maxlength' => true, 'readonly' => false, 'autocomplete' => 'off', 'id' => 'harga']) ?>
                                                     </div>
                                                     <div class="col-md-1">
                                                         <?= $form->field($model_penjualan_detail_baru, 'qty')->textInput(['autocomplete' => 'off']) ?>
                                                     </div>
-                                                    <div class="col-md-2">
-                                                        <?= $form->field($model_penjualan_detail_baru, 'diskon')->textInput(['placeholder' => 'Diskon %', 'autocomplete' => 'off', 'pattern' => '[+-]?([0-9]*[.])?[0-9]+', 'id' => 'diskon-floating']) ?>
+                                                    <div class="col-md-7" style="margin-bottom: 10px;">
+                                                        <?= $form->field($model_penjualan_detail_baru, 'jenis_diskon')->dropDownList(
+                                                            array(
+                                                                1 => 'Diskon (%)',
+                                                                2 => 'Diskon Bertingkat',
+                                                                3 => 'Diskon Nominal'
+                                                            ),
+                                                            ['prompt' => 'Pilih Jenis Diskon']
+                                                        )->label(false) ?>
                                                     </div>
+
+                                                    <div class="col-md-5 diskon-persen">
+                                                        <?= $form->field($model_penjualan_detail_baru, 'diskon')->textInput(['type' => 'text', 'placeholder' => 'Diskon %', 'name' => 'diskon-persen', 'pattern' => '[+-]?([0-9]*[.])?[0-9]+', 'class' => 'diskon-floating form-control', 'autocomplete' => 'off', 'id' => 'diskon-persen'])->label(false) ?>
+                                                    </div>
+
+                                                    <div class="col-md-5 diskon-nominal">
+                                                        <?= $form->field($model_penjualan_detail_baru, 'diskon')->textInput(['type' => 'text', 'placeholder' => 'Diskon', 'name' => 'diskon-nominal', 'pattern' => '[+-]?([0-9]*[.])?[0-9]+', 'class' => 'diskon-floating form-control', 'id' => 'diskon-nominal', 'autocomplete' => 'off'])->label(false) ?>
+                                                    </div>
+
+                                                    <div class="col-md-1 bertingkat1">
+                                                        <?= $form->field($model_penjualan_detail_baru, 'diskon')->textInput(['type' => 'text', 'autocomplete' => 'off', 'name' => 'diskon1', 'pattern' => '[+-]?([0-9]*[.])?[0-9]+', 'class' => 'diskon-floating form-control', 'id' => 'diskon-1'])->label(false) ?>
+                                                    </div>
+                                                    <input type="hidden" id="harga_tetap" name="harga_tetap" />
+                                                    <div class="col-md-1 bertingkat2">
+                                                        <?= $form->field($model_penjualan_detail_baru, 'diskon2')->textInput(['type' => 'text', 'autocomplete' => 'off', 'pattern' => '[+-]?([0-9]*[.])?[0-9]+', 'class' => 'diskon-floating form-control', 'id' => 'diskon-2'])->label(false) ?>
+                                                    </div>
+                                                    <div class="col-md-1 bertingkat3">
+                                                        <?= $form->field($model_penjualan_detail_baru, 'diskon3')->textInput(['type' => 'text', 'autocomplete' => 'off', 'pattern' => '[+-]?([0-9]*[.])?[0-9]+', 'class' => 'diskon-floating form-control', 'id' => 'diskon-3'])->label(false) ?>
+                                                    </div>
+                                                    <div class="col-md-1 bertingkat4">
+                                                        <?= $form->field($model_penjualan_detail_baru, 'diskon4')->textInput(['type' => 'text', 'autocomplete' => 'off', 'pattern' => '[+-]?([0-9]*[.])?[0-9]+', 'class' => 'diskon-floating form-control', 'id' => 'diskon-4'])->label(false) ?>
+                                                    </div>
+                                                    <div class="col-md-1 bertingkat5">
+                                                        <?= $form->field($model_penjualan_detail_baru, 'diskon5')->textInput(['type' => 'text', 'autocomplete' => 'off', 'pattern' => '[+-]?([0-9]*[.])?[0-9]+', 'class' => 'diskon-floating form-control', 'id' => 'diskon-5'])->label(false) ?>
+                                                    </div>
+
+
 
                                                     <div class="col-md-10">
                                                         <?= $form->field($model_penjualan_detail_baru, 'keterangan')->textarea(['rows' => 1, 'placeholder' => 'Keterangan'])->label(FALSE) ?>
@@ -319,11 +369,11 @@ $count_query_detail = AktPenjualanDetail::find()->where(['id_penjualan' => $mode
                                                 <tr>
                                                     <th style="width: 1%;">No.</th>
                                                     <th style="width: 20%;">Nama Barang</th>
-                                                    <th style="width: 10%;">Jenis</th>
-                                                    <th style="width: 10%;">Gudang</th>
+                                                    <th style="width: 5%;">Jenis</th>
+                                                    <th style="width: 5%;">Gudang</th>
                                                     <th style="width: 5%;">Qty</th>
-                                                    <th style="width: 10%;">Harga</th>
-                                                    <th style="width: 10%;">Diskon %</th>
+                                                    <th style="width: 5%;">Harga</th>
+                                                    <th style="width: 10%;">Diskon</th>
                                                     <th style="width: 20%;">Keterangan</th>
                                                     <th style="width: 10%;">Sub Total</th>
 
@@ -364,10 +414,25 @@ $count_query_detail = AktPenjualanDetail::find()->where(['id_penjualan' => $mode
                                                         <td><?= $level_harga->keterangan ?></td>
                                                         <td><?= (!empty($gudang->nama_gudang)) ? $gudang->nama_gudang : '' ?></td>
                                                         <td><?= $data['qty'] ?></td>
-                                                        <td><?= ribuan($data['harga']) ?></td>
-                                                        <td><?= $data['diskon'] ?></td>
+                                                        <td style="white-space: nowrap;"><?= ribuan($data['harga']) ?></td>
+                                                        <td style="white-space: nowrap;">
+                                                            <?php if ($data['jenis_diskon'] == 1) { ?>
+                                                                <?= $data['diskon'] ?>%
+
+                                                            <?php } else if ($data['jenis_diskon'] == 2) { ?>
+
+                                                                <?= $data['diskon'] == null ? 0 :  $data['diskon'] ?>% | <?= $data['diskon2'] == null ? 0 :  $data['diskon2'] ?>% | <?= $data['diskon3'] == null ? 0 :  $data['diskon3'] ?>% | <?= $data['diskon4'] == null ? 0 :  $data['diskon4'] ?>% | <?= $data['diskon5'] == null ? 0 :  $data['diskon5'] ?>%
+
+                                                            <?php } else { ?>
+
+                                                                Rp. <?= ribuan($data['diskon']) ?>
+
+                                                            <?php } ?>
+
+
+                                                        </td>
                                                         <td><?= $data['keterangan'] ?></td>
-                                                        <td style="text-align: right;"><?= ribuan($data['total']) ?></td>
+                                                        <td style="text-align: right;white-space: nowrap;"><?= ribuan($data['total']) ?></td>
                                                         <?php
                                                         if ($model->status <= 2 && $cek_login == null && $is_penjualan->status == 1 && $model->jenis_bayar == null) {
                                                             # code...
@@ -505,16 +570,6 @@ $count_query_detail = AktPenjualanDetail::find()->where(['id_penjualan' => $mode
                                                                 }
                                                             }
                                                         ],
-                                                        [
-                                                            'attribute' => 'tanggal_estimasi',
-                                                            'label' => 'Tanggal Estimasi Barang Dikirim',
-                                                            'value' => function ($model) {
-                                                                if (!empty($model->tanggal_estimasi)) {
-                                                                    # code...
-                                                                    return tanggal_indo($model->tanggal_estimasi, true);
-                                                                }
-                                                            }
-                                                        ],
                                                     ],
                                                 ]) ?>
                                             </div>
@@ -581,8 +636,8 @@ $count_query_detail = AktPenjualanDetail::find()->where(['id_penjualan' => $mode
                                         <?= Html::beginForm(['faktur', 'id' => $model->id_penjualan], 'post') ?>
 
                                         <div class="form-group">
-                                            <label for="no_faktur_penjualan">No. Faktur</label>
-                                            <input type="text" id="no_faktur_penjualan" name="no_faktur_penjualan" placeholder="Nomor Invoice" value="<?= $model->no_faktur_penjualan ?>" class="form-control" autocomplete="off" required <?= ($model->status == 2) ? '' : 'readonly' ?>>
+                                            <label for="no_faktur_penjualan">No. Faktur Pajak</label>
+                                            <input type="text" id="no_faktur_penjualan" name="no_faktur_penjualan" placeholder="No. Faktur" value="<?= $model->no_faktur_penjualan ?>" class="form-control" autocomplete="off" required <?= ($model->status == 2) ? '' : 'readonly' ?>>
                                         </div>
 
                                         <div class="form-group">
@@ -701,15 +756,6 @@ $count_query_detail = AktPenjualanDetail::find()->where(['id_penjualan' => $mode
                             ])
                             ?>
 
-                            <?= $form->field($model, 'tanggal_estimasi')->widget(\yii\jui\DatePicker::classname(), [
-                                'clientOptions' => [
-                                    'changeMonth' => true,
-                                    'changeYear' => true,
-                                ],
-                                'dateFormat' => 'yyyy-MM-dd',
-                                'options' => ['class' => 'form-control']
-                            ])->label('Tanggal Estimasi Barang Dikirim') ?>
-
                         </div>
                     </div>
                     <?php if ($count_query_detail > 0) {  ?>
@@ -717,11 +763,17 @@ $count_query_detail = AktPenjualanDetail::find()->where(['id_penjualan' => $mode
 
                         <div class="row">
                             <div class="col-md-6">
-                                <?= $form->field($model, 'ongkir')->textInput(['value' => $model->ongkir == '' ? 0 : $model->ongkir, 'autocomplete' => 'off', 'class' => 'ongkir_penjualan form-control', 'pattern' => '[+-]?([0-9]*[.])?[0-9]+'])->label('Ongkir') ?>
+                                <?= $form->field($model, 'ongkir')->widget(\yii\widgets\MaskedInput::className(), [
+                                    'clientOptions' => ['alias' => 'decimal', 'groupSeparator' => '.', 'autoGroup' => true, 'removeMaskOnSubmit' => true, 'rightAlign' => false, 'min' => 0,],
+                                    'options' => ['value' => $model->ongkir == '' ? 0 : $model->ongkir, 'autocomplete' => 'off', 'required' => true]
+                                ]); ?>
                                 <?= $form->field($model, 'diskon')->textInput(['value' => $model->diskon == '' ? 0 : $model->diskon, 'autocomplete' => 'off', 'pattern' => '[+-]?([0-9]*[.])?[0-9]+', 'id' => 'diskon-floating', 'class' => 'form-control diskon-penjualan'])->label('Diskon %') ?>
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <?= $form->field($model, 'uang_muka')->textInput(['value' => $model->uang_muka == '' ? 0 : $model->uang_muka, 'autocomplete' => 'off']); ?>
+                                        <?= $form->field($model, 'uang_muka')->widget(\yii\widgets\MaskedInput::className(), [
+                                            'clientOptions' => ['alias' => 'decimal', 'groupSeparator' => '.', 'autoGroup' => true, 'removeMaskOnSubmit' => true, 'rightAlign' => false, 'min' => 0,],
+                                            'options' => ['value' => $model->uang_muka == '' ? 0 : $model->uang_muka, 'required' => true]
+                                        ]); ?>
 
                                     </div>
                                     <div id="kas-bank" class="col-md-12 kas-bank style-kas-bank">
@@ -766,16 +818,19 @@ $count_query_detail = AktPenjualanDetail::find()->where(['id_penjualan' => $mode
                                     60 => 60,
                                 ), ['prompt' => 'Pilih Jumlah Tempo']) ?>
 
-                                <?= $form->field($model, 'materai')->textInput(['value' => $model->materai == '' ? 0 : $model->materai, 'autocomplete' => 'off', 'class' => 'materai-penjualan form-control', 'pattern' => '[+-]?([0-9]*[.])?[0-9]+'])->label('Materai') ?>
+                                <?= $form->field($model, 'materai')->widget(\yii\widgets\MaskedInput::className(), [
+                                    'clientOptions' => ['alias' => 'decimal', 'groupSeparator' => '.', 'autoGroup' => true, 'removeMaskOnSubmit' => true, 'rightAlign' => false, 'min' => 0,],
+                                    'options' => ['required' => true]
+                                ]); ?>
 
                                 <label for="total_penjualan_detail">Total Penjualan Barang</label>
-                                <?= Html::input("text", "total_penjualan_detail", ribuan($total_penjualan_detail), ['class' => 'form-control', 'readonly' => true, 'id' => 'total_penjualan_detail']) ?>
+                                <?= Html::input("text", "total_penjualan_detail", ribuan($total_penjualan_detail), ['class' => 'form-control', 'readonly' => false, 'id' => 'total_penjualan_detail']) ?>
 
 
-                                <div class="form-group" style="margin-top:20px;">
+                                <!-- <div class="form-group" style="margin-top:20px;">
                                     <label for="total_perhitungan">Kekurangan Pembayaran</label>
                                     <input id="total_perhitungan" readonly class="form-control">
-                                </div>
+                                </div> -->
                             </div>
                         </div>
 
@@ -862,6 +917,11 @@ $count_query_detail = AktPenjualanDetail::find()->where(['id_penjualan' => $mode
 
     $(document).ready(function(){ 
 
+        
+        $('.diskon-persen').hide(); 
+        $('.diskon-nominal').hide(); 
+        hide_bertingkat();
+
     if ($("#aktpenjualan-jenis_bayar").val() == "1")
     {
         $("#aktpenjualan-jumlah_tempo").hide();
@@ -901,9 +961,171 @@ $count_query_detail = AktPenjualanDetail::find()->where(['id_penjualan' => $mode
     });
     });
 
+    function hilang_titik(string) {
+        return string.split('.').join('');
+    }
+
+    function is_null_diskon(value, jenis) {
+        if(value == null || value == 0 || value == '' ) {
+            $(jenis).hide();
+        } else {
+            $(jenis).show();
+        }
+    }
+
+    function hide_bertingkat() {
+        $('.bertingkat1').hide(); 
+        $('.bertingkat2').hide();
+        $('.bertingkat3').hide(); 
+        $('.bertingkat4').hide(); 
+        $('.bertingkat5').hide(); 
+    }
+
+    // function hitung_harga_tetap(type, harga_tetap, value1, value2 = 0, value3 = 0, value4 = 0, value5 = 0){
+
+    //     var diskon_in_nominal1 = harga_tetap * value1 / 100;
+    //     var last_value1 = harga_tetap - diskon_in_nominal1;
+
+    //     var diskon_in_nominal2 = last_value1 * value2 / 100;
+    //     var last_value2 = last_value1 - diskon_in_nominal2;
+
+    //     var diskon_in_nominal3 = last_value2 * value3 / 100;
+    //     var last_value3 = last_value2 - diskon_in_nominal3;
+
+    //     var diskon_in_nominal4 = last_value3 * value4 / 100;
+    //     var last_value4 = last_value3 - diskon_in_nominal4;
+
+    //     var diskon_in_nominal5 = last_value4 * value5 / 100;
+    //     var last_value5 = last_value4 - diskon_in_nominal5;
+
+    //     if(type == 'diskon1') {
+    //         $("#harga").val(formatNumber(last_value1));
+    //     } else if (type == 'diskon2') {
+    //         $("#harga").val(formatNumber(last_value2));
+    //     } else if (type == 'diskon3') {
+    //         $("#harga").val(formatNumber(last_value3));
+    //     } else if (type == 'diskon4') {
+    //         $("#harga").val(formatNumber(last_value4));
+    //     } else if (type == 'diskon5') {
+    //         $("#harga").val(formatNumber(last_value5));
+    //     }
+
+
+    // }
+
+
+    $("#aktpenjualandetail-jenis_diskon").change(function(){
+
+        var value_harga = $("#harga").val();
+        var harga_tetap = $("#harga_tetap").val();
+
+        if ($("#aktpenjualandetail-jenis_diskon").val() == "1")
+        {
+            $(".diskon-persen").show();
+            hide_bertingkat();
+            $('.diskon-nominal').hide();  
+
+            // $("#harga").val(formatNumber(harga_tetap));
+            $("#diskon-nominal").val(0)
+            $("#diskon-1").val(0)
+            $("#diskon-2").val(0)
+            $("#diskon-3").val(0)
+            $("#diskon-4").val(0)
+            $("#diskon-5").val(0)
+
+
+            // $("#diskon-persen").change(function() {
+            //    var value = $(this).val();
+            //    var value_not_titik = hilang_titik(harga_tetap);
+            //    var diskon_in_nominal = value_not_titik * value / 100;
+            //    var last_value = value_not_titik - diskon_in_nominal;
+            //    $("#harga").val(formatNumber(last_value));
+            // })
+
+        }
+        
+        if ($("#aktpenjualandetail-jenis_diskon").val() == "2")
+        { 
+
+            // $("#harga").val(formatNumber(harga_tetap));
+
+            $(".diskon-persen").hide();
+            $(".diskon-nominal").hide();
+            $('.bertingkat1').show(); 
+
+            $("#diskon-nominal").val(0);
+            $("#diskon-persen").val(0)
+
+            
+            $("#diskon-1").change(function() {
+               var value1 = $(this).val();
+               is_null_diskon(value1, '.bertingkat2');
+            //    hitung_harga_tetap('diskon1', harga_tetap, value1)
+
+               $("#diskon-2").change(function() {
+                    var value2 = $(this).val();
+                    is_null_diskon(value2, '.bertingkat3');
+                    // hitung_harga_tetap('diskon2', harga_tetap, value1, value2);
+
+                    $("#diskon-3").change(function() {
+                        var value3 = $(this).val();
+                        is_null_diskon(value3, '.bertingkat4');
+                        // hitung_harga_tetap('diskon3', harga_tetap, value1, value2,value3);
+                        
+                        $("#diskon-4").change(function() {
+                            var value4 = $(this).val();
+                            is_null_diskon(value4, '.bertingkat5');
+                            // hitung_harga_tetap('diskon4', harga_tetap, value1, value2, value3, value4);
+
+                            $("#diskon-5").change(function() {
+                                var value5 = $(this).val();
+                                // hitung_harga_tetap('diskon5', harga_tetap, value1, value2, value3, value4, value5);
+
+                            })
+
+                        })
+
+                    })
+                })
+
+            })
+
+
+
+        }
+
+        if ($("#aktpenjualandetail-jenis_diskon").val() == "3")
+        {
+
+            $('.diskon-nominal').show();
+            hide_bertingkat();
+            $(".diskon-persen").hide();
+
+            // $("#harga").val(formatNumber(harga_tetap));
+            $("#diskon-persen").val(0)
+            $("#diskon-1").val(0)
+            $("#diskon-2").val(0)
+            $("#diskon-3").val(0)
+            $("#diskon-4").val(0)
+            $("#diskon-5").val(0)
+
+
+            // $("#diskon-nominal").change(function() {
+            //    var value = $(this).val();
+            //    var value_not_titik = hilang_titik(harga_tetap);
+            //    var last_value = value_not_titik - value;
+            //    $("#harga").val(formatNumber(last_value));
+            // })
+
+        }
+    
+    });
+
     let harga = document.querySelector('#harga');
+    let harga_tetap = document.querySelector('#harga_tetap');
     harga.addEventListener('keyup', function(e){
         harga.value = formatRupiah(this.value);
+        harga_tetap.value = this.value;
     });
     
     function formatNumber (number) {
@@ -936,6 +1158,7 @@ $count_query_detail = AktPenjualanDetail::find()->where(['id_penjualan' => $mode
                 let dataJson = $.parseJSON(data);
                 let hargaSatuan = formatNumber(dataJson.harga_satuan);
                 harga.value = hargaSatuan;
+                harga_tetap.value = dataJson.harga_satuan;
             }
         })
     })

@@ -17,8 +17,8 @@ class AktPembayaranBiayaSearch extends AktPembayaranBiaya
     public function rules()
     {
         return [
-            [['id_pembayaran_biaya', 'id_pembelian', 'cara_bayar', 'id_kas_bank'], 'integer'],
-            [['tanggal_pembayaran_biaya', 'keterangan', 'nominal'], 'safe'],
+            [['id_pembayaran_biaya', 'id_pembelian', 'cara_bayar', 'id_kas_bank', 'nominal'], 'integer'],
+            [['tanggal_pembayaran_biaya', 'keterangan'], 'safe'],
         ];
     }
 

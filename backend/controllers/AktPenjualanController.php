@@ -175,11 +175,8 @@ class AktPenjualanController extends Controller
         $model->id_mata_uang = 1;
 
         $no_order_penjualan = Utils::getNomorTransaksi($model, 'OP', 'no_order_penjualan', 'no_order_penjualan');
-        $no_penjualan = Utils::getNomorTransaksi($model, 'PJ', 'no_penjualan', 'no_penjualan');
+
         $model->no_order_penjualan = $no_order_penjualan;
-        $model->no_penjualan = $no_penjualan;
-
-
         $data_customer =  AktPenjualan::dataCustomer();
         $data_sales = AktPenjualan::dataSales();
         $data_mata_uang = AktPenjualan::dataMataUang();
@@ -250,8 +247,6 @@ class AktPenjualanController extends Controller
             # code...
             $no_penjualan = 'PJ' . date('ym') . '001';
         }
-
-
         $model->status = 2;
         $model->the_approver = $id_login;
         $model->the_approver_date = date('Y-m-d H:i:s');
@@ -264,22 +259,14 @@ class AktPenjualanController extends Controller
         $no_jurnal_umum = AktJurnalUmum::getKodeJurnalUmum();
         $jurnal_umum->no_jurnal_umum = $no_jurnal_umum;
         $jurnal_umum->tipe = 1;
-        $jurnal_umum->tanggal = $model->tanggal_penjualan;
+        $jurnal_umum->tanggal = date('Y-m-d');
         $jurnal_umum->keterangan = 'Order Penjualan : ' .  $model->no_order_penjualan;
         $jurnal_umum->save(false);
 
         // End Create Jurnal Umum
         $penjualan_detail = Yii::$app->db->createCommand("SELECT SUM(total) FROM akt_penjualan_detail WHERE id_penjualan = '$model->id_penjualan'")->queryScalar();
         $pajak = 0;
-
-        if ($jenis_diskon = 1) {
-            $diskon = $model->diskon / 100 * $penjualan_detail;
-        } else if ($jenis_diskon == 2) {
-            $diskon = $model->diskon;
-        } else {
-            $diskon = 0;
-        }
-
+        $diskon = $model->diskon / 100 * $penjualan_detail;
         if ($model->pajak == 1) {
             $total_pembelian = $penjualan_detail - $diskon;
             $pajak = 0.1 * $total_pembelian;
@@ -289,7 +276,7 @@ class AktPenjualanController extends Controller
         $penjualan_barang = $penjualan_detail - $diskon;
         $grand_total = $penjualan_barang + $pajak + $model->ongkir - $model->materai;
 
-        $piutang_usaha = $grand_total - $model->uang_muka;
+        $piutang_usaha = $grand_total - $model->uang_muka;;
 
         $data_jurnal_umum = array(
             'piutang_usaha' => $piutang_usaha,
@@ -368,16 +355,7 @@ class AktPenjualanController extends Controller
             $jurnal_umum_detail = AktJurnalUmumDetail::find()->where(['id_jurnal_umum' => $jurnal_umum->id_jurnal_umum])->all();
             foreach ($jurnal_umum_detail as $ju) {
                 $akun = AktAkun::find()->where(['id_akun' => $ju->id_akun])->one();
-                if ($akun->id_akun == 1 && $model->id_kas_bank != null) {
-                    $history_transaksi_kas = AktHistoryTransaksi::find()
-                        ->where(['id_tabel' => $model->id_kas_bank])
-                        ->andWhere(['nama_tabel' => 'akt_kas_bank'])
-                        ->andWhere(['id_jurnal_umum' => $ju->id_jurnal_umum_detail])->one();
-                    $akt_kas_bank = AktKasBank::find()->where(['id_kas_bank' => $model->id_kas_bank])->one();
-                    $akt_kas_bank->saldo = $akt_kas_bank->saldo - $ju->debit + $ju->kredit;
-                    $akt_kas_bank->save(false);
-                    $history_transaksi_kas->delete();
-                } else {
+                if ($akun->nama_akun != 'kas') {
                     if ($akun->saldo_normal == 1 && $ju->debit > 0 || $ju->debit < 0) {
                         $akun->saldo_akun = $akun->saldo_akun - $ju->debit;
                     } else if ($akun->saldo_normal == 1 && $ju->kredit > 0 || $ju->kredit < 0) {
@@ -387,6 +365,15 @@ class AktPenjualanController extends Controller
                     } else if ($akun->saldo_normal == 2 && $ju->debit > 0 || $ju->debit < 0) {
                         $akun->saldo_akun = $akun->saldo_akun + $ju->debit;
                     }
+                } else if ($akun->nama_akun == 'kas' && $model->id_kas_bank != null) {
+                    $history_transaksi_kas = AktHistoryTransaksi::find()
+                        ->where(['id_tabel' => $model->id_kas_bank])
+                        ->andWhere(['nama_tabel' => 'akt_kas_bank'])
+                        ->andWhere(['id_jurnal_umum' => $ju->id_jurnal_umum_detail])->one();
+                    $akt_kas_bank = AktKasBank::find()->where(['id_kas_bank' => $model->id_kas_bank])->one();
+                    $akt_kas_bank->saldo = $akt_kas_bank->saldo - $ju->debit + $ju->kredit;
+                    $akt_kas_bank->save(false);
+                    $history_transaksi_kas->delete();
                 }
                 $akun->save(false);
                 $ju->delete();
@@ -497,6 +484,8 @@ class AktPenjualanController extends Controller
 
         if ($model->load(Yii::$app->request->post())) {
 
+
+
             if ($model->uang_muka > 0 && $model->id_kas_bank == '') {
                 Yii::$app->session->setFlash('danger', [['Perhatian !', 'Jika ada uang muka, kas bank tidak boleh kosong!']]);
                 return $this->redirect(['view', 'id' => $model->id_penjualan]);
@@ -504,33 +493,16 @@ class AktPenjualanController extends Controller
 
             if ($count_penjualan_detail > 0) {
 
+                // $post_total_penjualan_detail = Yii::$app->request->post('total_penjualan_detail');
+                // $total_penjualan_detail = preg_replace('/\D/', '', $post_total_penjualan_detail);
+
                 $model_ongkir = preg_replace("/[^0-9,]+/", "", Yii::$app->request->post('AktPenjualan')['ongkir']);
                 $model_materai = preg_replace("/[^0-9,]+/", "", Yii::$app->request->post('AktPenjualan')['materai']);
                 $model_uang_muka = preg_replace("/[^a-zA-Z0-9]/", "", Yii::$app->request->post('AktPenjualan')['uang_muka']);
 
-                // $diskon = ($model->diskon > 0) ? ($model->diskon * $model_penjualan_detail) / 100 : 0;
-
-                $model_jenis_diskon = Yii::$app->request->post('AktPenjualan')['jenis_diskon'];
-                $model_diskon = Yii::$app->request->post('AktPenjualan')['diskon'];
-
-                // Persen
-                if ($model_jenis_diskon == 1) {
-                    $diskon = ($model_diskon > 0) ? ($model->diskon * $model_penjualan_detail) / 100 : 0;
-                }
-                // Rupiah
-                elseif ($model_jenis_diskon == 2) {
-                    $diskon = ($model_diskon > 0) ? $model_diskon : 0;
-                }
-
-                $diskon_akhir = empty($diskon) ? 0 : $diskon;
-
-                if ($model_diskon > 0  && $model_jenis_diskon == null) {
-                    return  Yii::$app->session->setFlash('danger', [['Perhatian!', 'Jika ada diskon, jenis diskon tidak boleh kosong']]);
-                }
-
-
+                $diskon = ($model->diskon > 0) ? ($model->diskon * $model_penjualan_detail) / 100 : 0;
                 $pajak = ($model->pajak == 1) ? (($model_penjualan_detail - $diskon) * 10) / 100 : 0;
-                $model_total_sementara = (($model_penjualan_detail - $diskon_akhir) + $pajak) + $model_ongkir;
+                $model_total_sementara = (($model_penjualan_detail - $diskon) + $pajak) + $model_ongkir + $model_materai;
                 $model_total = $model_total_sementara - $model_uang_muka;
 
                 $model->ongkir = $model_ongkir;

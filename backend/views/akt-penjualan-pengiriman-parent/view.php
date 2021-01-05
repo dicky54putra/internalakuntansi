@@ -65,12 +65,20 @@ $this->title = 'Detail Data Pengiriman Penjualan : ' . $model->no_penjualan;
             ?>
             <?php
             if ($count_belum_terkirim == 0 && $angka_penentu == 0) {
-                # code...
             ?>
                 <?= Html::a('<span class="glyphicon glyphicon-ok"></span> Selesai', ['terkirim', 'id' => $model->id_penjualan], [
                     'class' => 'btn btn-primary',
                     'data' => [
                         'confirm' => 'Apakah anda yakin sudah terkirim semua?',
+                        'method' => 'post',
+                    ],
+                ]) ?>
+            <?php } ?>
+            <?php if ($count_belum_terkirim == 0) { ?>
+                <?= Html::a('<span class="glyphicon glyphicon-trash"></span> Hapus Data Pengiriman', ['hapus-data-pengiriman', 'id' => $model->id_penjualan], [
+                    'class' => 'btn btn-danger',
+                    'data' => [
+                        'confirm' => 'Apakah anda yakin menghapus data ini semua?',
                         'method' => 'post',
                     ],
                 ]) ?>
@@ -319,7 +327,7 @@ $this->title = 'Detail Data Pengiriman Penjualan : ' . $model->no_penjualan;
                                                                 <?php } ?>
                                                         <?php }
                                                         } ?>
-                                                        <?= Html::a('<span class="glyphicon glyphicon-print"></span> Surat Jalan', ['akt-penjualan-pengiriman/cetak-surat-pengantar', 'id' => $data->id_penjualan_pengiriman], [
+                                                        <?= Html::a('<span class="glyphicon glyphicon-print"></span> Surat Pengantar', ['akt-penjualan-pengiriman/cetak-surat-pengantar', 'id' => $data->id_penjualan_pengiriman], [
                                                             'class' => 'btn btn-default',
                                                             'style' => [
                                                                 'float' => 'right',

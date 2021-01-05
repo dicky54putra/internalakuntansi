@@ -52,7 +52,7 @@ class AktJurnalUmum extends \yii\db\ActiveRecord
     {
         $akt_jurnal_umum = AktJurnalUmum::find()
             ->select(["no_jurnal_umum"])
-            ->orderBy("id_jurnal_umum DESC")
+            ->orderBy("no_jurnal_umum DESC")
             ->limit(1)
             ->one();
 

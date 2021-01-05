@@ -47,8 +47,8 @@ class AktPenjualanHartaTetap extends \yii\db\ActiveRecord
     {
         return [
             [['no_penjualan_harta_tetap', 'tanggal_penjualan_harta_tetap', 'id_customer', 'id_mata_uang', 'status'], 'required'],
-            [['tanggal_penjualan_harta_tetap', 'the_approver_date', 'tanggal_faktur_penjualan_harta_tetap', 'tanggal_tempo', 'total', 'diskon', 'jumlah_tempo'], 'safe'],
-            [['id_customer', 'id_sales', 'id_mata_uang', 'the_approver', 'pajak', 'id_kas_bank', 'jenis_bayar', 'status'], 'integer'],
+            [['tanggal_penjualan_harta_tetap', 'the_approver_date', 'tanggal_faktur_penjualan_harta_tetap', 'tanggal_tempo', 'total', 'diskon'], 'safe'],
+            [['id_customer', 'id_sales', 'id_mata_uang', 'the_approver', 'pajak', 'id_kas_bank', 'jenis_bayar', 'jumlah_tempo', 'status'], 'integer'],
             [['no_penjualan_harta_tetap', 'no_faktur_penjualan_harta_tetap'], 'string', 'max' => 200],
         ];
     }

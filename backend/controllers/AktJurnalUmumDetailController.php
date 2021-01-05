@@ -91,6 +91,15 @@ class AktJurnalUmumDetailController extends Controller
         $post_kas_bank = Yii::$app->request->post('detail-kas');
 
 
+        $post_kas_bank = Yii::$app->request->post('detail-kas');
+
+        if ($model_id_akun == 1) {
+            if (empty($post_kas_bank)) {
+                Yii::$app->session->setFlash("danger", "Jika akun kas, kas bank harus diisi");
+                return $this->redirect(['akt-jurnal-umum/view', 'id' => $model_id_jurnal_umum]);
+            }
+        }
+
 
         $model = new AktJurnalUmumDetail();
         $model->id_jurnal_umum = $model_id_jurnal_umum;
@@ -208,7 +217,6 @@ class AktJurnalUmumDetailController extends Controller
 
         return $this->redirect(['akt-jurnal-umum/view', 'id' => $model->id_jurnal_umum]);
     }
-
 
     /**
      * Finds the AktJurnalUmumDetail model based on its primary key value.
