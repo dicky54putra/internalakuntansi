@@ -252,7 +252,7 @@ class AktReturPembelianController extends Controller
         $no_jurnal_umum = AktJurnalUmum::getKodeJurnalUmum();
         $jurnal_umum->no_jurnal_umum = $no_jurnal_umum;
         $jurnal_umum->tipe = 1;
-        $jurnal_umum->tanggal = date('Y-m-d');
+        $jurnal_umum->tanggal = $model->tanggal_retur_pembelian;
         $jurnal_umum->keterangan = 'Retur Pembelian : ' .  $model_pembelian->no_pembelian;
         $jurnal_umum->save(false);
         // End Create Jurnal Umum
