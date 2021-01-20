@@ -247,7 +247,7 @@ class AktReturPenjualanController extends Controller
         $no_jurnal_umum = AktJurnalUmum::getKodeJurnalUmum();
         $jurnal_umum->no_jurnal_umum = $no_jurnal_umum;
         $jurnal_umum->tipe = 1;
-        $jurnal_umum->tanggal = date('Y-m-d');
+        $jurnal_umum->tanggal = $model->tanggal_retur_penjualan;
         $jurnal_umum->keterangan = 'Retur Penjualan : ' .  $model_penjualan->no_penjualan;
         $jurnal_umum->save(false);
         // End Create Jurnal Umum

@@ -2,6 +2,7 @@
 
 namespace yii\helpers;
 
+use backend\models\AktJurnalUmumDetail;
 use Yii;
 
 class Utils
@@ -16,7 +17,8 @@ class Utils
         }
     }
 
-    public static function getIdLogin() {
+    public static function getIdLogin()
+    {
         $id_login =  Yii::$app->user->identity->id_login;
         return $id_login;
     }
@@ -46,5 +48,19 @@ class Utils
         }
 
         return $no_transaksi;
+    }
+
+    public static function getSumAktivaPasiva($tanggal_awal, $tanggal_akhir, $in, $saldo_normal, $type)
+    {
+
+        $query_aktiva = AktJurnalUmumDetail::find()
+            ->leftjoin("akt_jurnal_umum", "akt_jurnal_umum.id_jurnal_umum = akt_jurnal_umum_detail.id_jurnal_umum")
+            ->leftjoin("akt_akun", "akt_akun.id_akun = akt_jurnal_umum_detail.id_akun")
+            ->where("akt_jurnal_umum_detail.id_akun IN($in)")
+            ->andWhere("akt_jurnal_umum.tanggal BETWEEN '$tanggal_awal' AND '$tanggal_akhir'")
+            ->andWhere("akt_akun.saldo_normal = '$saldo_normal'");
+
+        $sum = $query_aktiva->sum($type);
+        return $sum;
     }
 }

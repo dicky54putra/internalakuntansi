@@ -42,6 +42,9 @@ $this->title = 'Daftar Laporan Akuntansi';
                                     ?></td>
                             </tr> -->
                             <tr>
+                                <td><?= Html::a('<span class="fa fa-file-text"></span> Laporan Neraca Saldo', ['laporan-neraca-saldo']) ?></td>
+                            </tr>
+                            <tr>
                                 <td><?= Html::a('<span class="fa fa-file-text"></span> Laporan Neraca Lajur', ['laporan-neraca-lajur']) ?></td>
                             </tr>
                             <tr>

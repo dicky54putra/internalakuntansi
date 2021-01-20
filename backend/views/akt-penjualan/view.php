@@ -559,6 +559,16 @@ $this->title = 'Detail Data Order Penjualan : ' . $model->no_order_penjualan;
                             'options' => ['class' => 'form-control']
                         ]) ?>
 
+                        <?= $model->tanggal_penjualan = date('Y-m-d');
+                        echo $form->field($model, 'tanggal_penjualan')->widget(\yii\jui\DatePicker::classname(), [
+                            'clientOptions' => [
+                                'changeMonth' => true,
+                                'changeYear' => true,
+                            ],
+                            'dateFormat' => 'yyyy-MM-dd',
+                            'options' => ['class' => 'form-control']
+                        ]) ?>
+
                         <?= $form->field($model, 'id_customer')->widget(Select2::classname(), [
                             'data' => $data_customer,
                             'language' => 'en',

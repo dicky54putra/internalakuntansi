@@ -527,6 +527,21 @@ $count_query_detail = AktPembelianDetail::find()->where(['id_pembelian' => $mode
                                 ) ?>
                             </div>
                             <div class="form-group">
+                                <?php
+                                $model->tanggal_pembelian = date('Y-m-d');
+                                echo $form->field($model, 'tanggal_pembelian')->widget(
+                                    \yii\jui\DatePicker::classname(),
+                                    [
+                                        'clientOptions' => [
+                                            'changeMonth' => true,
+                                            'changeYear' => true,
+                                        ],
+                                        'dateFormat' => 'yyyy-MM-dd',
+                                        'options' => ['class' => 'form-control', 'required' => 'on', 'autocomplete' => 'off']
+                                    ]
+                                ) ?>
+                            </div>
+                            <div class="form-group">
                                 <?= $form->field($model, 'tanggal_estimasi')->widget(
                                     \yii\jui\DatePicker::classname(),
                                     [

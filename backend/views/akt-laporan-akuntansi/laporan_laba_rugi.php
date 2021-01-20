@@ -3,8 +3,11 @@
 use yii\helpers\Html;
 use kartik\select2\Select2;
 use backend\models\AktAkun;
+use backend\models\AktAkunLaporan;
+use backend\models\AktAkunLaporanDetail;
 use backend\models\AktJurnalUmumDetail;
 use backend\models\AktKlasifikasi;
+use backend\models\AktLabaRugi;
 
 $this->title = 'Laporan Laba Rugi';
 ?>
@@ -41,7 +44,7 @@ $this->title = 'Laporan Laba Rugi';
                                 </td>
                                 <td width="30%">
                                     <div class="form-group">
-                                        <input type="date" name="tanggal_awal" value="<?= (!empty($tanggal_awal)) ? $tanggal_awal : ''; ?>" class="form-control" required>
+                                        <input type="date" name="tanggal_awal" value="<?= (!empty($tanggal_awal)) ? $tanggal_awal : date('Y-m-d', strtotime('-30 days', strtotime(date('Y-m-d')))) ?>" class="form-control" required>
                                     </div>
                                 </td>
                             </tr>
@@ -54,7 +57,7 @@ $this->title = 'Laporan Laba Rugi';
                                 </td>
                                 <td width="30%">
                                     <div class="form-group">
-                                        <input type="date" name="tanggal_akhir" value="<?= (!empty($tanggal_akhir)) ? $tanggal_akhir : ''; ?>" class="form-control" required>
+                                        <input type="date" name="tanggal_akhir" value="<?= (!empty($tanggal_akhir)) ? $tanggal_akhir : date('Y-m-d') ?>" class="form-control" required>
                                     </div>
                                 </td>
                             </tr>
@@ -86,304 +89,142 @@ $this->title = 'Laporan Laba Rugi';
             <?= Html::a('Cetak', ['laporan-laba-rugi-cetak', 'tanggal_awal' => $tanggal_awal, 'tanggal_akhir' => $tanggal_akhir], ['class' => 'btn btn-primary', 'target' => '_blank', 'method' => 'post']) ?>
             <?= Html::a('Export', ['laporan-laba-rugi-excel', 'tanggal_awal' => $tanggal_awal, 'tanggal_akhir' => $tanggal_akhir], ['class' => 'btn btn-success', 'target' => '_blank', 'method' => 'post']) ?>
         </p>
-
-        <div class="box">
-            <div class="panel panel-primary">
-                <div class="panel-heading">Pendapatan</div>
-                <div class="panel-body">
-                    <div class="col-md-12" style="padding: 0;">
-                        <div class="box-body">
+        <!-- pendapatan -->
+        <div class="panel panel-primary">
+            <div class="panel-heading">Laporan Laba Rugi</div>
+            <div class="panel-body">
+                <div class="col-md-12" style="padding: 0;">
+                    <div class="box-body">
+                        <table class="table">
                             <?php
-                            $pendapatan_ = Yii::$app->db->createCommand("SELECT akt_klasifikasi.id_klasifikasi, akt_klasifikasi.klasifikasi FROM akt_klasifikasi LEFT JOIN akt_akun ON akt_klasifikasi.id_klasifikasi = akt_akun.klasifikasi WHERE akt_akun.jenis = 4 GROUP BY akt_klasifikasi.klasifikasi ORDER BY akt_klasifikasi.klasifikasi DESC")->query();
-                            $grandtotal_pendapatan = 0;
-                            foreach ($pendapatan_ as $key => $val) {
+                            // array no urut 
+                            $nomer_urut = AktLabaRugi::arrayPembagian();
+
+                            foreach ($nomer_urut as $nomer_urut) {
+                                $in = AktLabaRugi::getAkunLaporanDetail($nomer_urut['no_urut']);
+                                // query laba rugi
+                                $q_laba_rugi = AktLabaRugi::getQuery4LabaRugi($tanggal_awal, $tanggal_akhir, "AND akt_akun.id_akun IN($in) AND akt_akun_laporan.id_akun_laporan = 11")->query();
+                                $sum = 0;
+                                foreach ($q_laba_rugi as $val) {
                             ?>
-                                <table class="table">
-                                    <thead>
+                                    <tr>
+                                        <td><?= ($val['nama_akun'] == 'HPP') ? 'PERSEDIAAN AWAL' : strtoupper($val['nama_akun']); ?></td>
+                                        <td style="text-align: right;">
+                                            <?php
+                                            if ($val['no_urut'] == 2 || $val['no_urut'] == 3) {
+                                                if ($val['nama_akun'] == 'Persediaan Barang Dagang') {
+                                                    echo ($val['nominal'] <= 0) ? ribuan($val['nominal']) : '(' . ribuan(abs($val['nominal'])) . ')';
+                                                } else if ($val['nama_akun'] == 'HPP') {
+                                                    echo ribuan(0);
+                                                } else {
+                                                    echo ($val['nominal'] < 0) ? '(' . ribuan(abs($val['nominal'])) . ')' : ribuan(abs($val['nominal']));
+                                                }
+                                            }
+                                            ?>
+                                        </td>
+                                        <td style="text-align: right;">
+                                            <?php
+                                            if ($val['no_urut'] == 1 || $val['no_urut'] == 4) {
+                                                echo ($val['nominal'] <= 0) ? ribuan(abs($val['nominal'])) : '(' . ribuan(abs($val['nominal'])) . ')';
+                                            }
+                                            ?>
+                                        </td>
+                                    </tr>
+                                    <?php
+                                    $sum += $val['nominal'];
+                                    ?>
+                                <?php } ?>
+                                <?php
+                                if ($nomer_urut['no_urut'] == 2 || $nomer_urut['no_urut'] == 3) {
+                                    $bor = 'border-top: 2px solid black;';
+                                    $bor2 = 'bottom';
+                                } else  if ($nomer_urut['no_urut'] == 1 || $nomer_urut['no_urut'] == 4) {
+                                    $bor = '';
+                                    $bor2 = 'top';
+                                }
+                                $persediaan_barang_dagang = AktLabaRugi::getQuery4LabaRugi($tanggal_awal, $tanggal_akhir, "AND akt_akun.id_akun IN(117) AND akt_akun_laporan.id_akun_laporan = 11")->queryOne();
+                                $hpp = AktLabaRugi::getQuery4LabaRugi($tanggal_awal, $tanggal_akhir, "AND akt_akun.id_akun IN(114) AND akt_akun_laporan.id_akun_laporan = 11")->queryOne();
+
+                                // sum hpp / bagian 2
+                                $sum_total = $sum - ($persediaan_barang_dagang['nominal'] * 2) - $hpp['nominal'];
+
+                                if ($nomer_urut['no_urut'] == 1) {
+                                    $sum_p = ($sum <= 0) ? abs($sum_penjualan = $sum) : -1 * abs($sum);
+                                } else if ($nomer_urut['no_urut'] == 2) {
+                                    $sum_b = $sum_total;
+                                } else if ($nomer_urut['no_urut'] == 3) {
+                                    $sum_by = $sum;
+                                } else if ($nomer_urut['no_urut'] == 4) {
+                                    $sum_bb = ($sum <= 0) ? abs($sum_penjualan = $sum) : -1 * abs($sum);
+                                }
+
+                                if ($nomer_urut['no_urut'] != 4) {
+                                ?>
+                                    <tr>
+                                        <td><b><?= strtoupper('TOTAL ' . $nomer_urut['nama']) ?></b></td>
+                                        <td style="<?= $bor ?>"></td>
+                                        <td style="border-<?= $bor2 ?>: 2px solid black; text-align: right; font-weight: bold;">
+                                            <?php
+                                            if ($nomer_urut['no_urut'] == 1) {
+                                                echo ($sum <= 0) ? ribuan(abs($sum_penjualan = $sum)) : '(' . ribuan(abs($sum)) . ')';
+                                            } else if ($nomer_urut['no_urut'] == 2) {
+                                                echo ribuan($sum_total);
+                                            } else if ($nomer_urut['no_urut'] == 3) {
+                                                echo ribuan($sum);
+                                            }
+                                            ?>
+                                        </td>
+                                    </tr>
+                                    <?php if ($nomer_urut['no_urut'] == 2) { ?>
                                         <tr>
-                                            <th colspan="4" bgcolor="grey" style="color: white;"><?= $val['klasifikasi'] ?></th>
+                                            <td><?= strtoupper('laba kotor') ?></td>
+                                            <td></td>
+                                            <td style="text-align: right; font-weight: bold;">
+                                                <?php
+                                                if (!empty($sum_p) || !empty($sum_b) || !empty($sum_by)) {
+                                                    $laba_kotor = $sum_p - $sum_b;
+                                                    echo ($laba_kotor < 0) ? '(' . ribuan(abs($laba_kotor)) . ')' : ribuan($laba_kotor);
+                                                }
+                                                ?>
+                                            </td>
                                         </tr>
+                                    <?php } else if ($nomer_urut['no_urut'] == 3) { ?>
                                         <tr>
-                                            <th style="width: 1%;">#</th>
-                                            <th style="width: 15%;">Kode</th>
-                                            <th>Nama Akun</th>
-                                            <th>Nominal</th>
+                                            <td><?= strtoupper('laba bersih') ?></td>
+                                            <td></td>
+                                            <td style="text-align: right;">
+                                                <?php
+                                                if (!empty($sum_p) || !empty($sum_b) || !empty($sum_by)) {
+                                                    $laba_bersih1 = $sum_p - $sum_b - $sum_by;
+                                                    echo ($laba_bersih1 < 0) ? '(' . ribuan(abs($laba_bersih1)) . ')' : ribuan($laba_bersih1);
+                                                } ?>
+                                            </td>
                                         </tr>
-                                    </thead>
-                                    <tbody>
-                                        <?php
-                                        $no = 0;
-                                        $total_pendapatan = 0;
-                                        $pendapatan = Yii::$app->db->createCommand("SELECT * FROM akt_akun LEFT JOIN akt_klasifikasi ON akt_klasifikasi.id_klasifikasi = akt_akun.klasifikasi WHERE akt_akun.jenis = 4 AND akt_klasifikasi.klasifikasi = '" . $val['klasifikasi'] . "'")->query();
-                                        foreach ($pendapatan as $key => $value) {
-                                            $no++;
-                                            $sum_debit = AktJurnalUmumDetail::find()->leftJoin('akt_jurnal_umum', 'akt_jurnal_umum.id_jurnal_umum = akt_jurnal_umum_detail.id_jurnal_umum')->where(['id_akun' => $value['id_akun']])->andWhere(['BETWEEN', 'tanggal', $tanggal_awal, $tanggal_akhir])->sum('debit');
-                                            $sum_kredit = AktJurnalUmumDetail::find()->leftJoin('akt_jurnal_umum', 'akt_jurnal_umum.id_jurnal_umum = akt_jurnal_umum_detail.id_jurnal_umum')->where(['id_akun' => $value['id_akun']])->andWhere(['BETWEEN', 'tanggal', $tanggal_awal, $tanggal_akhir])->sum('kredit');
-                                            $nominal = $sum_debit - $sum_kredit;
-                                            $total_pendapatan += $nominal;
-                                        ?>
-                                            <tr>
-                                                <td><?= $no ?></td>
-                                                <td><?= $value['kode_akun']
-                                                    ?></td>
-                                                <td><?= $value['nama_akun'] ?></td>
-                                                <td style="text-align: right;"><?= $nominal >= 0 ? ribuan($nominal) : '( ' . ribuan($nominal) . ' ) ' ?></td>
-                                            </tr>
-                                        <?php } ?>
-                                    </tbody>
-                                    <tfoot>
-                                        <tr>
-                                            <th colspan="3" style="text-align: right;">Total</th>
-                                            <th style="text-align: right;"><?= ribuan($total_pendapatan) ?></th>
-                                        </tr>
-                                    </tfoot>
-                                </table>
-                                <?php $grandtotal_pendapatan += $total_pendapatan; ?>
+                                    <?php } ?>
+                                <?php } ?>
+                                <?php if ($nomer_urut['no_urut'] == 4) {  ?>
+                                    <tr>
+                                        <td><b><?= strtoupper('laba bersih') ?></b></td>
+                                        <td></td>
+                                        <td style="border-<?= $bor2 ?>: 2px solid black; text-align: right; font-weight: bold;">
+                                            <?php
+                                            if (!empty($sum_p) || !empty($sum_b) || !empty($sum_by) || !empty($sum_bb)) {
+                                                $laba_bersih = $sum_p - $sum_b - $sum_by + $sum_bb;
+                                                echo ($laba_bersih < 0) ? '(' . ribuan(abs($laba_bersih)) . ')' : ribuan($laba_bersih);
+                                            }
+                                            ?>
+                                        </td>
+                                    </tr>
+                                <?php } ?>
+                                <?php if ($nomer_urut['no_urut'] != 3) { ?>
+                                    <tr>
+                                        <td colspan="3"><br></td>
+                                    </tr>
+                                <?php } ?>
                             <?php } ?>
-                        </div>
+                        </table>
                     </div>
                 </div>
-                <div class="panel-footer">
-                    <center>
-                        <table style="width: 97%;">
-                            <tr>
-                                <td><b>Grandtotal Pendapatan</b></td>
-                                <td><b style="float: right;"><?= ribuan($grandtotal_pendapatan) ?></b></td>
-                            </tr>
-                        </table>
-                    </center>
-                </div>
-            </div>
-        </div>
-
-        <div class="box">
-            <div class="panel panel-primary">
-                <div class="panel-heading">Pendapatan Lain</div>
-                <div class="panel-body">
-                    <div class="col-md-12" style="padding: 0;">
-                        <div class="box-body">
-                            <?php
-                            $pendapatan_lain_ = Yii::$app->db->createCommand("SELECT akt_klasifikasi.id_klasifikasi, akt_klasifikasi.klasifikasi FROM akt_klasifikasi LEFT JOIN akt_akun ON akt_klasifikasi.id_klasifikasi = akt_akun.klasifikasi WHERE akt_akun.jenis = 10 GROUP BY akt_klasifikasi.klasifikasi ORDER BY akt_klasifikasi.klasifikasi DESC")->query();
-                            $grandtotal_pendapatan_lain = 0;
-                            foreach ($pendapatan_lain_ as $key => $val) {
-                            ?>
-                                <table class="table">
-                                    <thead>
-                                        <tr>
-                                            <th colspan="4" bgcolor="grey" style="color: white;"><?= $val['klasifikasi'] ?></th>
-                                        </tr>
-                                        <tr>
-                                            <th style="width: 1%;">#</th>
-                                            <th style="width: 15%;">Kode</th>
-                                            <th>Nama Akun</th>
-                                            <th>Nominal</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <?php
-                                        $no = 0;
-                                        $total_pendapatan_lain = 0;
-                                        $pendapatan_lain = Yii::$app->db->createCommand("SELECT * FROM akt_akun LEFT JOIN akt_klasifikasi ON akt_klasifikasi.id_klasifikasi = akt_akun.klasifikasi WHERE akt_akun.jenis = 4 AND akt_klasifikasi.klasifikasi = '" . $val['klasifikasi'] . "'")->query();
-                                        foreach ($pendapatan_lain as $key => $value) {
-                                            $no++;
-                                            $sum_debit = AktJurnalUmumDetail::find()->leftJoin('akt_jurnal_umum', 'akt_jurnal_umum.id_jurnal_umum = akt_jurnal_umum_detail.id_jurnal_umum')->where(['id_akun' => $value['id_akun']])->andWhere(['BETWEEN', 'tanggal', $tanggal_awal, $tanggal_akhir])->sum('debit');
-                                            $sum_kredit = AktJurnalUmumDetail::find()->leftJoin('akt_jurnal_umum', 'akt_jurnal_umum.id_jurnal_umum = akt_jurnal_umum_detail.id_jurnal_umum')->where(['id_akun' => $value['id_akun']])->andWhere(['BETWEEN', 'tanggal', $tanggal_awal, $tanggal_akhir])->sum('kredit');
-                                            $nominal = $sum_debit - $sum_kredit;
-                                            $total_pendapatan_lain += $nominal;
-                                        ?>
-                                            <tr>
-                                                <td><?= $no ?></td>
-                                                <td><?= $value['kode_akun']
-                                                    ?></td>
-                                                <td><?= $value['nama_akun'] ?></td>
-                                                <td style="text-align: right;"><?= $nominal >= 0 ? ribuan($nominal) : '( ' . ribuan($nominal) . ' ) ' ?></td>
-                                            </tr>
-                                        <?php } ?>
-                                    </tbody>
-                                    <tfoot>
-                                        <tr>
-                                            <th colspan="3" style="text-align: right;">Total</th>
-                                            <th style="text-align: right;"><?= ribuan($total_pendapatan_lain) ?></th>
-                                        </tr>
-                                    </tfoot>
-                                </table>
-                                <?php $grandtotal_pendapatan_lain += $total_pendapatan_lain; ?>
-                            <?php } ?>
-                        </div>
-                    </div>
-                </div>
-                <div class="panel-footer">
-                    <center>
-                        <table style="width: 97%;">
-                            <tr>
-                                <td><b>Grandtotal Pendapatan Lain</b></td>
-                                <td><b style="float: right;"><?= ribuan($grandtotal_pendapatan_lain) ?></b></td>
-                            </tr>
-                        </table>
-                    </center>
-                </div>
-            </div>
-        </div>
-
-        <div class="box">
-            <div class="panel panel-primary">
-                <div class="panel-heading">Beban</div>
-                <div class="panel-body">
-                    <div class="col-md-12" style="padding: 0;">
-                        <div class="box-body">
-                            <?php
-                            $beban_ = Yii::$app->db->createCommand("SELECT akt_klasifikasi.id_klasifikasi, akt_klasifikasi.klasifikasi FROM akt_klasifikasi LEFT JOIN akt_akun ON akt_klasifikasi.id_klasifikasi = akt_akun.klasifikasi WHERE akt_akun.jenis = 8 GROUP BY akt_klasifikasi.klasifikasi ORDER BY akt_klasifikasi.klasifikasi DESC")->query();
-                            $grandtotal_beban = 0;
-                            foreach ($beban_ as $key => $val) {
-                            ?>
-                                <table class="table">
-                                    <thead>
-                                        <tr>
-                                            <th colspan="4" bgcolor="grey" style="color: white;"><?= $val['klasifikasi'] ?></th>
-                                        </tr>
-                                        <tr>
-                                            <th style="width: 1%;">#</th>
-                                            <th style="width: 15%;">Kode</th>
-                                            <th>Nama Akun</th>
-                                            <th>Nominal</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <?php
-                                        $no = 0;
-                                        $total_beban = 0;
-                                        $beban = Yii::$app->db->createCommand("SELECT * FROM akt_akun LEFT JOIN akt_klasifikasi ON akt_klasifikasi.id_klasifikasi = akt_akun.klasifikasi WHERE akt_akun.jenis = 8 AND akt_klasifikasi.klasifikasi = '" . $val['klasifikasi'] . "'")->query();
-                                        foreach ($beban as $key => $value) {
-                                            $no++;
-
-                                            $sum_debit = AktJurnalUmumDetail::find()->leftJoin('akt_jurnal_umum', 'akt_jurnal_umum.id_jurnal_umum = akt_jurnal_umum_detail.id_jurnal_umum')->where(['id_akun' => $value['id_akun']])->andWhere(['BETWEEN', 'tanggal', $tanggal_awal, $tanggal_akhir])->sum('debit');
-                                            $sum_kredit = AktJurnalUmumDetail::find()->leftJoin('akt_jurnal_umum', 'akt_jurnal_umum.id_jurnal_umum = akt_jurnal_umum_detail.id_jurnal_umum')->where(['id_akun' => $value['id_akun']])->andWhere(['BETWEEN', 'tanggal', $tanggal_awal, $tanggal_akhir])->sum('kredit');
-                                            $nominal = $sum_debit - $sum_kredit;
-                                            $total_beban += $nominal;
-                                        ?>
-                                            <tr>
-                                                <td><?= $no ?></td>
-                                                <td><?= $value['kode_akun']
-                                                    ?></td>
-                                                <td><?= $value['nama_akun'] ?></td>
-                                                <td style="text-align: right;"><?= $nominal >= 0 ? ribuan($nominal) : '( ' . ribuan($nominal) . ' ) ' ?></td>
-                                            </tr>
-                                        <?php } ?>
-                                    </tbody>
-                                    <tfoot>
-                                        <tr>
-                                            <th colspan="3" style="text-align: right;">Total</th>
-                                            <th style="text-align: right;"><?= ribuan($total_beban) ?></th>
-                                        </tr>
-                                    </tfoot>
-                                </table>
-                                <?php $grandtotal_beban += $total_beban; ?>
-                            <?php } ?>
-                        </div>
-                    </div>
-                </div>
-                <div class="panel-footer">
-                    <center>
-                        <table style="width: 97%;">
-                            <tr>
-                                <td><b>Grandtotal Beban</b></td>
-                                <td><b style="float: right;"><?= ribuan($grandtotal_beban) ?></b></td>
-                            </tr>
-                        </table>
-                    </center>
-                </div>
-            </div>
-        </div>
-
-        <div class="box">
-            <div class="panel panel-primary">
-                <div class="panel-heading">Pengeluaran Lain</div>
-                <div class="panel-body">
-                    <div class="col-md-12" style="padding: 0;">
-                        <div class="box-body">
-                            <?php
-                            $pengeluaran_lain_ = Yii::$app->db->createCommand("SELECT akt_klasifikasi.id_klasifikasi, akt_klasifikasi.klasifikasi FROM akt_klasifikasi LEFT JOIN akt_akun ON akt_klasifikasi.id_klasifikasi = akt_akun.klasifikasi WHERE akt_akun.jenis = 9 GROUP BY akt_klasifikasi.klasifikasi ORDER BY akt_klasifikasi.klasifikasi DESC")->query();
-                            $grandtotal_pengeluaran_lain = 0;
-                            foreach ($pengeluaran_lain_ as $key => $val) {
-                            ?>
-                                <table class="table">
-                                    <thead>
-                                        <tr>
-                                            <th colspan="4" bgcolor="grey" style="color: white;"><?= $val['klasifikasi'] ?></th>
-                                        </tr>
-                                        <tr>
-                                            <th style="width: 1%;">#</th>
-                                            <th style="width: 15%;">Kode</th>
-                                            <th>Nama Akun</th>
-                                            <th>Nominal</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <?php
-                                        $no = 0;
-                                        $total_pengeluaran_lain = 0;
-                                        $pengeluaran_lain = Yii::$app->db->createCommand("SELECT * FROM akt_akun LEFT JOIN akt_klasifikasi ON akt_klasifikasi.id_klasifikasi = akt_akun.klasifikasi WHERE akt_akun.jenis = 8 AND akt_klasifikasi.klasifikasi = '" . $val['klasifikasi'] . "'")->query();
-                                        foreach ($pengeluaran_lain as $key => $value) {
-                                            $no++;
-
-                                            $sum_debit = AktJurnalUmumDetail::find()->leftJoin('akt_jurnal_umum', 'akt_jurnal_umum.id_jurnal_umum = akt_jurnal_umum_detail.id_jurnal_umum')->where(['id_akun' => $value['id_akun']])->andWhere(['BETWEEN', 'tanggal', $tanggal_awal, $tanggal_akhir])->sum('debit');
-                                            $sum_kredit = AktJurnalUmumDetail::find()->leftJoin('akt_jurnal_umum', 'akt_jurnal_umum.id_jurnal_umum = akt_jurnal_umum_detail.id_jurnal_umum')->where(['id_akun' => $value['id_akun']])->andWhere(['BETWEEN', 'tanggal', $tanggal_awal, $tanggal_akhir])->sum('kredit');
-                                            $nominal = $sum_debit - $sum_kredit;
-                                            $total_pengeluaran_lain += $nominal;
-                                        ?>
-                                            <tr>
-                                                <td><?= $no ?></td>
-                                                <td><?= $value['kode_akun']
-                                                    ?></td>
-                                                <td><?= $value['nama_akun'] ?></td>
-                                                <td style="text-align: right;"><?= $nominal >= 0 ? ribuan($nominal) : '( ' . ribuan($nominal) . ' ) ' ?></td>
-                                            </tr>
-                                        <?php } ?>
-                                    </tbody>
-                                    <tfoot>
-                                        <tr>
-                                            <th colspan="3" style="text-align: right;">Total</th>
-                                            <th style="text-align: right;"><?= ribuan($total_pengeluaran_lain) ?></th>
-                                        </tr>
-                                    </tfoot>
-                                </table>
-                                <?php $grandtotal_pengeluaran_lain += $total_pengeluaran_lain; ?>
-                            <?php } ?>
-                        </div>
-                    </div>
-                </div>
-                <div class="panel-footer">
-                    <center>
-                        <table style="width: 97%;">
-                            <tr>
-                                <td><b>Grandtotal Pengeluaran Lain</b></td>
-                                <td><b style="float: right;"><?= ribuan($grandtotal_pengeluaran_lain) ?></b></td>
-                            </tr>
-                        </table>
-                    </center>
-                </div>
-            </div>
-        </div>
-
-        <div class="box box-primary">
-            <div class="box-body">
-                <table class="table">
-                    <tr>
-                        <th>
-                            <h3>Laba Bersih</h3>
-                        </th>
-                        <th style="text-align: right;">
-                            <?php
-                            $laba_bersih = $grandtotal_pendapatan + $grandtotal_pendapatan_lain - $grandtotal_pengeluaran_lain - $grandtotal_beban;
-                            if ($laba_bersih < 0) {
-                                echo '<h3>(' . ribuan(substr($laba_bersih, 1)) . ')</h3>';
-                            } else {
-                                echo '<h3>' . ribuan($laba_bersih, 1) . '</h3>';
-                            }
-                            ?>
-                        </th>
-                    </tr>
-                </table>
             </div>
         </div>
 

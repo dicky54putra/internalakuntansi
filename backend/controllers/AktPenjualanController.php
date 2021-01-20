@@ -251,7 +251,6 @@ class AktPenjualanController extends Controller
         $model->the_approver = $id_login;
         $model->the_approver_date = date('Y-m-d H:i:s');
         $model->no_penjualan = $no_penjualan;
-        $model->tanggal_penjualan = date('Y-m-d');
         $model->save(FALSE);
 
         // Create Jurnal Umum
@@ -259,7 +258,7 @@ class AktPenjualanController extends Controller
         $no_jurnal_umum = AktJurnalUmum::getKodeJurnalUmum();
         $jurnal_umum->no_jurnal_umum = $no_jurnal_umum;
         $jurnal_umum->tipe = 1;
-        $jurnal_umum->tanggal = date('Y-m-d');
+        $jurnal_umum->tanggal = $model->tanggal_penjualan;
         $jurnal_umum->keterangan = 'Order Penjualan : ' .  $model->no_order_penjualan;
         $jurnal_umum->save(false);
 
